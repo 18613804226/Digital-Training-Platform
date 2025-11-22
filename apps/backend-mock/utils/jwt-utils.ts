@@ -46,12 +46,25 @@ export function verifyAccessToken(
 ): null | Omit<UserInfo, 'password'> {
   console.log('🔍 event type:', typeof event);
   console.log('🔍 event.req exists:', !!event.req);
-  if (!event.req) {
-    throw new Error('💥 event.req is missing! Use defineEventHandler!');
+
+  // ✅ 直接使用 h3 的 getHeader —— 它内部已处理 Edge / Node.js 差异
+  const authHeader = getHeader(event, 'authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    return null;
   }
-  const authHeader = getAuthHeader(event);
-  if (!authHeader?.startsWith('Bearer ')) return null;
-  const token = authHeader.substring(7);
+
+  const token = authHeader.substring(7); // "Bearer xxx" → "xxx"
+
+  try {
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as unknown as UserPayload;
+    const user = MOCK_USERS.find(u => u.username === decoded.username);
+    if (!user) return null;
+    const { password: _, ...userinfo } = user;
+    return userinfo;
+  } catch {
+    return null;
+  }
   // const authHeader = getHeader(event, 'Authorization');
   if (!authHeader?.startsWith('Bearer')) {
     return null;
