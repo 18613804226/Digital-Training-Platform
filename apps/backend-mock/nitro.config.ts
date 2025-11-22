@@ -9,7 +9,7 @@ export default defineNitroConfig({
     '@utils': path.resolve(__dirname, '.utils'),
     '@error': path.resolve(__dirname, '.error'),
   },
-  scanDirs: ['src'],
+  scanDirs: ['.', 'api', 'utils', 'error'],
   devErrorHandler: errorHandler,
   errorHandler: '@/error',
   routeRules: {

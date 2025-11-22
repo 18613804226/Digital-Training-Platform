@@ -8,9 +8,9 @@ export default defineConfig({
     environment: 'happy-dom',
     exclude: [...configDefaults.exclude, '**/e2e/**'],
   },
-  // resolve: {
-  //   alias: {
-  //     '@': path.resolve(__dirname, './src'), // 关键！把 @ 映射到 src/
-  //   },
-  // },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'), // 关键！把 @ 映射到 src/
+    },
+  },
 });
