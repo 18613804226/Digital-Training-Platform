@@ -42,13 +42,14 @@ function getAuthHeader(event: H3Event): string | undefined {
 }
 
 export function verifyAccessToken(
-  event: H3Event<EventHandlerRequest>,
+  rawReq: any
 ): null | Omit<UserInfo, 'password'> {
-  console.log('🔍 event type:', typeof event);
-  console.log('🔍 event.req exists:', !!event.req);
+
 
   // ✅ 直接使用 h3 的 getHeader —— 它内部已处理 Edge / Node.js 差异
-  const authHeader = getHeader(event, 'authorization');
+  // const authHeader = getHeader(event, 'authorization');
+  const headers = rawReq?.headers || {};
+  const authHeader = headers.authorization || headers.Authorization;
 
   if (!authHeader?.startsWith('Bearer ')) {
     return null;

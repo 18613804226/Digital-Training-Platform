@@ -3,7 +3,10 @@ import { verifyAccessToken } from '../utils/jwt-utils';
 import { unAuthorizedResponse, useResponseSuccess } from '../utils/response';
 
 export default defineEventHandler((event) => {
-  const userinfo = verifyAccessToken(event);
+  const userinfo = verifyAccessToken(event.node?.req);
+  if (!userinfo) {
+    return { status: 401, body: 'Unauthorized' };
+  }
   if (!userinfo) {
     return unAuthorizedResponse(event);
   }
