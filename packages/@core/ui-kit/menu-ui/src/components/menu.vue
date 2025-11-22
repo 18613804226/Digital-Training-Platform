@@ -32,7 +32,7 @@ import {
   useMenuStyle,
 } from '../hooks';
 import { useMenuScroll } from '../hooks/use-menu-scroll';
-import { flattedChildren } from '../../utils';
+import { flattedChildren } from '../utils';
 import SubMenu from './sub-menu.vue';
 
 interface Props extends MenuProps {}
