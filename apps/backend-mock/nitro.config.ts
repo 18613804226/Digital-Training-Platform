@@ -5,9 +5,9 @@ import errorHandler from './error';
 process.env.COMPATIBILITY_DATE = new Date().toISOString();
 export default defineNitroConfig({
   alias: {
-    '@': path.resolve(__dirname, './'),
-    '@utils': path.resolve(__dirname, './utils'),
-    '@error': path.resolve(__dirname, './error'),
+    '@': path.resolve(__dirname, '.'),
+    '@utils': path.resolve(__dirname, '.utils'),
+    '@error': path.resolve(__dirname, '.error'),
   },
   scanDirs: ['src'],
   devErrorHandler: errorHandler,
