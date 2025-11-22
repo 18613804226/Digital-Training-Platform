@@ -15,7 +15,6 @@ export interface UserPayload extends UserInfo {
   iat: number;
   exp: number;
 }
-
 export function generateAccessToken(user: UserInfo) {
   return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: '7d' });
 }
@@ -29,6 +28,11 @@ export function generateRefreshToken(user: UserInfo) {
 export function verifyAccessToken(
   event: H3Event<EventHandlerRequest>,
 ): null | Omit<UserInfo, 'password'> {
+  console.log('🔍 event type:', typeof event);
+  console.log('🔍 event.req exists:', !!event.req);
+  if (!event.req) {
+    throw new Error('💥 event.req is missing! Use defineEventHandler!');
+  }
   const authHeader = getHeader(event, 'Authorization');
   if (!authHeader?.startsWith('Bearer')) {
     return null;

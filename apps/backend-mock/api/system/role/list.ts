@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { eventHandler, getQuery } from 'h3';
+import { defineEventHandler, getQuery } from 'h3';
 import { verifyAccessToken } from '../../../utils/jwt-utils';
 import { getMenuIds, MOCK_MENU_LIST } from '../../../utils/mock-data';
 import { unAuthorizedResponse, usePageResponseSuccess } from '../../../utils/response';
@@ -39,7 +39,7 @@ function generateMockDataList(count: number) {
 
 const mockData = generateMockDataList(100);
 
-export default eventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
   const userinfo = verifyAccessToken(event);
   if (!userinfo) {
     return unAuthorizedResponse(event);

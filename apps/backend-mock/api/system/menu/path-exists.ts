@@ -1,4 +1,4 @@
-import { eventHandler, getQuery } from 'h3';
+import { defineEventHandler, getQuery } from 'h3';
 import { verifyAccessToken } from '../../../utils/jwt-utils';
 import { MOCK_MENU_LIST } from '../../../utils/mock-data';
 import { unAuthorizedResponse, useResponseSuccess } from '../../../utils/response';
@@ -15,7 +15,7 @@ function getPaths(menus: any[]) {
 }
 getPaths(MOCK_MENU_LIST);
 
-export default eventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
   const userinfo = verifyAccessToken(event);
   if (!userinfo) {
     return unAuthorizedResponse(event);
