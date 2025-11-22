@@ -25,6 +25,22 @@ export function generateRefreshToken(user: UserInfo) {
   });
 }
 
+function getAuthHeader(event: H3Event): string | undefined {
+  try {
+    return getHeader(event, 'authorization');
+  } catch (e) {
+    // fallback: 手动检查
+    if ('request' in event) {
+      const req = event as unknown as { request: Request };
+      return req.request.headers.get('authorization') || undefined;
+    }
+    if (event.node?.req?.headers) {
+      return event.node.req.headers.authorization;
+    }
+    return undefined;
+  }
+}
+
 export function verifyAccessToken(
   event: H3Event<EventHandlerRequest>,
 ): null | Omit<UserInfo, 'password'> {
@@ -33,7 +49,10 @@ export function verifyAccessToken(
   if (!event.req) {
     throw new Error('💥 event.req is missing! Use defineEventHandler!');
   }
-  const authHeader = getHeader(event, 'Authorization');
+  const authHeader = getAuthHeader(event);
+  if (!authHeader?.startsWith('Bearer ')) return null;
+  const token = authHeader.substring(7);
+  // const authHeader = getHeader(event, 'Authorization');
   if (!authHeader?.startsWith('Bearer')) {
     return null;
   }
@@ -42,7 +61,7 @@ export function verifyAccessToken(
   if (tokenParts.length !== 2) {
     return null;
   }
-  const token = tokenParts[1] as string;
+  // const token = tokenParts[1] as string;
   try {
     const decoded = jwt.verify(
       token,

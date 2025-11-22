@@ -4,6 +4,7 @@ import errorHandler from './error';
 
 process.env.COMPATIBILITY_DATE = new Date().toISOString();
 export default defineNitroConfig({
+  preset: 'vercel', // 或 'vercel-serverless'
   alias: {
     '@': path.resolve(__dirname, '.'),
     '@utils': path.resolve(__dirname, '.utils'),
