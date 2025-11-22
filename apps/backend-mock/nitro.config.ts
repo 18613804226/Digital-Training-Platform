@@ -1,9 +1,17 @@
+import path from 'node:path'
 import errorHandler from './error';
+// import { defineNitroConfig } from 'nitropack';
 
 process.env.COMPATIBILITY_DATE = new Date().toISOString();
 export default defineNitroConfig({
+  alias: {
+    '@': path.resolve(__dirname, './'),
+    '@utils': path.resolve(__dirname, './utils'),
+    '@error': path.resolve(__dirname, './error'),
+  },
+  scanDirs: ['src'],
   devErrorHandler: errorHandler,
-  errorHandler: '~/error',
+  errorHandler: '@/error',
   routeRules: {
     '/api/**': {
       cors: true,
@@ -18,3 +26,6 @@ export default defineNitroConfig({
     },
   },
 });
+// nitro.config.ts
+
+
