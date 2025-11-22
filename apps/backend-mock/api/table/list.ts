@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { eventHandler, getQuery } from 'h3';
-import { verifyAccessToken } from '@/utils/jwt-utils';
+import { verifyAccessToken } from '../../utils/jwt-utils';
 import {
   sleep,
   unAuthorizedResponse,
   usePageResponseSuccess,
-} from '@/utils/response';
+} from '../../utils/response';
 
 function generateMockDataList(count: number) {
   const dataList = [];
@@ -100,9 +100,9 @@ export default eventHandler(async (event) => {
           Number.isFinite(aNum) && Number.isFinite(bNum)
             ? aNum - bNum
             : aStr.localeCompare(bStr, undefined, {
-                numeric: true,
-                sensitivity: 'base',
-              });
+              numeric: true,
+              sensitivity: 'base',
+            });
       }
 
       return isDesc ? -result : result;

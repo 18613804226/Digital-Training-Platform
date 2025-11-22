@@ -6,7 +6,7 @@ import {
   readPackageJSON,
 } from '@vben/node-utils';
 
-import { loadEnv } from '../utils/env';
+import { loadEnv } from '../../utils/env';
 
 interface PluginOptions {
   isBuild: boolean;
