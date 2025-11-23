@@ -77,9 +77,8 @@ const logoSrc = computed(() => {
         </slot>
       </template>
     </AuthenticationFormView>
-
+    <!-- 头部 Logo 和应用名称 -->
     <slot name="logo">
-      <!-- 头部 Logo 和应用名称 -->
       <div
         v-if="logoSrc || appName"
         class="absolute left-0 top-0 z-10 flex flex-1"
@@ -102,7 +101,6 @@ const logoSrc = computed(() => {
         </div>
       </div>
     </slot>
-
     <!-- 系统介绍 -->
     <div v-if="!authPanelCenter" class="relative hidden w-0 flex-1 lg:block">
       <div

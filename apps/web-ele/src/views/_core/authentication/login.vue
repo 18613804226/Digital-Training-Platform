@@ -14,10 +14,10 @@ defineOptions({ name: 'Login' });
 const authStore = useAuthStore();
 
 const MOCK_USER_OPTIONS: BasicOption[] = [
-  {
-    label: 'Super',
-    value: 'vben',
-  },
+  // {
+  //   label: 'Super',
+  //   value: 'vben',
+  // },
   {
     label: 'Admin',
     value: 'admin',

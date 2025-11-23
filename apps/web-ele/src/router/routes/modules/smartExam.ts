@@ -1,0 +1,36 @@
+import type { RouteRecordRaw } from 'vue-router';
+
+import { $t } from '#/locales';
+
+const routes: RouteRecordRaw[] = [
+  {
+    meta: {
+      icon: 'ic:baseline-view-in-ar',
+      keepAlive: true,
+      order: 1000,
+      title: $t('smartExam.title'),
+    },
+    name: 'smartExam',
+    path: '/smartExam',
+    children: [
+      {
+        meta: {
+          title: $t('smartExam.AIexamGenerator'),
+        },
+        name: 'AIexamGenerator',
+        path: '/smartExam/AIexamGenerator',
+        component: () => import('#/views/smartExam/AIexamGenerator/index.vue'),
+      },
+      {
+        meta: {
+          title: $t('smartExam.formalExam'),
+        },
+        name: 'formalExam',
+        path: '/smartExam/formalExam',
+        component: () => import('#/views/smartExam/formalExam/index.vue'),
+      },
+    ],
+  },
+];
+
+export default routes;
