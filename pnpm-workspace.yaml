@@ -14,7 +14,7 @@ packages:
   - playground
 
 catalog:
-  '@ast-grep/napi': ^0.39.9
+  '@ast-grep/napi': ^0.40.0
   '@changesets/changelog-github': ^0.5.1
   '@changesets/cli': ^2.29.7
   '@changesets/git': ^3.0.4
@@ -122,7 +122,7 @@ catalog:
   lodash.get: ^4.4.2
   lodash.isequal: ^4.5.0
   lodash.set: ^4.3.2
-  lucide-vue-next: ^0.553.0
+  lucide-vue-next: ^0.554.0
   medium-zoom: ^1.1.0
   naive-ui: ^2.42.0
   nitropack: ^2.11.13
@@ -191,5 +191,5 @@ catalog:
   vxe-table: ^4.17.14
   watermark-js-plus: ^1.6.2
   zod: ^3.25.67
-  zod-defaults: 0.1.3
+  zod-defaults: 0.2.3
   es-toolkit: ^1.41.0
