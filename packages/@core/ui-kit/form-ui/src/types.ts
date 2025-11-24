@@ -131,9 +131,9 @@ export interface FormItemDependencies {
 
 type ComponentProps =
   | ((
-    value: Partial<Record<string, any>>,
-    actions: FormActions,
-  ) => MaybeComponentProps)
+      value: Partial<Record<string, any>>,
+      actions: FormActions,
+    ) => MaybeComponentProps)
   | MaybeComponentProps;
 
 export interface FormCommonConfig {
@@ -350,9 +350,9 @@ export interface ActionButtonOptions extends VbenButtonProps {
 export interface VbenFormProps<
   T extends BaseFormComponentType = BaseFormComponentType,
 > extends Omit<
-  FormRenderProps<T>,
-  'componentBindEventMap' | 'componentMap' | 'form'
-> {
+    FormRenderProps<T>,
+    'componentBindEventMap' | 'componentMap' | 'form'
+  > {
   /**
    * 操作按钮是否反转（提交按钮前置）
    */

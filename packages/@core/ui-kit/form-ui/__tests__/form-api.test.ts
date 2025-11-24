@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FormApi } from '../src/form-api';
-import { fa } from 'zod/v4/locales';
 
 describe('formApi', () => {
   let formApi: FormApi;
@@ -161,7 +160,7 @@ describe('updateSchema', () => {
 
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
-      .mockImplementation(() => { });
+      .mockImplementation(() => {});
 
     instance.updateSchema(newSchema);
 
