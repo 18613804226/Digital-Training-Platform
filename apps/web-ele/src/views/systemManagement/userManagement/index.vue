@@ -1,12 +1,9 @@
 <script lang="ts" setup>
-
-import { VbenButton, prompt, useVbenModal } from '@vben/common-ui';
-import type { VxeGridProps } from '#/adapter/vxe-table';
 import type { VbenFormProps } from '#/adapter/form';
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getUserListApi, deleteUserApi } from '#/api';
-// @ts-ignore
-import ExtraModal from './modal.vue';
+import type { VxeGridProps } from '#/adapter/vxe-table';
+
+import { prompt, useVbenModal, VbenButton } from '@vben/common-ui';
+
 import {
   // ElButton,
   // ElCard,
@@ -17,6 +14,11 @@ import {
   // ElTable,
 } from 'element-plus';
 
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { deleteUserApi, getUserListApi } from '#/api';
+
+// @ts-ignore
+import ExtraModal from './modal.vue';
 
 const [Modal, modalApi] = useVbenModal({
   // 连接抽离的组件
@@ -132,14 +134,23 @@ const gridOptions: VxeGridProps<RowType> = {
     // autoLoad: false,
     ajax: {
       query: async ({ page }, formValues) => {
-        let startDate = ''
-        let endDate = ''
-        if (Array.isArray(formValues.createdAt) && formValues.createdAt.length === 2) {
-          startDate = formValues.createdAt[0]
-          endDate = formValues.createdAt[1]
-          formValues.createdAt = []
+        let startDate = '';
+        let endDate = '';
+        if (
+          Array.isArray(formValues.createdAt) &&
+          formValues.createdAt.length === 2
+        ) {
+          startDate = formValues.createdAt[0];
+          endDate = formValues.createdAt[1];
+          formValues.createdAt = [];
         }
-        const res: any = await getUserListApi({ page: page.currentPage, pageSize: page.pageSize, ...formValues, startDate, endDate }); // 不传分页参数
+        const res: any = await getUserListApi({
+          page: page.currentPage,
+          pageSize: page.pageSize,
+          ...formValues,
+          startDate,
+          endDate,
+        }); // 不传分页参数
         return {
           result: res.list || [],
           page: {
@@ -148,7 +159,7 @@ const gridOptions: VxeGridProps<RowType> = {
             pageSize: page.pageSize,
           },
         };
-      }
+      },
     },
   },
   toolbarConfig: {
@@ -161,21 +172,21 @@ const gridOptions: VxeGridProps<RowType> = {
       // { name: '新增', code: 'myAdd', status: 'primary' },
       // { name: '删除', code: 'myDel', status: 'error' },
       // { name: '保存', code: 'mySave', status: 'success' }
-    ]
+    ],
   },
 };
 
 function showIconConfirm(row: RowType) {
   prompt({
-    component: () => { },
+    component: () => {},
     content: 'Confirm whether to delete',
     icon: 'warning',
     modelPropName: 'value',
   }).then(async () => {
-    const res: any = await deleteUserApi(row)
+    const res: any = await deleteUserApi(row);
     if (res.success === true) {
       ElMessage.success(res.message);
-      gridApi.query()
+      gridApi.query();
     }
   });
 }
@@ -184,9 +195,9 @@ function handleAdd() {
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({
-  gridOptions, formOptions
+  gridOptions,
+  formOptions,
 });
-
 </script>
 
 <template>
@@ -195,10 +206,14 @@ const [Grid, gridApi] = useVbenVxeGrid({
     <Grid>
       <!-- 自定义工具栏左侧区域 -->
       <template #toolbar-actions>
-        <VbenButton variant="outline" size="default" @click="handleAdd">新增</VbenButton>
+        <VbenButton variant="outline" size="default" @click="handleAdd">
+          新增
+        </VbenButton>
       </template>
       <template #action="{ row }">
-        <VbenButton variant="link" size="sm" @click="showIconConfirm(row)">delete</VbenButton>
+        <VbenButton variant="link" size="sm" @click="showIconConfirm(row)">
+          delete
+        </VbenButton>
       </template>
     </Grid>
   </div>

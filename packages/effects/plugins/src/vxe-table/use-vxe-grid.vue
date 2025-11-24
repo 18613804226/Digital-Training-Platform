@@ -299,17 +299,22 @@ async function init() {
   const autoLoad = defaultGridOptions.proxyConfig?.autoLoad;
   const enableProxyConfig = options.value.proxyConfig?.enabled;
   if (enableProxyConfig && autoLoad) {
-    const formValues = formOptions.value ? ((await formApi.getValues()) ?? {}) : {};
+    const formValues = formOptions.value
+      ? ((await formApi.getValues()) ?? {})
+      : {};
     const rawResult = await defaultGridOptions.proxyConfig!.ajax!.query!(
       { page: { currentPage: 1, pageSize: 20 } },
-      formValues
+      formValues,
     );
     // 🔍 开发环境校验
-    if (import.meta.env.DEV && (!rawResult || !Array.isArray(rawResult.result))) {
+    if (
+      import.meta.env.DEV &&
+      (!rawResult || !Array.isArray(rawResult.result))
+    ) {
       console.error(
         '[Vben VxeTable] proxy.ajax.query 返回格式错误！应为 { result: [...], page?: {...} }',
         '实际返回:',
-        rawResult
+        rawResult,
       );
     }
 
@@ -374,14 +379,20 @@ onUnmounted(() => {
 
 <template>
   <div :class="cn('bg-card h-full rounded-md', className)">
-    <VxeGrid ref="gridRef" :class="cn(
-      'p-2',
-      {
-        'pt-0': showToolbar && !formOptions,
-      },
-      gridClass,
-    )
-      " v-bind="options" v-on="events">
+    <VxeGrid
+      ref="gridRef"
+      :class="
+        cn(
+          'p-2',
+          {
+            'pt-0': showToolbar && !formOptions,
+          },
+          gridClass,
+        )
+      "
+      v-bind="options"
+      v-on="events"
+    >
       <!-- 左侧操作区域或者title -->
       <template v-if="showToolbar" #toolbar-actions="slotProps">
         <slot v-if="showTableTitle" name="table-title">
@@ -396,32 +407,55 @@ onUnmounted(() => {
       </template>
 
       <!-- 继承默认的slot -->
-      <template v-for="slotName in delegatedSlots" :key="slotName" #[slotName]="slotProps">
+      <template
+        v-for="slotName in delegatedSlots"
+        :key="slotName"
+        #[slotName]="slotProps"
+      >
         <slot :name="slotName" v-bind="slotProps"></slot>
       </template>
       <template #toolbar-tools="slotProps">
         <slot name="toolbar-tools" v-bind="slotProps"></slot>
-        <VxeButton icon="vxe-icon-search" circle class="ml-2" v-if="gridOptions?.toolbarConfig?.search && !!formOptions"
-          :status="showSearchForm ? 'primary' : undefined" :title="$t('common.search')" @click="onSearchBtnClick" />
+        <VxeButton
+          icon="vxe-icon-search"
+          circle
+          class="ml-2"
+          v-if="gridOptions?.toolbarConfig?.search && !!formOptions"
+          :status="showSearchForm ? 'primary' : undefined"
+          :title="$t('common.search')"
+          @click="onSearchBtnClick"
+        />
       </template>
 
       <!-- form表单 -->
       <template #form>
-        <div v-if="formOptions" v-show="showSearchForm !== false" :class="cn(
-          'relative rounded py-3',
-          isCompactForm
-            ? isSeparator
-              ? 'pb-8'
-              : 'pb-4'
-            : isSeparator
-              ? 'pb-4'
-              : 'pb-0',
-        )
-          ">
+        <div
+          v-if="formOptions"
+          v-show="showSearchForm !== false"
+          :class="
+            cn(
+              'relative rounded py-3',
+              isCompactForm
+                ? isSeparator
+                  ? 'pb-8'
+                  : 'pb-4'
+                : isSeparator
+                  ? 'pb-4'
+                  : 'pb-0',
+            )
+          "
+        >
           <slot name="form">
             <Form>
-              <template v-for="slotName in delegatedFormSlots" :key="slotName" #[slotName]="slotProps">
-                <slot :name="`${FORM_SLOT_PREFIX}${slotName}`" v-bind="slotProps"></slot>
+              <template
+                v-for="slotName in delegatedFormSlots"
+                :key="slotName"
+                #[slotName]="slotProps"
+              >
+                <slot
+                  :name="`${FORM_SLOT_PREFIX}${slotName}`"
+                  v-bind="slotProps"
+                ></slot>
               </template>
               <template #reset-before="slotProps">
                 <slot name="reset-before" v-bind="slotProps"></slot>
@@ -437,11 +471,13 @@ onUnmounted(() => {
               </template>
             </Form>
           </slot>
-          <div v-if="isSeparator" :style="{
-            ...(separatorBg ? { backgroundColor: separatorBg } : undefined),
-          }"
-            class="bg-background-deep z-100 absolute -left-2 bottom-1 h-2 w-[calc(100%+1rem)] overflow-hidden md:bottom-2 md:h-3">
-          </div>
+          <div
+            v-if="isSeparator"
+            :style="{
+              ...(separatorBg ? { backgroundColor: separatorBg } : undefined),
+            }"
+            class="bg-background-deep z-100 absolute -left-2 bottom-1 h-2 w-[calc(100%+1rem)] overflow-hidden md:bottom-2 md:h-3"
+          ></div>
         </div>
       </template>
       <!-- loading -->

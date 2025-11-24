@@ -5,7 +5,7 @@ export interface User {
   username: string;
   realName: string;
   email?: string;
-  role: 'ADMIN' | 'USER' | 'GUEST';
+  role: 'ADMIN' | 'GUEST' | 'USER';
   status: 'active' | 'disabled';
   avatar?: string;
   createdAt: string;

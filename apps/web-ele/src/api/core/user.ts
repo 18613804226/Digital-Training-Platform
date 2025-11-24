@@ -14,5 +14,5 @@ export async function getUserListApi(params: any) {
 }
 // 删除用户
 export async function deleteUserApi(params: any) {
-  return requestClient.delete<UserInfo>('/user/' + params.id);
+  return requestClient.delete<UserInfo>(`/user/${params.id}`);
 }
