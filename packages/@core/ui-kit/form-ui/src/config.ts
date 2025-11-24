@@ -14,7 +14,7 @@ import {
   Input as VbenInput,
   VbenInputPassword,
   VbenPinInput,
-  VbenSelect,
+  // VbenSelect,
 } from '@vben-core/shadcn-ui';
 import { globalShareState } from '@vben-core/shared/global-state';
 
@@ -31,7 +31,7 @@ export const COMPONENT_MAP: Record<BaseFormComponentType, Component> = {
   VbenInput,
   VbenInputPassword,
   VbenPinInput,
-  VbenSelect,
+  // VbenSelect,
 };
 
 export const COMPONENT_BIND_EVENT_MAP: Partial<

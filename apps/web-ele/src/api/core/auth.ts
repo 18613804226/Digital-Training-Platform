@@ -49,3 +49,9 @@ export async function logoutApi() {
 export async function getAccessCodesApi() {
   return requestClient.get<string[]>('/auth/codes');
 }
+/**
+ * 用户注册
+ */
+export async function registerApi(data: AuthApi.LoginParams) {
+  return requestClient.post<AuthApi.LoginResult>('/auth/register', data);
+}

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FormApi } from '../src/form-api';
+import { fa } from 'zod/v4/locales';
 
 describe('formApi', () => {
   let formApi: FormApi;
@@ -22,7 +23,7 @@ describe('formApi', () => {
         resetButtonOptions: {},
         schema: [],
         showCollapseButton: false,
-        showDefaultActions: true,
+        showDefaultActions: false,
         submitButtonOptions: {},
         wrapperClass: 'grid-cols-1',
       }),
@@ -160,7 +161,7 @@ describe('updateSchema', () => {
 
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
-      .mockImplementation(() => {});
+      .mockImplementation(() => { });
 
     instance.updateSchema(newSchema);
 

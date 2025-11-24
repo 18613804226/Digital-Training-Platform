@@ -42,7 +42,7 @@ function getDefaultState(): VbenFormProps {
     schema: [],
     scrollToFirstError: false,
     showCollapseButton: false,
-    showDefaultActions: true,
+    showDefaultActions: false,
     submitButtonOptions: {},
     submitOnChange: false,
     submitOnEnter: false,
@@ -340,9 +340,9 @@ export class FormApi {
       if (key in obj) {
         obj[key] =
           !Array.isArray(obj[key]) &&
-          isObject(obj[key]) &&
-          !isDayjsObject(obj[key]) &&
-          !isDate(obj[key])
+            isObject(obj[key]) &&
+            !isDayjsObject(obj[key]) &&
+            !isDate(obj[key])
             ? fieldMergeFn(value, obj[key])
             : value;
       }
