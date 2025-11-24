@@ -22,12 +22,15 @@ setupVbenVxeTable({
           // 全局禁用vxe-table的表单配置，使用formOptions
           enabled: false,
         },
+        // pagerConfig: {
+        //   enabled: false,
+        // },
         proxyConfig: {
           autoLoad: true,
           response: {
-            result: 'items',
+            result: 'result',
             total: 'total',
-            list: 'items',
+            list: 'list',
           },
           showActiveMsg: true,
           showResponseMsg: false,

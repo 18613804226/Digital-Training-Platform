@@ -25,8 +25,8 @@ const props = withDefaults(defineProps<Props>(), {
   handleSubmit: undefined,
   layout: 'horizontal',
   resetButtonOptions: () => ({}),
-  showCollapseButton: false,
-  showDefaultActions: false,
+  showCollapseButton: true,
+  showDefaultActions: true,
   submitButtonOptions: () => ({}),
   wrapperClass: 'grid-cols-1',
 });
