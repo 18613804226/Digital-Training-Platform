@@ -16,3 +16,7 @@ export async function getUserListApi(params: any) {
 export async function deleteUserApi(params: any) {
   return requestClient.delete<UserInfo>(`/user/${params.id}`);
 }
+// profile 修改个人信息
+export async function uesrProfileApi(params: any) {
+  return requestClient.put<UserInfo>(`/user/profile`, params);
+}

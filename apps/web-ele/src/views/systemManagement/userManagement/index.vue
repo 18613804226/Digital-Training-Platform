@@ -113,6 +113,7 @@ const gridOptions: VxeGridProps<RowType> = {
     // { align: 'left', title: 'Name', type: 'checkbox', width: 100 },
     { field: 'username', title: 'UserName' },
     { field: 'role', title: 'Role' },
+    { field: 'name', title: 'Name' },
     { field: 'createdAt', title: 'Creatdate' },
     {
       field: 'action',
@@ -208,7 +209,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 </script>
 
 <template>
-  <div class="vp-raw w-full p-5">
+  <div class="vp-raw w-full p-4">
     <Modal @confrim="gridApi.query()" />
     <Grid>
       <!-- 自定义工具栏左侧区域 -->

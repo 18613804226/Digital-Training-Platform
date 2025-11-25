@@ -14,4 +14,6 @@ export interface PageProps {
    * @default 0
    */
   heightOffset?: number;
+  loading?: boolean; // 👈 新增
+  loadingText?: string;
 }

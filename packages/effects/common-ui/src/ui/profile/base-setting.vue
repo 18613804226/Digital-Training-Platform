@@ -27,6 +27,7 @@ const [Form, formApi] = useVbenForm(
       componentProps: {
         class: 'w-full',
       },
+      labelWidth: 140,
     },
     layout: 'horizontal',
     schema: computed(() => props.formSchema),
@@ -49,8 +50,8 @@ defineExpose({
 <template>
   <div @keydown.enter.prevent="handleSubmit">
     <Form />
-    <VbenButton type="submit" class="mt-4" @click="handleSubmit">
-      更新基本信息
+    <VbenButton type="submit" class="float-right mt-4" @click="handleSubmit">
+      Update
     </VbenButton>
   </div>
 </template>

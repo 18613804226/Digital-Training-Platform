@@ -11,9 +11,13 @@ import { cn } from '@vben-core/shared/utils';
 defineOptions({
   name: 'Page',
 });
-
-const { autoContentHeight = false, heightOffset = 0 } =
-  defineProps<PageProps>();
+const props = withDefaults(defineProps<PageProps>(), {
+  autoContentHeight: false,
+  heightOffset: 0,
+  loading: false, // 👈 新增默认值
+  loadingText: 'Loading...',
+});
+const { autoContentHeight = false, heightOffset = 0 } = props;
 
 const headerHeight = ref(0);
 const footerHeight = ref(0);
@@ -95,6 +99,18 @@ onMounted(() => {
       :class="cn('bg-card align-center flex px-6 py-4', footerClass)"
     >
       <slot name="footer"></slot>
+    </div>
+    <!-- ✅ Loading 遮罩（新增） -->
+    <div
+      v-if="props.loading"
+      class="absolute inset-0 z-10 flex items-center justify-center bg-white/10 backdrop-blur-sm"
+    >
+      <div class="text-center">
+        <div
+          class="inline-block h-10 w-10 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"
+        ></div>
+        <p class="mt-2 text-gray-600">{{ props.loadingText }}</p>
+      </div>
     </div>
   </div>
 </template>

@@ -43,7 +43,8 @@ const imageStyle = computed<CSSProperties>(() => {
 });
 
 const text = computed(() => {
-  return props.alt.slice(-2).toUpperCase();
+  // return props.alt.slice(-2).toUpperCase();
+  return props.alt.slice(0, 3);
 });
 
 const rootStyle = computed(() => {
@@ -69,7 +70,7 @@ const rootStyle = computed(() => {
     <span
       v-if="dot"
       :class="dotClass"
-      class="border-background absolute bottom-0 right-0 size-3 rounded-full border-2"
+      class="absolute bottom-0 right-0 size-3 rounded-full border-2 border-background"
     >
     </span>
   </div>

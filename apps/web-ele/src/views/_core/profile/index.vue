@@ -15,21 +15,21 @@ const tabsValue = ref<string>('basic');
 
 const tabs = ref([
   {
-    label: '基本设置',
+    label: 'Basic',
     value: 'basic',
   },
+  // {
+  //   label: '安全设置',
+  //   value: 'security',
+  // },
   {
-    label: '安全设置',
-    value: 'security',
-  },
-  {
-    label: '修改密码',
+    label: 'Change PassWord',
     value: 'password',
   },
-  {
-    label: '新消息提醒',
-    value: 'notice',
-  },
+  // {
+  //   label: 'Notice',
+  //   value: 'notice',
+  // },
 ]);
 </script>
 <template>

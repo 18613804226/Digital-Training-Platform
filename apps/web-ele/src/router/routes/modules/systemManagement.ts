@@ -22,6 +22,14 @@ const routes: RouteRecordRaw[] = [
         component: () =>
           import('#/views/systemManagement/userManagement/index.vue'),
       },
+      {
+        name: 'Profile',
+        path: 'Profile',
+        component: () => import('#/views/_core/profile/index.vue'),
+        meta: {
+          title: $t('page.auth.profile'),
+        },
+      },
     ],
   },
 ];
