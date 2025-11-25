@@ -1,13 +1,20 @@
 <script lang="ts" setup>
-import { useVbenModal, useVbenForm, z } from '@vben/common-ui';
-import { registerApi, getUserListApi } from '#/api';
+import { useVbenForm, useVbenModal, z } from '@vben/common-ui';
+
+import { registerApi } from '#/api';
+
 defineOptions({
   name: 'ExtraModal',
 });
 
+// 定义要 emit 的事件名
+const emit = defineEmits<{
+  (e: 'confrim'): void;
+}>();
+
 const [Modal, modalApi] = useVbenModal({
   draggable: true,
-  onConfirm: onConfirm
+  onConfirm,
 });
 
 const [Form, formApi] = useVbenForm({
@@ -107,15 +114,10 @@ async function onConfirm() {
   // console.log('1111111111');
   // formApi.submitForm(values)
   // console.log(formApi.form)
-  await registerApi(formApi.form.values)
-  modalApi.close()
-  notifyParent()
+  await registerApi(formApi.form.values);
+  modalApi.close();
+  notifyParent();
 }
-// 定义要 emit 的事件名
-const emit = defineEmits<{
-  (e: 'confrim'): void;
-}>();
-
 function notifyParent() {
   // 触发事件，并传参
   emit('confrim');
@@ -123,6 +125,6 @@ function notifyParent() {
 </script>
 <template>
   <Modal title="Add User">
-    <Form></Form>
+    <Form />
   </Modal>
 </template>

@@ -144,7 +144,7 @@ const gridOptions: VxeGridProps<RowType> = {
           endDate = formValues.createdAt[1];
           formValues.createdAt = [];
         }
-        return await getUserListData(page, formValues, startDate, endDate)
+        return await getUserListData(page, formValues, startDate, endDate);
       },
     },
   },
@@ -162,7 +162,12 @@ const gridOptions: VxeGridProps<RowType> = {
   },
 };
 
-async function getUserListData(page: any, formValues: any, startDate: string, endDate: string) {
+async function getUserListData(
+  page: any,
+  formValues: any,
+  startDate: string,
+  endDate: string,
+) {
   const res: any = await getUserListApi({
     page: page.currentPage,
     pageSize: page.pageSize,
@@ -181,7 +186,7 @@ async function getUserListData(page: any, formValues: any, startDate: string, en
 }
 function showIconConfirm(row: RowType) {
   prompt({
-    component: () => { },
+    component: () => {},
     content: 'Confirm whether to delete',
     icon: 'warning',
     modelPropName: 'value',
