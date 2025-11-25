@@ -17,7 +17,7 @@ export const VBEN_LOGO_URL =
 /**
  * @zh_CN Vben Admin 首页地址
  */
-export const VBEN_PREVIEW_URL = 'https://www.vben.pro';
+export const VBEN_PREVIEW_URL = '';
 
 export const VBEN_ELE_PREVIEW_URL = 'https://ele.vben.pro';
 

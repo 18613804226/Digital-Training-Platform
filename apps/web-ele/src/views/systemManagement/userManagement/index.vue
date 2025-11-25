@@ -144,21 +144,7 @@ const gridOptions: VxeGridProps<RowType> = {
           endDate = formValues.createdAt[1];
           formValues.createdAt = [];
         }
-        const res: any = await getUserListApi({
-          page: page.currentPage,
-          pageSize: page.pageSize,
-          ...formValues,
-          startDate,
-          endDate,
-        }); // 不传分页参数
-        return {
-          result: res.list || [],
-          page: {
-            total: res.total || 0,
-            currentPage: page.currentPage,
-            pageSize: page.pageSize,
-          },
-        };
+        return await getUserListData(page, formValues, startDate, endDate)
       },
     },
   },
@@ -176,9 +162,26 @@ const gridOptions: VxeGridProps<RowType> = {
   },
 };
 
+async function getUserListData(page: any, formValues: any, startDate: string, endDate: string) {
+  const res: any = await getUserListApi({
+    page: page.currentPage,
+    pageSize: page.pageSize,
+    ...formValues,
+    startDate,
+    endDate,
+  });
+  return {
+    result: res.list || [],
+    page: {
+      total: res.total || 0,
+      currentPage: page.currentPage,
+      pageSize: page.pageSize,
+    },
+  };
+}
 function showIconConfirm(row: RowType) {
   prompt({
-    component: () => {},
+    component: () => { },
     content: 'Confirm whether to delete',
     icon: 'warning',
     modelPropName: 'value',
@@ -193,7 +196,6 @@ function showIconConfirm(row: RowType) {
 function handleAdd() {
   modalApi.open();
 }
-
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
   formOptions,
@@ -202,7 +204,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 <template>
   <div class="vp-raw w-full p-5">
-    <Modal />
+    <Modal @confrim="gridApi.query()" />
     <Grid>
       <!-- 自定义工具栏左侧区域 -->
       <template #toolbar-actions>
