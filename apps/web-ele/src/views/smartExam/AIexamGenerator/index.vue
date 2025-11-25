@@ -183,9 +183,12 @@ const [QueryForm, formApi] = useVbenForm({
 
 <template>
   <div class="relative flex h-full flex-col p-4">
-    <Page class="card-box flex-1 overflow-hidden rounded-lg"
-      title="AI - powered question generation (Tongyi Qwen qwen-max)" :loading="loading"
-      loading-text="AI is thinking... Please wait.">
+    <Page
+      class="card-box flex-1 overflow-hidden rounded-lg"
+      title="AI - powered question generation (Tongyi Qwen qwen-max)"
+      :loading="loading"
+      loading-text="AI is thinking... Please wait."
+    >
       <!-- 描述区域（可选） -->
       <template #description>
         <div>
@@ -205,13 +208,22 @@ const [QueryForm, formApi] = useVbenForm({
         </div>
         <!-- 操作按钮 -->
         <div class="mb-6 flex justify-end gap-4">
-          <VbenButton variant="default" size="default" @click="handleGenerate" :disabled="loading">
+          <VbenButton
+            variant="default"
+            size="default"
+            @click="handleGenerate"
+            :disabled="loading"
+          >
             {{ loading ? 'AI is posing questions....' : 'Generate questions' }}
           </VbenButton>
           <!-- <VbenButton variant="default" size="default" :disabled="!questions.length" @click="handleReview">
           AI-based question analysis
         </VbenButton> -->
-          <VbenButton variant="default" size="default" :disabled="questions.length === 0">
+          <VbenButton
+            variant="default"
+            size="default"
+            :disabled="questions.length === 0"
+          >
             One-click publishing
           </VbenButton>
         </div>
@@ -221,7 +233,11 @@ const [QueryForm, formApi] = useVbenForm({
         </div>
         <div v-if="questions.length > 0">
           <h3 class="mb-3 text-lg font-semibold">生成的题目：</h3>
-          <div v-for="q in questions" :key="q.id" class="mb-4 rounded border bg-gray-50 p-4">
+          <div
+            v-for="q in questions"
+            :key="q.id"
+            class="mb-4 rounded border bg-gray-50 p-4"
+          >
             <p class="font-medium">{{ q.id }}. {{ q.question }}</p>
             <!-- 选项 -->
             <div v-if="q.options && q.options.length > 0" class="ml-4 mt-2">
