@@ -26,10 +26,10 @@
     "#/*": "./src/*"
   },
   "dependencies": {
+    "@tencentcloud/roomkit-web-vue3": "^3.2.0",
     "@thirdweb-dev/chains": "^0.1.120",
     "@thirdweb-dev/react": "^4.9.4",
     "@thirdweb-dev/sdk": "^4.0.99",
-    "@types/three": "^0.181.0",
     "@vben/access": "workspace:*",
     "@vben/common-ui": "workspace:*",
     "@vben/constants": "workspace:*",
@@ -51,11 +51,14 @@
     "face-api.js": "^0.22.2",
     "pinia": "catalog:",
     "three": "^0.181.2",
+    "tim-js-sdk": "^2.27.6",
+    "trtc-js-sdk": "^4.15.22",
     "video.js": "^8.23.4",
     "vue": "catalog:",
     "vue-router": "catalog:"
   },
   "devDependencies": {
+    "@types/three": "^0.181.0",
     "unplugin-element-plus": "catalog:"
   }
 }

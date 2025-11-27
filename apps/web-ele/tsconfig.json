@@ -13,5 +13,8 @@
     {
       "name": "volar"
     }
-  ]
+  ],
+  "paths": {
+    "three/*": ["node_modules/three/*"]
+  }
 }

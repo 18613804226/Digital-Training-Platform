@@ -12,6 +12,7 @@ const routes: RouteRecordRaw[] = [
     },
     name: 'liveStreaming',
     path: '/liveStreaming',
+    component: () => import('#/views/liveStreaming/liveRoom/index.vue'),
     children: [
       // {
       //   meta: {
