@@ -133,16 +133,8 @@ const goBack = () => {
     <!-- 播放器 -->
     <div v-else-if="videoUrl" ref="playerContainer" class="player-wrapper">
       <div data-vjs-player>
-        <video
-          ref="videoElement"
-          id="my-video"
-          class="video-js vjs-big-play-centered"
-          controls
-          preload="auto"
-          width="100%"
-          poster="./assets/images/video-poster.png"
-          muted
-        >
+        <video ref="videoElement" id="my-video" class="video-js vjs-big-play-centered" controls preload="auto"
+          width="100%" muted>
           <source :src="videoUrl" type="application/x-mpegURL" />
           <p class="vjs-no-js">您的浏览器不支持 HTML5 视频，请升级浏览器。</p>
         </video>
