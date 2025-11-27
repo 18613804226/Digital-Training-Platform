@@ -26,6 +26,10 @@
     "#/*": "./src/*"
   },
   "dependencies": {
+    "@thirdweb-dev/chains": "^0.1.120",
+    "@thirdweb-dev/react": "^4.9.4",
+    "@thirdweb-dev/sdk": "^4.0.99",
+    "@types/three": "^0.181.0",
     "@vben/access": "workspace:*",
     "@vben/common-ui": "workspace:*",
     "@vben/constants": "workspace:*",
@@ -43,7 +47,11 @@
     "@vueuse/core": "catalog:",
     "dayjs": "catalog:",
     "element-plus": "catalog:",
+    "ethers": "^5.8.0",
+    "face-api.js": "^0.22.2",
     "pinia": "catalog:",
+    "three": "^0.181.2",
+    "video.js": "^8.23.4",
     "vue": "catalog:",
     "vue-router": "catalog:"
   },

@@ -27,3 +27,15 @@ export async function aiGenerateQuestionsApi(data: any) {
 export async function aiReviewQuestionsApi(data: any) {
   return requestClient.post<any>('/ai-exam/review-questions', data);
 }
+/**
+ * publish
+ */
+export async function publishExamApi(data: any) {
+  return requestClient.post<any>('/ai-exam/publish', data);
+}
+/**
+ *  get publish
+ */
+export async function getExamApi() {
+  return requestClient.get<any>('/ai-exam/current');
+}

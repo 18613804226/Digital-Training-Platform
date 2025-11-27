@@ -3,8 +3,10 @@ import { ref } from 'vue';
 
 import { Page, VbenButton } from '@vben/common-ui';
 
+import { ElMessage } from 'element-plus';
+
 import { useVbenForm } from '#/adapter/form';
-import { aiGenerateQuestionsApi } from '#/api';
+import { aiGenerateQuestionsApi, publishExamApi } from '#/api';
 // 定义题目类型
 interface Question {
   id: number;
@@ -27,13 +29,16 @@ const loading = ref(false);
 const error = ref('');
 // 生成题目
 async function handleGenerate() {
+  formApi.validateAndSubmitForm();
+}
+async function onSubmit(values: Record<string, any>) {
   questions.value = [];
   loading.value = true;
   error.value = '';
-  const form_value = await formApi.getValues();
-  form.value = form_value;
+  form.value = await formApi.getValues();
+
   try {
-    const response = await aiGenerateQuestionsApi(form.value);
+    const response = await aiGenerateQuestionsApi(values);
     questions.value = response;
   } catch {
     error.value = '网络错误，请重试';
@@ -59,7 +64,17 @@ async function handleGenerate() {
 //     reviewing.value = false;
 //   }
 // }
-
+// 一键发布
+async function publishing() {
+  const data = {
+    ...form.value,
+    questions: questions.value,
+  };
+  const res = await publishExamApi(data);
+  if (res.success === true) {
+    ElMessage.success(res.message);
+  }
+}
 const [QueryForm, formApi] = useVbenForm({
   showDefaultActions: false,
   showCollapseButton: false,
@@ -75,7 +90,7 @@ const [QueryForm, formApi] = useVbenForm({
     labelWidth: 50,
   },
   // 提交函数
-  // handleSubmit: handleGenerate,
+  handleSubmit: onSubmit,
   layout: 'horizontal',
   schema: [
     {
@@ -85,20 +100,20 @@ const [QueryForm, formApi] = useVbenForm({
         filterOption: true,
         options: [
           {
-            label: '安全',
-            value: '安全',
+            label: 'Safety',
+            value: 'Safety',
           },
           {
-            label: '技术',
-            value: '技术',
+            label: 'technology',
+            value: 'technology',
           },
           {
-            label: '管理',
-            value: '管理',
+            label: 'manage',
+            value: 'manage',
           },
           {
-            label: '合规',
-            value: '合规',
+            label: 'Compliance',
+            value: 'Compliance',
           },
         ],
         placeholder: 'Please Chose',
@@ -106,6 +121,7 @@ const [QueryForm, formApi] = useVbenForm({
       },
       fieldName: 'subject',
       label: 'Subject',
+      rules: 'required',
     },
     {
       component: 'Select',
@@ -114,16 +130,16 @@ const [QueryForm, formApi] = useVbenForm({
         filterOption: true,
         options: [
           {
-            label: '简单',
-            value: '简单',
+            label: 'Simple',
+            value: 'Simple',
           },
           {
-            label: '中等',
-            value: '中等',
+            label: 'medium',
+            value: 'medium',
           },
           {
-            label: '困难',
-            value: '困难',
+            label: 'difficulty',
+            value: 'difficulty',
           },
         ],
         placeholder: 'Please Chose',
@@ -131,6 +147,7 @@ const [QueryForm, formApi] = useVbenForm({
       },
       fieldName: 'difficulty',
       label: 'Difficulty',
+      rules: 'required',
     },
     {
       component: 'Select',
@@ -139,20 +156,20 @@ const [QueryForm, formApi] = useVbenForm({
         filterOption: true,
         options: [
           {
-            label: '单选题',
-            value: '单选题',
+            label: 'Single choice questions',
+            value: 'Single choice questions',
           },
           {
-            label: '多选题',
-            value: '多选题',
+            label: 'Multiple choice questions',
+            value: 'Multiple choice questions',
           },
           {
-            label: '填空题',
-            value: '填空题',
+            label: 'Fill in the blanks',
+            value: 'Fill in the blanks',
           },
           {
-            label: '简答题',
-            value: '简答题',
+            label: 'Short answer questions',
+            value: 'Short answer questions',
           },
         ],
         placeholder: 'Please Chose',
@@ -160,6 +177,7 @@ const [QueryForm, formApi] = useVbenForm({
       },
       fieldName: 'questionType',
       label: 'Type',
+      rules: 'required',
     },
     {
       // 组件需要在 #/adapter.ts内注册，并加上类型
@@ -167,11 +185,15 @@ const [QueryForm, formApi] = useVbenForm({
       // 对应组件的参数
       componentProps: {
         placeholder: 'Please enter the quantity.',
+        min: 1, // 最小值
+        max: 30, // 最大值
+        step: 1, // 步长（可选
       },
       // 字段名
       fieldName: 'count',
       // 界面显示的label
       label: 'count',
+      rules: 'required',
     },
   ],
   // submitButtonOptions: {
@@ -214,7 +236,7 @@ const [QueryForm, formApi] = useVbenForm({
             @click="handleGenerate"
             :disabled="loading"
           >
-            {{ loading ? 'AI is posing questions....' : 'Generate questions' }}
+            {{ loading ? 'AI is posing questions....' : 'Generate Questions' }}
           </VbenButton>
           <!-- <VbenButton variant="default" size="default" :disabled="!questions.length" @click="handleReview">
           AI-based question analysis
@@ -223,8 +245,9 @@ const [QueryForm, formApi] = useVbenForm({
             variant="default"
             size="default"
             :disabled="questions.length === 0"
+            @click="publishing"
           >
-            One-click publishing
+            One-click Publish
           </VbenButton>
         </div>
         <!-- 错误提示 -->
@@ -232,24 +255,33 @@ const [QueryForm, formApi] = useVbenForm({
           {{ error }}
         </div>
         <div v-if="questions.length > 0">
-          <h3 class="mb-3 text-lg font-semibold">生成的题目：</h3>
+          <h2 class="mb-3 text-base font-semibold">Generated questions：</h2>
           <div
             v-for="q in questions"
             :key="q.id"
             class="mb-4 rounded border bg-gray-50 p-4"
           >
-            <p class="font-medium">{{ q.id }}. {{ q.question }}</p>
+            <p class="text-sm font-medium">{{ q.id }}. {{ q.question }}</p>
             <!-- 选项 -->
-            <div v-if="q.options && q.options.length > 0" class="ml-4 mt-2">
-              <div v-for="(opt, idx) in q.options" :key="idx" class="my-1">
+            <div
+              v-if="q.options && q.options.length > 0"
+              class="ml-4 mt-2 text-sm"
+            >
+              <div
+                v-for="(opt, idx) in q.options"
+                :key="idx"
+                class="my-1 text-sm"
+              >
                 {{ opt }}
               </div>
             </div>
             <!-- 答案与解析 -->
-            <p class="mt-2 text-red-600">
-              <strong>答案：</strong>{{ q.answer }}
+            <p class="mt-2 text-sm text-red-600">
+              <strong>Answer：</strong>{{ q.answer }}
             </p>
-            <p class="mt-1 text-gray-700"><em>解析：</em>{{ q.explanation }}</p>
+            <p class="mt-1 text-sm text-gray-700">
+              <em>Analysis：</em>{{ q.explanation }}
+            </p>
           </div>
         </div>
       </template>
