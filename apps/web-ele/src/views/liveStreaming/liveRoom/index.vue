@@ -387,7 +387,7 @@ onUnmounted(() => {
 
         <!-- 右侧：聊天区 -->
         <div class="flex w-80 flex-col">
-          <div class="flex flex-1 flex-col rounded-lg bg-gray-50 p-3">
+          <div class="flex flex-1 flex-col rounded-lg p-3">
             <div class="mb-2 flex items-center justify-between">
               <h3 class="text-sm font-medium">Real-time chat</h3>
               <ElCheckbox v-model="showDanmaku" size="small">

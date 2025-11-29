@@ -364,7 +364,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex h-full gap-6 bg-gray-50 p-4">
+  <div class="flex h-full gap-6 p-4">
     <!-- 左侧：模板列表 -->
     <div class="flex w-1/5 flex-col overflow-hidden">
       <Page class="card-box flex-1 overflow-auto rounded-lg" title="模板列表">
@@ -467,7 +467,7 @@ onMounted(() => {
           <div
             v-for="item in questionTypeOptions"
             :key="item.value"
-            class="m-3 cursor-grab rounded-lg border border-dashed border-blue-200 bg-blue-50 p-3 text-center text-blue-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-100"
+            class="m-3 cursor-grab rounded-lg border border-dashed border-blue-200 p-3 text-center text-blue-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-100"
             draggable="true"
             @dragstart="onDragStart($event, item)"
           >

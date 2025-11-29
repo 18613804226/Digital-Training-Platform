@@ -306,7 +306,7 @@ const handleOptionChange = (option: string, questionIndex: number) => {
           <div
             v-for="(q, index) in questions"
             :key="index"
-            class="mt-6 rounded border bg-white p-4 shadow-sm"
+            class="mt-6 rounded border p-4 shadow-sm"
           >
             <p class="mb-4 text-base font-medium">
               {{ index + 1 }}. {{ q.question }}
@@ -316,7 +316,7 @@ const handleOptionChange = (option: string, questionIndex: number) => {
                 v-for="(option, idx) in q.options"
                 :key="idx"
                 :disabled="examStatus === false"
-                class="flex cursor-pointer items-start rounded p-2 transition hover:bg-gray-50"
+                class="flex cursor-pointer items-start rounded p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
               >
                 <input
                   type="radio"
@@ -326,7 +326,7 @@ const handleOptionChange = (option: string, questionIndex: number) => {
                   @change="handleOptionChange(option, index)"
                   class="mr-2 mt-1 h-4 w-4 text-blue-600"
                 />
-                <span class="text-gray-700">{{ option }}</span>
+                <span class="">{{ option }}</span>
               </label>
             </div>
           </div>
