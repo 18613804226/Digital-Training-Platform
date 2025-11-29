@@ -12,6 +12,7 @@ const routes: RouteRecordRaw[] = [
     },
     name: 'lowCodeStudio',
     path: '/lowCodeStudio',
+    component: () => import('#/views/lowCodeStudio/index.vue'),
     children: [
       // {
       //   meta: {

@@ -26,6 +26,10 @@
     "#/*": "./src/*"
   },
   "dependencies": {
+    "@formily/core": "^2.3.7",
+    "@formily/element-plus": "^1.1.0",
+    "@formily/json-schema": "^2.3.7",
+    "@formily/vue": "^2.3.7",
     "@tencentcloud/roomkit-web-vue3": "^3.2.0",
     "@thirdweb-dev/chains": "^0.1.120",
     "@thirdweb-dev/react": "^4.9.4",
@@ -50,6 +54,7 @@
     "ethers": "^5.8.0",
     "face-api.js": "^0.22.2",
     "pinia": "catalog:",
+    "sortablejs": "catalog:",
     "three": "^0.181.2",
     "tim-js-sdk": "^2.27.6",
     "trtc-js-sdk": "^4.15.22",
@@ -58,6 +63,7 @@
     "vue-router": "catalog:"
   },
   "devDependencies": {
+    "@types/sortablejs": "catalog:",
     "@types/three": "^0.181.0",
     "unplugin-element-plus": "catalog:"
   }

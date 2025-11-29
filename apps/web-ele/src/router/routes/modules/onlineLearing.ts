@@ -5,7 +5,7 @@ import { $t } from '#/locales';
 const routes: RouteRecordRaw[] = [
   {
     meta: {
-      icon: 'ic:baseline-view-in-ar',
+      icon: 'ic:baseline-menu-book',
       keepAlive: true,
       order: 1000,
       title: $t('onlineLearning.title'),

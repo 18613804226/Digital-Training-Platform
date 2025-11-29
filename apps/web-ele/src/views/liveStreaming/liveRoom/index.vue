@@ -1,4 +1,5 @@
 <!-- src/views/onlineLearning/liveClassroom/index.vue -->
+
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
@@ -10,6 +11,13 @@ import TIM from 'tim-js-sdk';
 import TRTC from 'trtc-js-sdk';
 
 import { getUserSigApi } from '#/api';
+// 如果你使用 Vben 内置的 useBreakpoint（推荐）
+const isMobile = ref(window.innerWidth < 768);
+
+// 响应窗口变化（可选）
+window.addEventListener('resize', () => {
+  isMobile.value = window.innerWidth < 768;
+});
 // ====== 配置 ======
 const userStore = useUserStore();
 const SDK_APP_ID = 1_600_115_551;
@@ -288,12 +296,18 @@ onMounted(() => {
   initTencent();
 });
 
-onUnmounted(() => leaveRoom());
+onUnmounted(() => {
+  leaveRoom();
+  // // 👇 只加这 3 行！清空 TRTC 自动插入的媒体元素
+  // const local = document.getElementById('local-video');
+  // if (local) local.innerHTML = '';
+  // document.querySelectorAll('[id^="thumb-"]').forEach(el => el.innerHTML = '');
+});
 </script>
 
 <template>
   <!-- 最外层：必须 h-full + overflow-hidden -->
-  <div class="relative flex h-full flex-col overflow-hidden p-4">
+  <div class="relative flex h-full flex-col overflow-hidden p-2 sm:p-4">
     <!-- 弹幕层 -->
     <div class="pointer-events-none absolute inset-0 z-50 overflow-hidden">
       <div
@@ -306,40 +320,39 @@ onUnmounted(() => leaveRoom());
       </div>
     </div>
 
-    <!-- Page 容器：flex-1 占满剩余空间 -->
+    <!-- Page 容器 -->
     <Page
       class="card-box relative flex-1 overflow-hidden rounded-lg"
-      title="Online live classroom (Tencent Cloud · TRTC + IM + bullet comments)"
+      title="Online live classroom (Tencent Cloud · TRTC + IM)"
       :loading="joining"
       loading-text="正在加入直播间..."
     >
-      <!-- 顶部信息 -->
+      <!-- 顶部信息（仅桌面显示） -->
       <template #description>
-        <div class="flex justify-between text-sm text-gray-600">
+        <div
+          v-if="!isMobile"
+          class="flex justify-between text-sm text-gray-600"
+        >
           <span>Course: xx</span>
           <span>Online users：{{ onlineCount }} 人</span>
         </div>
       </template>
 
-      <!-- 主内容区：必须 h-full -->
-      <div class="flex h-full gap-6">
+      <!-- 桌面端：左右布局 -->
+      <div v-if="!isMobile" class="flex h-full gap-6">
         <!-- 左侧：视频区域 -->
         <div class="relative flex-1">
-          <!-- 主画面容器 -->
           <div
             class="relative h-full w-full overflow-hidden rounded-lg bg-black"
           >
-            <!-- 主画面内容（固定为本地） -->
             <div id="local-video" class="relative h-full w-full"></div>
-
-            <!-- 主画面身份标签 -->
             <div
               class="absolute bottom-2 left-2 right-2 rounded bg-black bg-opacity-60 px-2 py-1 text-xs text-white"
             >
               Speaker：{{ USER_ID }}
             </div>
 
-            <!-- 画中画小窗（含 +N 提示） -->
+            <!-- 画中画小窗（右下角） -->
             <div
               v-if="allThumbs.length > 0"
               class="absolute bottom-4 right-4 z-10 flex gap-2"
@@ -349,7 +362,6 @@ onUnmounted(() => leaveRoom());
                 :key="thumb.key"
                 class="thumb-container relative h-16 w-24 cursor-pointer overflow-hidden rounded border border-gray-600 bg-gray-800 transition-all duration-200"
               >
-                <!-- 普通小窗 -->
                 <template v-if="thumb.type === 'user'">
                   <div
                     :id="`thumb-${thumb.userId}`"
@@ -361,8 +373,6 @@ onUnmounted(() => leaveRoom());
                     {{ thumb.name }}
                   </div>
                 </template>
-
-                <!-- +N 提示 -->
                 <template v-else-if="thumb.type === 'more'">
                   <div
                     class="flex h-full w-full items-center justify-center text-xs font-bold text-white"
@@ -388,7 +398,6 @@ onUnmounted(() => leaveRoom());
                 }}
               </ElCheckbox>
             </div>
-            <!-- 聊天消息区域 -->
             <div
               ref="chatContainer"
               class="no-scrollbar mb-2 min-h-0 flex-1 overflow-y-auto text-sm"
@@ -437,6 +446,77 @@ onUnmounted(() => leaveRoom());
             </VbenButton>
             <VbenButton variant="default" size="sm" @click="leaveRoom">
               Quit
+            </VbenButton>
+          </div>
+        </div>
+      </div>
+
+      <!-- 移动端：全屏视频 + 底部控制 -->
+      <div v-else class="relative h-full">
+        <!-- 全屏视频 -->
+        <div class="relative h-full w-full overflow-hidden rounded-lg bg-black">
+          <div id="local-video" class="h-full w-full"></div>
+          <div
+            class="absolute bottom-2 left-2 right-2 rounded bg-black bg-opacity-60 px-2 py-1 text-xs text-white"
+          >
+            Speaker：{{ USER_ID }}
+          </div>
+
+          <!-- 小窗移到左上角（最多显示2个） -->
+          <div
+            v-if="allThumbs.length > 0"
+            class="absolute left-2 top-2 z-10 flex gap-1"
+          >
+            <div
+              v-for="(thumb, index) in allThumbs.slice(0, 2)"
+              :key="thumb.key"
+              class="thumb-container relative h-12 w-16 overflow-hidden rounded border border-gray-600 bg-gray-800"
+            >
+              <div
+                v-if="thumb.type === 'user'"
+                :id="`thumb-${thumb.userId}`"
+                class="h-full w-full"
+              ></div>
+              <div
+                v-else-if="thumb.type === 'more'"
+                class="flex h-full w-full items-center justify-center text-[10px] font-bold text-white"
+              >
+                +{{ thumb.count }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部控制栏 -->
+        <div class="absolute bottom-0 left-0 right-0 bg-white p-3 shadow-lg">
+          <div class="flex items-center gap-2">
+            <input
+              v-model="inputMessage"
+              type="text"
+              placeholder="输入消息..."
+              class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm"
+              @keyup.enter="sendChatMessage"
+            />
+            <VbenButton size="sm" @click="sendChatMessage">发送</VbenButton>
+          </div>
+          <div class="mt-2 flex flex-wrap justify-center gap-2">
+            <VbenButton
+              size="sm"
+              @click="toggleMute('audio')"
+              :class="{ 'bg-red-500': !isAudioEnabled }"
+            >
+              {{ isAudioEnabled ? '静音' : '取消静音' }}
+            </VbenButton>
+            <VbenButton
+              size="sm"
+              @click="toggleMute('video')"
+              :class="{ 'bg-red-500': !isVideoEnabled }"
+            >
+              {{ isVideoEnabled ? '关摄像头' : '开摄像头' }}
+            </VbenButton>
+            <VbenButton size="sm" @click="requestToSpeak">举手</VbenButton>
+            <VbenButton size="sm" variant="heavy" @click="leaveRoom">
+              退出
             </VbenButton>
           </div>
         </div>

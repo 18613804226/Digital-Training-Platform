@@ -4,7 +4,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "#/*": ["./src/*"]
+      "#/*": ["./src/*"],
+      "three/*": ["node_modules/three/*"]
     }
   },
   "references": [{ "path": "./tsconfig.node.json" }],
@@ -13,8 +14,5 @@
     {
       "name": "volar"
     }
-  ],
-  "paths": {
-    "three/*": ["node_modules/three/*"]
-  }
+  ]
 }

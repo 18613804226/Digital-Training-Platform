@@ -103,7 +103,7 @@ catalogs:
       specifier: ^6.14.0
       version: 6.14.0
     '@types/sortablejs':
-      specifier: ^1.15.8
+      specifier: 1.15.9
       version: 1.15.9
     '@typescript-eslint/eslint-plugin':
       specifier: ^8.46.4
@@ -199,7 +199,7 @@ catalogs:
       specifier: ^6.0.0
       version: 6.0.0
     element-plus:
-      specifier: ^2.10.2
+      specifier: 2.11.8
       version: 2.11.8
     es-toolkit:
       specifier: ^1.41.0
@@ -361,7 +361,7 @@ catalogs:
       specifier: ^2.0.0
       version: 2.0.0
     sortablejs:
-      specifier: ^1.15.6
+      specifier: 1.15.6
       version: 1.15.6
     stylelint:
       specifier: ^16.21.0
@@ -590,6 +590,18 @@ importers:
 
   apps/web-ele:
     dependencies:
+      '@formily/core':
+        specifier: ^2.3.7
+        version: 2.3.7
+      '@formily/element-plus':
+        specifier: ^1.1.0
+        version: 1.1.0(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3))
+      '@formily/json-schema':
+        specifier: ^2.3.7
+        version: 2.3.7(typescript@5.9.3)
+      '@formily/vue':
+        specifier: ^2.3.7
+        version: 2.3.7(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3))
       '@tencentcloud/roomkit-web-vue3':
         specifier: ^3.2.0
         version: 3.2.0(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3)))(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3))
@@ -662,6 +674,9 @@ importers:
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3))
+      sortablejs:
+        specifier: 'catalog:'
+        version: 1.15.6
       three:
         specifier: ^0.181.2
         version: 0.181.2
@@ -681,6 +696,9 @@ importers:
         specifier: 'catalog:'
         version: 4.6.3(vue@3.5.24(typescript@5.9.3))
     devDependencies:
+      '@types/sortablejs':
+        specifier: 'catalog:'
+        version: 1.15.9
       '@types/three':
         specifier: ^0.181.0
         version: 0.181.0
@@ -2944,6 +2962,11 @@ packages:
   '@dual-bundle/import-meta-resolve@4.2.1':
     resolution: {integrity: sha512-id+7YRUgoUX6CgV0DtuhirQWodeeA7Lf4i2x71JS/vtA5pRb/hIGWlw+G6MeXvsM+MXrz0VAydTGElX1rAfgPg==}
 
+  '@element-plus/icons-vue@1.1.4':
+    resolution: {integrity: sha512-Iz/nHqdp1sFPmdzRwHkEQQA3lKvoObk8azgABZ81QUOpW9s/lUyQVUSh0tNtEPZXQlKwlSh7SPgoVxzrE0uuVQ==}
+    peerDependencies:
+      vue: ^3.5.24
+
   '@element-plus/icons-vue@2.3.2':
     resolution: {integrity: sha512-OzIuTaIfC8QXEPmJvB4Y4kw34rSXdCJzxcD1kFStBvr8bK6X1zQAYDo0CNMjojnfTqRQCJ0I7prlErcoRiET2A==}
     peerDependencies:
@@ -3480,6 +3503,65 @@ packages:
   '@floating-ui/vue@1.1.9':
     resolution: {integrity: sha512-BfNqNW6KA83Nexspgb9DZuz578R7HT8MZw1CfK9I6Ah4QReNWEJsXWHN+SdmOVLNGmTPDi+fDT535Df5PzMLbQ==}
 
+  '@formily/core@2.3.7':
+    resolution: {integrity: sha512-oqLE6gOoM2xjwlUrfH4cyjscO4kZJNpidtVytZeBvYp9v4OgL9EUm89laPcF4cnpWE2lZIqqzfGluOySxku8WQ==}
+    engines: {npm: '>=3.0.0'}
+
+  '@formily/element-plus@1.1.0':
+    resolution: {integrity: sha512-J0UkSSD48RFJ0qFmm8HLE9igxCoxjCSTKUPqVqD7l4pVtkohfxUd/3isCkgmr4r7DU2pks0MNEzPftNz7N7UTw==}
+    engines: {npm: '>=3.0.0'}
+    peerDependencies:
+      vue: ^3.5.24
+
+  '@formily/grid@2.3.7':
+    resolution: {integrity: sha512-QTmmFkNVxcL+nQVvrqhBrUwhRCXDVy5iycTb4IJILqK4puYUKRajbsbm0oudTE0Yyo6ovpM6SD8QtdFU/cwLLw==}
+    engines: {npm: '>=3.0.0'}
+    peerDependencies:
+      typescript: 4.x || 5.x
+
+  '@formily/json-schema@2.3.7':
+    resolution: {integrity: sha512-YmDmH98sJLOPO5GAq5NJw+NP3i2vCELBoz4Y4w+nhpKI5n8eQHe2GczQKntWDOnTfchXD2dXcgpb0ub6KNeATw==}
+    engines: {npm: '>=3.0.0'}
+    peerDependencies:
+      typescript: '>4.1.5'
+
+  '@formily/path@2.3.7':
+    resolution: {integrity: sha512-uDqXlW3TwJ8dImi5FrKze/yAbnxqpE/z1ZzJLNSlNr+T4bJRrC7Ya2veOOYeDaM9EK6eQNQCXST55REj5DKVmQ==}
+    engines: {npm: '>=3.0.0'}
+
+  '@formily/reactive-vue@2.3.7':
+    resolution: {integrity: sha512-4YFY9aCXi/XDVcqOztEt13BnEr6EWnFJjYtAe71g27bERX+pTlUxqTVSgDCneCNYblxm+mTmbwbkFWgsmNUeNg==}
+    engines: {npm: '>=3.0.0'}
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-beta.1
+      vue: ^3.5.24
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+
+  '@formily/reactive@2.3.7':
+    resolution: {integrity: sha512-+ovdvYfig7K97Ktel8qY1xAUM4O1uxSm79yuk7xmaAhOJWDAkvDPvzGtcB95cQ3vhPN9d/2sOvRzxMlVlr/gpg==}
+    engines: {npm: '>=3.0.0'}
+
+  '@formily/shared@2.3.7':
+    resolution: {integrity: sha512-Xccuay6CP1CNvieyTjAniFG08biUVA+xBZZuZboCzdxoUO1gOCzUz9A2U7cvw0Xw+Hm4uI1sgISE95lCD5R3fQ==}
+    engines: {npm: '>=3.0.0'}
+
+  '@formily/validator@2.3.7':
+    resolution: {integrity: sha512-/bIZL0YoEhi/AxwbJz1FxkcAXI4tyzaMF8j7LTJigKgjrJLGCiLEU1GtSk+9OmUSRDHblr73jM/TWMlb/L3EuA==}
+    engines: {npm: '>=3.0.0'}
+
+  '@formily/vue@2.3.7':
+    resolution: {integrity: sha512-fSO2VosPnejh3LMRfO+FgGd4Px95A70WBRBCOtm+01MfN3ODqL5p6nb/Aktj6h0sbexvLC7INFj4U6uxFfR3oA==}
+    engines: {npm: '>=3.0.0'}
+    hasBin: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-beta.1
+      vue: ^3.5.24
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+
   '@google-cloud/kms@4.5.0':
     resolution: {integrity: sha512-i2vC0DI7bdfEhQszqASTw0KVvbB7HsO2CwTBod423NawAu7FWi+gVVa7NLfXVNGJaZZayFfci2Hu+om/HmyEjQ==}
     engines: {node: '>=14.0.0'}
@@ -3670,6 +3752,9 @@ packages:
 
   '@jspm/import-map@1.2.2':
     resolution: {integrity: sha512-QrM7+lkgVE8t9NZSm9fDSzheguEOVCOxueKxSwgoOt7yUWesWKDFmmL9bQFURl4IqMcpPz7VV2Tvw9s9emaJzQ==}
+
+  '@juggle/resize-observer@3.4.0':
+    resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
 
   '@keyv/bigmap@1.3.0':
     resolution: {integrity: sha512-KT01GjzV6AQD5+IYrcpoYLkCu1Jod3nau1Z7EsEuViO3TZGRacSbO9MfHmbJ1WaOXFtWLxPVj169cn2WNKPkIg==}
@@ -11106,6 +11191,9 @@ packages:
   require-package-name@2.0.1:
     resolution: {integrity: sha512-uuoJ1hU/k6M0779t3VMVIYpb2VMJk05cehCaABFhXaibcbvfgR8wKiozLjVFSzJPmQMRqIcO0HMyTFqfV09V6Q==}
 
+  resize-observer-polyfill@1.5.1:
+    resolution: {integrity: sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==}
+
   resolve-dir@1.0.1:
     resolution: {integrity: sha512-R7uiTjECzvOsWSfdM0QKFNBVFcK27aHOUwdvK53BcW8zqnGdYp0Fbj82cy54+2A4P2tFM22J5kRfe1R+lM/1yg==}
     engines: {node: '>=0.10.0'}
@@ -11449,6 +11537,9 @@ packages:
 
   sonic-boom@4.2.0:
     resolution: {integrity: sha512-INb7TM37/mAcsGmc9hyyI6+QR3rR1zVRu36B0NeGXKnOOLiZOfER5SA+N7X7k3yUYRzLWafduTDvJAfDswwEww==}
+
+  sortablejs@1.14.0:
+    resolution: {integrity: sha512-pBXvQCs5/33fdN1/39pPL0NZF20LeRbLQ5jtnheIPN9JQAaufGjKdWduZn4U7wCtVuzKhmRkI0DFYHYRbB2H1w==}
 
   sortablejs@1.15.6:
     resolution: {integrity: sha512-aNfiuwMEpfBM/CN6LY0ibyhxPfPbyFeBTYJKCvzkJ2GkUpazIt3H+QIPAMHwqQ7tMKaHz1Qj+rJJCqljnf4p3A==}
@@ -12385,6 +12476,9 @@ packages:
     resolution: {integrity: sha512-+dwUY4L35XFYEzE+OAL3sarJdUioVovq+8f7lcIJ7wnmnYQV5UD1Y/lcwaMSyaQ6Bj3JMj1XSTjZbNLHn/19yA==}
     engines: {node: '>=18'}
 
+  upper-case@2.0.2:
+    resolution: {integrity: sha512-KgdgDGJt2TpuwBUIjgG6lzw2GWFRCW9Qkfkiv0DxqHHLYJHmtmdUIKcZd8rHgFSjopVTlw6ggzCm1b8MFQwikg==}
+
   uqr@0.1.2:
     resolution: {integrity: sha512-MJu7ypHq6QasgF5YRTjqscSzQp/W11zoUk6kvmlH+fmWEs63Y0Eib13hYFwAzagRJcVY8WVnlV+eBDUGMJ5IbA==}
 
@@ -12675,6 +12769,11 @@ packages:
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0
 
+  vue-frag@1.4.3:
+    resolution: {integrity: sha512-pQZj03f/j9LRhzz9vKaXTCXUHVYHuAXicshFv76VFqwz4MG3bcb+sPZMAbd0wmw7THjkrTPuoM0EG9TbG8CgMQ==}
+    peerDependencies:
+      vue: ^3.5.24
+
   vue-i18n@11.2.1:
     resolution: {integrity: sha512-cc3Wx4eJZac9WMS8mxhfYiCipm9PBQ2Dz15piWYm7DwNcCehaKRgpolEdiqrjjT27T3Wijz3xJ7NeIc8ofIWAA==}
     engines: {node: '>= 16'}
@@ -12688,6 +12787,11 @@ packages:
 
   vue-router@4.6.3:
     resolution: {integrity: sha512-ARBedLm9YlbvQomnmq91Os7ck6efydTSpRP3nuOKCvgJOHNrhRoJDSKtee8kcL1Vf7nz6U+PMBL+hTvR3bTVQg==}
+    peerDependencies:
+      vue: ^3.5.24
+
+  vue-slicksort@1.2.0:
+    resolution: {integrity: sha512-k1324l+AnYy6MrpySN7PYL165z2EkvZmMe+BS7H/EugzS8IrZYRtoqa3QxSSWB34C7cplV1hj3c+7peKpxpYxg==}
     peerDependencies:
       vue: ^3.5.24
 
@@ -12709,6 +12813,11 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  vuedraggable@4.1.0:
+    resolution: {integrity: sha512-FU5HCWBmsf20GpP3eudURW3WdWTKIbEIQxh9/8GE806hydR9qZqRRxRE3RjqX7PkuLuMQG/A7n3cfj9rCEchww==}
+    peerDependencies:
+      vue: ^3.5.24
 
   vxe-pc-ui@4.10.29:
     resolution: {integrity: sha512-iiVzjzfzXTw+/57cOnhmxK8jRkiwo6lovNJGQbqdTyk+RUeAwlpCxK95nEyYVU5jwhYReVaK+HHWspm8jHYkZQ==}
@@ -14773,6 +14882,10 @@ snapshots:
 
   '@dual-bundle/import-meta-resolve@4.2.1': {}
 
+  '@element-plus/icons-vue@1.1.4(vue@3.5.24(typescript@5.9.3))':
+    dependencies:
+      vue: 3.5.24(typescript@5.9.3)
+
   '@element-plus/icons-vue@2.3.2(vue@3.5.24(typescript@5.9.3))':
     dependencies:
       vue: 3.5.24(typescript@5.9.3)
@@ -15700,6 +15813,87 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
+  '@formily/core@2.3.7':
+    dependencies:
+      '@formily/reactive': 2.3.7
+      '@formily/shared': 2.3.7
+      '@formily/validator': 2.3.7
+
+  '@formily/element-plus@1.1.0(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3))':
+    dependencies:
+      '@element-plus/icons-vue': 1.1.4(vue@3.5.24(typescript@5.9.3))
+      '@formily/core': 2.3.7
+      '@formily/grid': 2.3.7(typescript@5.9.3)
+      '@formily/json-schema': 2.3.7(typescript@5.9.3)
+      '@formily/reactive': 2.3.7
+      '@formily/reactive-vue': 2.3.7(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
+      '@formily/shared': 2.3.7
+      '@formily/vue': 2.3.7(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3))
+      element-plus: 2.11.8(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
+      resize-observer-polyfill: 1.5.1
+      vue: 3.5.24(typescript@5.9.3)
+      vue-slicksort: 1.2.0(vue@3.5.24(typescript@5.9.3))
+      vuedraggable: 4.1.0(vue@3.5.24(typescript@5.9.3))
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - typescript
+
+  '@formily/grid@2.3.7(typescript@5.9.3)':
+    dependencies:
+      '@formily/reactive': 2.3.7
+      '@juggle/resize-observer': 3.4.0
+      typescript: 5.9.3
+
+  '@formily/json-schema@2.3.7(typescript@5.9.3)':
+    dependencies:
+      '@formily/core': 2.3.7
+      '@formily/reactive': 2.3.7
+      '@formily/shared': 2.3.7
+      typescript: 5.9.3
+
+  '@formily/path@2.3.7': {}
+
+  '@formily/reactive-vue@2.3.7(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))':
+    dependencies:
+      '@formily/reactive': 2.3.7
+      vue: 3.5.24(typescript@5.9.3)
+      vue-demi: 0.14.10(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
+    optionalDependencies:
+      '@vue/composition-api': 1.7.2(vue@3.5.24(typescript@5.9.3))
+
+  '@formily/reactive@2.3.7': {}
+
+  '@formily/shared@2.3.7':
+    dependencies:
+      '@formily/path': 2.3.7
+      camel-case: 4.1.2
+      lower-case: 2.0.2
+      no-case: 3.0.4
+      param-case: 3.0.4
+      pascal-case: 3.1.2
+      upper-case: 2.0.2
+
+  '@formily/validator@2.3.7':
+    dependencies:
+      '@formily/shared': 2.3.7
+
+  '@formily/vue@2.3.7(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3))':
+    dependencies:
+      '@formily/core': 2.3.7
+      '@formily/json-schema': 2.3.7(typescript@5.9.3)
+      '@formily/reactive': 2.3.7
+      '@formily/reactive-vue': 2.3.7(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
+      '@formily/shared': 2.3.7
+      '@formily/validator': 2.3.7
+      fs-extra: 10.1.0
+      vue: 3.5.24(typescript@5.9.3)
+      vue-demi: 0.14.10(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
+      vue-frag: 1.4.3(vue@3.5.24(typescript@5.9.3))
+    optionalDependencies:
+      '@vue/composition-api': 1.7.2(vue@3.5.24(typescript@5.9.3))
+    transitivePeerDependencies:
+      - typescript
+
   '@google-cloud/kms@4.5.0':
     dependencies:
       google-gax: 4.6.1
@@ -15929,6 +16123,8 @@ snapshots:
       - supports-color
 
   '@jspm/import-map@1.2.2': {}
+
+  '@juggle/resize-observer@3.4.0': {}
 
   '@keyv/bigmap@1.3.0(keyv@5.5.4)':
     dependencies:
@@ -25084,6 +25280,8 @@ snapshots:
 
   require-package-name@2.0.1: {}
 
+  resize-observer-polyfill@1.5.1: {}
+
   resolve-dir@1.0.1:
     dependencies:
       expand-tilde: 2.0.2
@@ -25468,6 +25666,8 @@ snapshots:
   sonic-boom@4.2.0:
     dependencies:
       atomic-sleep: 1.0.0
+
+  sortablejs@1.14.0: {}
 
   sortablejs@1.15.6: {}
 
@@ -26501,6 +26701,10 @@ snapshots:
       semver: 7.7.3
       xdg-basedir: 5.1.0
 
+  upper-case@2.0.2:
+    dependencies:
+      tslib: 2.8.1
+
   uqr@0.1.2: {}
 
   uri-js@4.4.1:
@@ -26854,6 +27058,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  vue-frag@1.4.3(vue@3.5.24(typescript@5.9.3)):
+    dependencies:
+      vue: 3.5.24(typescript@5.9.3)
+
   vue-i18n@11.2.1(vue@3.5.24(typescript@5.9.3)):
     dependencies:
       '@intlify/core-base': 11.2.1
@@ -26869,6 +27077,10 @@ snapshots:
   vue-router@4.6.3(vue@3.5.24(typescript@5.9.3)):
     dependencies:
       '@vue/devtools-api': 6.6.4
+      vue: 3.5.24(typescript@5.9.3)
+
+  vue-slicksort@1.2.0(vue@3.5.24(typescript@5.9.3)):
+    dependencies:
       vue: 3.5.24(typescript@5.9.3)
 
   vue-tippy@6.7.1(vue@3.5.24(typescript@5.9.3)):
@@ -26891,6 +27103,11 @@ snapshots:
       '@vue/shared': 3.5.24
     optionalDependencies:
       typescript: 5.9.3
+
+  vuedraggable@4.1.0(vue@3.5.24(typescript@5.9.3)):
+    dependencies:
+      sortablejs: 1.14.0
+      vue: 3.5.24(typescript@5.9.3)
 
   vxe-pc-ui@4.10.29(vue@3.5.24(typescript@5.9.3)):
     dependencies:

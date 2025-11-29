@@ -63,7 +63,7 @@ function onTransitionEnd() {
   <div
     :class="
       cn(
-        'flex-center z-100 bg-overlay-content absolute left-0 top-0 size-full backdrop-blur-sm transition-all duration-500',
+        'flex-center absolute left-0 top-0 z-100 size-full bg-overlay-content backdrop-blur-sm transition-all duration-500',
         {
           'invisible opacity-0': !showSpinner,
         },
@@ -75,7 +75,7 @@ function onTransitionEnd() {
     <div
       :class="{ paused: !renderSpinner }"
       v-if="renderSpinner"
-      class="loader before:bg-primary/50 after:bg-primary relative size-12 before:absolute before:left-0 before:top-[60px] before:h-[5px] before:w-12 before:rounded-[50%] before:content-[''] after:absolute after:left-0 after:top-0 after:h-full after:w-full after:rounded after:content-['']"
+      class="loader relative size-12 before:absolute before:left-0 before:top-[60px] before:h-[5px] before:w-12 before:rounded-[50%] before:content-[''] after:absolute after:left-0 after:top-0 after:h-full after:w-full after:rounded after:bg-primary after:content-['']"
     ></div>
   </div>
 </template>
@@ -92,12 +92,81 @@ function onTransitionEnd() {
 }
 
 .loader {
-  &::before {
-    animation: loader-shadow-ani 0.5s linear infinite;
+  &::after {
+    background: linear-gradient(
+      135deg,
+      hsl(210deg 100% 50%),
+      hsl(240deg 100% 50%)
+    );
+    border-radius: 10px;
+    box-shadow:
+      0 0 20px rgb(0 255 255 / 50%),
+      inset 0 0 20px rgb(0 255 255 / 50%);
+
+    /* 渐变色 */
+    animation:
+      jump-ani 1s cubic-bezier(0.55, 0.09, 0.68, 0.53) infinite,
+      rotate-ani 4s linear infinite,
+      color-shift 3s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes rotate-ani {
+  from {
+    transform: rotate(0deg);
   }
 
-  &::after {
-    animation: loader-jump-ani 0.5s linear infinite;
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes color-shift {
+  0% {
+    background: linear-gradient(
+      135deg,
+      hsl(210deg 100% 50%),
+      hsl(240deg 100% 50%)
+    );
+  }
+
+  50% {
+    background: linear-gradient(
+      135deg,
+      hsl(180deg 100% 50%),
+      hsl(270deg 100% 50%)
+    );
+  }
+
+  100% {
+    background: linear-gradient(
+      135deg,
+      hsl(210deg 100% 50%),
+      hsl(240deg 100% 50%)
+    );
+  }
+}
+
+@keyframes jump-ani {
+  15% {
+    border-bottom-right-radius: 3px;
+  }
+
+  25% {
+    transform: translateY(9px) rotate(22.5deg);
+  }
+
+  50% {
+    border-bottom-right-radius: 40px;
+    transform: translateY(18px) scale(1, 0.9) rotate(45deg);
+  }
+
+  75% {
+    transform: translateY(9px) rotate(67.5deg);
+  }
+
+  100% {
+    transform: translateY(0) rotate(90deg);
   }
 }
 
