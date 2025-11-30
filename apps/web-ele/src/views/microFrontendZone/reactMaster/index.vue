@@ -6,7 +6,7 @@ import WujieVue from 'wujie-vue3';
 // console.log(import.meta.env.VITE_REACT_SUB_APP_ADDRESS);
 
 const subAppUrl = import.meta.env.VITE_REACT_SUB_APP_ADDRESS; // React 子应用开发地址
-const loading = ref(true);
+
 
 const handleBeforeLoad = () => {
   console.log('子应用开始加载');
@@ -20,13 +20,7 @@ const handleAfterLoad = () => {
 
 <template>
   <div class="micro-app-container">
-    <WujieVue
-      width="100%"
-      height="100%"
-      name="react-course"
-      :url="subAppUrl"
-      :sync="true"
-    />
+    <WujieVue width="100%" height="100%" name="react-course" :url="subAppUrl" :sync="true" />
   </div>
 </template>
 
