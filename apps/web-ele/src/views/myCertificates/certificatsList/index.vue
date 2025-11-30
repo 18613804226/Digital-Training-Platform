@@ -245,7 +245,7 @@ function showIconConfirm(row: RowType) {
     return;
   }
   prompt({
-    component: () => {},
+    component: () => { },
     content: 'Confirm whether to delete',
     icon: 'error',
     modelPropName: 'value',
@@ -286,12 +286,7 @@ onMounted(() => {
     <!-- 列表 -->
     <Grid>
       <template #toolbar-actions>
-        <VbenButton
-          v-if="currentUserRole === 'ADMIN'"
-          variant="outline"
-          size="default"
-          @click="handleAdd"
-        >
+        <VbenButton variant="outline" size="default" @click="handleAdd">
           Add
         </VbenButton>
       </template>
@@ -299,13 +294,8 @@ onMounted(() => {
         <VbenButton variant="link" size="sm" @click="handlePreview(row)">
           PreView
         </VbenButton>
-        <VbenButton
-          v-if="currentUserRole === 'ADMIN'"
-          variant="link"
-          size="sm"
-          class="text-red-500 hover:text-red-700"
-          @click="showIconConfirm(row)"
-        >
+        <VbenButton v-if="currentUserRole === 'ADMIN'" variant="link" size="sm" class="text-red-500 hover:text-red-700"
+          @click="showIconConfirm(row)">
           Delete
         </VbenButton>
       </template>
