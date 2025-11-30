@@ -1,5 +1,11 @@
 <template>
-  <div>
-    <h1>video payer</h1>
+  <div class="layout">
+    <slot></slot>
   </div>
 </template>
+
+<style scoped>
+.layout {
+  padding: 20px;
+}
+</style>

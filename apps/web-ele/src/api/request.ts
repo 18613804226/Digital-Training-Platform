@@ -21,6 +21,10 @@ import { refreshTokenApi } from './core';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
+function formatToken(token: null | string) {
+  return token ? `Bearer ${token}` : null;
+}
+
 function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   const client = new RequestClient({
     ...options,
@@ -54,10 +58,6 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     const newToken = resp.data;
     accessStore.setAccessToken(newToken);
     return newToken;
-  }
-
-  function formatToken(token: null | string) {
-    return token ? `Bearer ${token}` : null;
   }
 
   // 请求头处理
@@ -110,5 +110,19 @@ export const requestClient = createRequestClient(apiURL, {
   responseReturn: 'data',
   timeout: 60_000, // ：30秒超时
 });
-
+// 用于文件下载/上传等二进制操作的客户端
+export const fileRequestClient = new RequestClient({
+  baseURL: apiURL,
+  timeout: 60_000,
+  // ⚠️ 关键：不要加任何 response interceptor！
+});
+// 请求头处理
+fileRequestClient.addRequestInterceptor({
+  fulfilled: async (config) => {
+    const accessStore = useAccessStore();
+    config.headers.Authorization = formatToken(accessStore.accessToken);
+    config.headers['Accept-Language'] = preferences.app.locale;
+    return config;
+  },
+});
 export const baseRequestClient = new RequestClient({ baseURL: apiURL });

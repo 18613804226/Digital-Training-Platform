@@ -2,6 +2,8 @@
 import type { VbenFormProps } from '#/adapter/form';
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
+import { onMounted } from 'vue';
+
 import { prompt, useVbenModal, VbenButton } from '@vben/common-ui';
 
 import {
@@ -132,7 +134,7 @@ const gridOptions: VxeGridProps<RowType> = {
   keepSource: true,
   proxyConfig: {
     showLoading: true,
-    // autoLoad: false,
+    autoLoad: false,
     ajax: {
       query: async ({ page }, formValues) => {
         let startDate = '';
@@ -206,6 +208,9 @@ const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
   formOptions,
 });
+onMounted(() => {
+  gridApi.query();
+});
 </script>
 
 <template>
@@ -215,11 +220,16 @@ const [Grid, gridApi] = useVbenVxeGrid({
       <!-- 自定义工具栏左侧区域 -->
       <template #toolbar-actions>
         <VbenButton variant="outline" size="default" @click="handleAdd">
-          新增
+          Add
         </VbenButton>
       </template>
       <template #action="{ row }">
-        <VbenButton variant="link" size="sm" @click="showIconConfirm(row)">
+        <VbenButton
+          class="text-red-500 hover:text-red-700"
+          variant="link"
+          size="sm"
+          @click="showIconConfirm(row)"
+        >
           delete
         </VbenButton>
       </template>

@@ -34,7 +34,7 @@ const joining = ref(true);
 const onlineCount = ref(0);
 const inputMessage = ref('');
 const chatMessages = ref<Array<{ body: string; from: string }>>([]);
-const showDanmaku = ref(false);
+const showDanmaku = ref(true);
 const danmakuList = ref<Array<{ duration: number; text: string; top: number }>>(
   [],
 );
@@ -400,7 +400,7 @@ onUnmounted(() => {
             </div>
             <div
               ref="chatContainer"
-              class="no-scrollbar mb-2 min-h-0 flex-1 overflow-y-auto text-sm"
+              class="no-scrollbar mb-2 min-h-0 flex-1 overflow-y-auto border border-dashed border-gray-300 p-4 text-sm"
             >
               <div
                 v-for="(msg, idx) in chatMessages"

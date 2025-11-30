@@ -12,6 +12,7 @@ const routes: RouteRecordRaw[] = [
     },
     name: 'myCertificates',
     path: '/myCertificates',
+    component: () => import('#/views/myCertificates/certificatsList/index.vue'),
     children: [
       // {
       //   meta: {

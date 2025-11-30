@@ -60,7 +60,8 @@
     "trtc-js-sdk": "^4.15.22",
     "video.js": "^8.23.4",
     "vue": "catalog:",
-    "vue-router": "catalog:"
+    "vue-router": "catalog:",
+    "wujie-vue3": "^1.0.29"
   },
   "devDependencies": {
     "@types/sortablejs": "catalog:",
