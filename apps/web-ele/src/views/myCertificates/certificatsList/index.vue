@@ -230,55 +230,55 @@ const gridOptions = computed(
 // Operate方法
 // ========================
 function handleAdd() {
-  if (currentUserRole.value !== 'ADMIN') return;
-  modalApi.open();
-}
+  //   if (currentUserRole.value !== 'ADMIN') return;
+  //   modalApi.open();
+  // }
 
-function handlePreview(row: RowType) {
-  currentRow.value = row;
-  drawerApi.open();
-}
-
-function showIconConfirm(row: RowType) {
-  if (currentUserRole.value !== 'ADMIN') {
-    ElMessage.warning('无权限Operate');
-    return;
+  function handlePreview(row: RowType) {
+    currentRow.value = row;
+    drawerApi.open();
   }
-  prompt({
-    component: () => { },
-    content: 'Confirm whether to delete',
-    icon: 'error',
-    modelPropName: 'value',
-  }).then(async () => {
-    const res: any = await deleteCertificategApi(row.id);
-    if (res.success === true) {
-      ElMessage.success(res.message);
-      _gridApi.query();
+
+  function showIconConfirm(row: RowType) {
+    if (currentUserRole.value !== 'ADMIN') {
+      ElMessage.warning('无权限Operate');
+      return;
     }
+    prompt({
+      component: () => { },
+      content: 'Confirm whether to delete',
+      icon: 'error',
+      modelPropName: 'value',
+    }).then(async () => {
+      const res: any = await deleteCertificategApi(row.id);
+      if (res.success === true) {
+        ElMessage.success(res.message);
+        _gridApi.query();
+      }
+    });
+  }
+
+  // 抽屉删除回调
+  function handleDeleteFromDrawer(row: RowType) {
+    showIconConfirm(row); // 复用确认逻辑
+  }
+
+  // ========================
+  // 初始化
+  // ========================
+  const gridApi = ref<any>(null);
+  const [Grid, _gridApi] = useVbenVxeGrid({
+    gridOptions: gridOptions.value,
+    formOptions: formOptions.value,
   });
-}
-
-// 抽屉删除回调
-function handleDeleteFromDrawer(row: RowType) {
-  showIconConfirm(row); // 复用确认逻辑
-}
-
-// ========================
-// 初始化
-// ========================
-const gridApi = ref<any>(null);
-const [Grid, _gridApi] = useVbenVxeGrid({
-  gridOptions: gridOptions.value,
-  formOptions: formOptions.value,
-});
-async function createCertificates(data: any) {
-  await createCertificategApi(data);
-  gridApi.value?.query();
-}
-onMounted(() => {
-  gridApi.value = _gridApi;
-  gridApi.value?.query();
-});
+  async function createCertificates(data: any) {
+    await createCertificategApi(data);
+    gridApi.value?.query();
+  }
+  onMounted(() => {
+    gridApi.value = _gridApi;
+    gridApi.value?.query();
+  });
 </script>
 
 <template>
