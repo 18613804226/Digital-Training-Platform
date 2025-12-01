@@ -218,8 +218,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <Modal @confrim="gridApi.query()" />
   <div class="h-[calc(100vh-88px)] w-full p-4">
+    <Modal @confrim="gridApi.query()" />
     <Grid>
       <!-- 自定义工具栏左侧区域 -->
       <template #toolbar-actions>
