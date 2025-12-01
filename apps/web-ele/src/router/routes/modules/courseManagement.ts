@@ -16,6 +16,7 @@ const routes: RouteRecordRaw[] = [
       {
         meta: {
           title: $t('courseManagement.courseAdmin'),
+          keepAlive: true,
         },
         name: 'courseAdmin',
         path: '/courseManagement/courseAdmin',
@@ -25,8 +26,9 @@ const routes: RouteRecordRaw[] = [
       {
         meta: {
           title: $t('courseManagement.courseBank'),
+          keepAlive: true,
         },
-        name: 'courseBank',
+        name: 'formalExam',
         path: '/courseManagement/courseBank',
         component: () =>
           import('#/views/courseManagement/courseBank/index.vue'),

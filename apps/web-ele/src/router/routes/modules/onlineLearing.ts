@@ -15,7 +15,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         meta: {
-          title: $t('onlineLearning.videoPlayer'),
+          title: $t('onlineLearning.videoPlayer'), keepAlive: true,
         },
         name: 'videoPlayer',
         path: '/onlineLearing/videoPlayer',
@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         meta: {
-          title: $t('onlineLearning.3DvirtualClassroom'),
+          title: $t('onlineLearning.3DvirtualClassroom'), keepAlive: true,
         },
         name: '3DvirtualClassroom',
         path: '/onlineLearning/3DvirtualClassroom',
