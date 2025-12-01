@@ -15,7 +15,8 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         meta: {
-          title: $t('systemManagement.userManagement'), keepAlive: true,
+          title: $t('systemManagement.userManagement'),
+          keepAlive: true,
         },
         name: 'userManagement',
         path: '/systemManagement/userManagement',
@@ -27,7 +28,8 @@ const routes: RouteRecordRaw[] = [
         path: 'Profile',
         component: () => import('#/views/_core/profile/index.vue'),
         meta: {
-          title: $t('page.auth.profile'), keepAlive: true,
+          title: $t('page.auth.profile'),
+          keepAlive: true,
         },
       },
     ],
