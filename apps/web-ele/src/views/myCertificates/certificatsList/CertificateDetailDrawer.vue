@@ -80,9 +80,13 @@ async function opened() {
   loading.value = true;
 
   // 2. 抽屉打开时才发起请求
-  const response = await fetch(`/api/v1/certificates/${data.value.id}/pdf`, {
-    headers: { Authorization: `Bearer ${accessStore}` },
-  });
+  const BASE_URL = import.meta.env.VITE_GLOB_API_URL;
+  const response = await fetch(
+    `${BASE_URL}/certificates/${data.value.id}/pdf`,
+    {
+      headers: { Authorization: `Bearer ${accessStore}` },
+    },
+  );
 
   if (!response.ok) {
     throw new Error('PDF 获取失败');
