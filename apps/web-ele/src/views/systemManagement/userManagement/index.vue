@@ -63,8 +63,12 @@ const formOptions: VbenFormProps = {
             value: 'ADMIN',
           },
           {
-            label: 'USER',
-            value: 'USER',
+            label: 'TEACHER',
+            value: 'TEACHER',
+          },
+          {
+            label: 'STUDENT',
+            value: 'STUDENT',
           },
         ],
         placeholder: 'Please Chose',
@@ -130,7 +134,8 @@ const gridOptions: VxeGridProps<RowType> = {
   // ],
   exportConfig: {},
   // pagerConfig: {},
-  // height: 'auto', // 如果设置为 auto，则必须确保存在父节点且不允许存在相邻元素，否则会出现高度闪动问题
+  height: '100%', // 如果设置为 auto，则必须确保存在父节点且不允许存在相邻元素，否则会出现高度闪动问题
+  autoResize: true,
   keepSource: true,
   proxyConfig: {
     showLoading: true,
@@ -180,16 +185,15 @@ async function getUserListData(
   });
   return {
     result: res.list || [],
-    page: {
-      total: res.total || 0,
-      currentPage: page.currentPage,
-      pageSize: page.pageSize,
-    },
+    total: res.total || 0,
+    currentPage: page.currentPage,
+    pageSize: page.pageSize,
+
   };
 }
 function showIconConfirm(row: RowType) {
   prompt({
-    component: () => {},
+    component: () => { },
     content: 'Confirm whether to delete',
     icon: 'warning',
     modelPropName: 'value',
@@ -214,8 +218,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="vp-raw w-full p-4">
-    <Modal @confrim="gridApi.query()" />
+  <Modal @confrim="gridApi.query()" />
+  <div class="h-[calc(100vh-88px)] w-full p-4">
     <Grid>
       <!-- 自定义工具栏左侧区域 -->
       <template #toolbar-actions>
@@ -224,12 +228,7 @@ onMounted(() => {
         </VbenButton>
       </template>
       <template #action="{ row }">
-        <VbenButton
-          class="text-red-500 hover:text-red-700"
-          variant="link"
-          size="sm"
-          @click="showIconConfirm(row)"
-        >
+        <VbenButton class="text-red-500 hover:text-red-700" variant="link" size="sm" @click="showIconConfirm(row)">
           delete
         </VbenButton>
       </template>

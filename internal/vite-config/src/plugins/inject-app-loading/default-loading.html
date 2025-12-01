@@ -1,6 +1,4 @@
 <style data-app-loading="inject-css">
-
-
   @keyframes shadow-ani {
     0% {
       transform: translateX(-50%) translateY(60px);
@@ -11,7 +9,6 @@
       transform: translateX(-50%) translateY(50px);
     }
   }
-
   @keyframes rotate-ani {
     from {
       transform: rotate(0deg);
@@ -50,7 +47,7 @@
 
   @keyframes jump-ani {
     15% {
-      border-bottom-right-radius: 3px;
+      border-radius: 7px;
     }
 
     25% {
@@ -58,7 +55,7 @@
     }
 
     50% {
-      border-bottom-right-radius: 40px;
+      border-radius: 40px;
       transform: translateY(18px) scale(1, 0.9) rotate(45deg);
     }
 
@@ -128,8 +125,8 @@
 
   .loader {
     position: relative;
-    width: 48px;
-    height: 48px;
+    width: 58px;
+    height: 58px;
     margin: 100px auto; /* 根据需要调整 */
   }
 
@@ -168,9 +165,9 @@
       0 0 20px rgb(0 255 255 / 50%),
       inset 0 0 20px rgb(0 255 255 / 50%);
     animation:
-      jump-ani 1s cubic-bezier(0.55, 0.09, 0.68, 0.53) infinite,
-      rotate-ani 4s linear infinite,
-      color-shift 3s ease-in-out infinite alternate;
+      jump-ani 2s cubic-bezier(0.55, 0.09, 0.68, 0.53) infinite,
+      rotate-ani 3s linear infinite,
+      color-shift 2s ease-in-out infinite alternate;
   }
 </style>
 <div class="loading" id="__app-loading__">

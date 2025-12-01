@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: $t('courseManagement.courseAdmin'),
         },
-        name: 'AIexamGenerator',
+        name: 'courseAdmin',
         path: '/courseManagement/courseAdmin',
         component: () =>
           import('#/views/courseManagement/courseAdmin/index.vue'),
@@ -26,7 +26,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: $t('courseManagement.courseBank'),
         },
-        name: 'formalExam',
+        name: 'courseBank',
         path: '/courseManagement/courseBank',
         component: () =>
           import('#/views/courseManagement/courseBank/index.vue'),

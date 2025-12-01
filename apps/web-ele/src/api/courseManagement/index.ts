@@ -10,3 +10,6 @@ export async function getCourseApi(params: any) {
 export async function createCourseApi(data: any) {
   return requestClient.post<any>('/courses', data);
 }
+export async function deleteCourseApi(data: any) {
+  return requestClient.delete<any>('/courses/' + data);
+}

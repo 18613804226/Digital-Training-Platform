@@ -32,16 +32,16 @@ const routes: RouteRecordRaw[] = [
       //   component: () =>
       //     import('#/views/microFrontendZone/industrialLotSecurity/index.vue'),
       // },
-      {
-        meta: {
-          title: $t('microFrontendZone.pythonDataScience'),
-          keepAlive: false,
-        },
-        name: 'pythonDataScience',
-        path: '/python-data-analysis',
-        component: () =>
-          import('#/views/microFrontendZone/pythonDataScience/index.vue'),
-      },
+      // {
+      //   meta: {
+      //     title: $t('microFrontendZone.pythonDataScience'),
+      //     keepAlive: false,
+      //   },
+      //   name: 'pythonDataScience',
+      //   path: '/python-data-analysis',
+      //   component: () =>
+      //     import('#/views/microFrontendZone/pythonDataScience/index.vue'),
+      // },
     ],
   },
 ];

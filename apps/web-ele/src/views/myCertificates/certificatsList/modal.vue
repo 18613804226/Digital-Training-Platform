@@ -4,6 +4,7 @@ import { ref } from 'vue';
 import { useVbenForm, useVbenModal } from '@vben/common-ui';
 
 import { getCourseApi } from '#/api';
+import { label } from 'three/tsl';
 
 defineOptions({
   name: 'ExtraModal',
@@ -11,7 +12,7 @@ defineOptions({
 
 // 定义要 emit 的事件名
 const emit = defineEmits<{
-  (e: 'confrim'): void;
+  (e: 'confirm', data: Record<string, any>): void;
 }>();
 
 const [Modal, modalApi] = useVbenModal({
@@ -23,8 +24,8 @@ const [Modal, modalApi] = useVbenModal({
     const courseList = await getCourseApi({});
 
     // 转换为 select 选项
-    const courseOptions = courseList.map((course: { id: any; name: any }) => ({
-      label: course.name,
+    const courseOptions = courseList.list.map((course: { id: number; title: string }) => ({
+      label: course.title,
       value: course.id,
     }));
 
@@ -42,7 +43,7 @@ const [Modal, modalApi] = useVbenModal({
       (item) => item.fieldName === 'templateId',
     );
     if (templateField) {
-      templateField.componentProps.options = courseOptions; // 或其他模板数据
+      templateField.componentProps.options = [{ label: "Default", value: 1 }]; // 或其他模板数据
     }
   },
 });
@@ -55,7 +56,7 @@ const baseSchema = [
     label: 'UserName',
     rules: 'selectRequired',
     componentProps: {
-      allowClear: true,
+      clearable: true,
       filterOption: true,
       // 这里可以写死，或从 API 获取（如果需要）
       options: [
@@ -71,20 +72,20 @@ const baseSchema = [
     label: 'Course',
     rules: 'selectRequired',
     componentProps: {
-      allowClear: true,
+      clearable: true,
       filterOption: true,
       options: [], // 先空着，后面动态填
       placeholder: 'Please Chose',
-      showSearch: true,
+      showsearch: true,
     },
   },
   {
     component: 'Select',
     fieldName: 'templateId', // 建议改名为 templateId 更合理
-    label: '证书模板',
+    label: 'Certificate Template',
     rules: 'selectRequired',
     componentProps: {
-      allowClear: true,
+      clearable: true,
       filterOption: true,
       options: [], // 动态填充
       placeholder: 'Please enter',
@@ -99,7 +100,7 @@ const [Form, formApi] = useVbenForm({
     componentProps: {
       class: 'w-full',
     },
-    labelWidth: 130,
+    labelWidth: 90,
   },
   // 提交函数
   // handleSubmit: onSubmit,

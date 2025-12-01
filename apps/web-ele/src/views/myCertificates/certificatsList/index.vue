@@ -115,7 +115,7 @@ const baseFormConfig = {
 // ========================
 // 动态列
 // ========================
-const dynamicColumns = computed(() => {
+const dynamicColumns: any = computed(() => {
   const cols = [{ title: '#', type: 'seq', width: 50 }];
 
   if (currentUserRole.value === 'ADMIN') {
@@ -207,11 +207,10 @@ const gridOptions = computed(
 
           return {
             result: res.list || [],
-            page: {
-              total: res.pagination.total || 0,
-              currentPage: page.currentPage,
-              pageSize: page.pageSize,
-            },
+            total: res.pagination.total || 0,
+            currentPage: page.currentPage,
+            pageSize: page.pageSize,
+
           };
         },
       },
