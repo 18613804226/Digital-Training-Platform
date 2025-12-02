@@ -56,8 +56,8 @@ export const useAuthStore = defineStore('auth', () => {
           onSuccess
             ? await onSuccess?.()
             : await router.push(
-              userInfo.homePath || preferences.app.defaultHomePath,
-            );
+                userInfo.homePath || preferences.app.defaultHomePath,
+              );
         }
 
         if (userInfo?.realName) {
@@ -82,7 +82,10 @@ export const useAuthStore = defineStore('auth', () => {
       await logoutApi();
     } catch (error) {
       // 不做任何处理
-      console.warn('Logout request failed, but proceeding to clear state:', error);
+      console.warn(
+        'Logout request failed, but proceeding to clear state:',
+        error,
+      );
     }
 
     resetAllStores();
@@ -93,8 +96,8 @@ export const useAuthStore = defineStore('auth', () => {
       path: LOGIN_PATH,
       query: redirect
         ? {
-          redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-        }
+            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+          }
         : {},
     });
   }

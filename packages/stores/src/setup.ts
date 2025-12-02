@@ -35,13 +35,13 @@ export async function initStores(app: App, options: InitStoreOptions) {
       storage: import.meta.env.DEV
         ? localStorage
         : {
-          getItem(key) {
-            return ls.get(key);
+            getItem(key) {
+              return ls.get(key);
+            },
+            setItem(key, value) {
+              ls.set(key, value);
+            },
           },
-          setItem(key, value) {
-            ls.set(key, value);
-          },
-        },
     }),
   );
   app.use(pinia);
