@@ -60,6 +60,10 @@ export const authenticateResponseInterceptor = ({
   return {
     rejected: async (error) => {
       const { config, response } = error;
+      // console.log(config, response);
+      if (response?.status === 404) {
+        await doReAuthenticate();
+      }
       // 如果不是 401 错误，直接抛出异常
       if (response?.status !== 401) {
         throw error;
