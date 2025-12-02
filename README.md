@@ -20,3 +20,16 @@ Make sure you have the following installed:
    ```bash
    git clone https://github.com/18613804226/Digital-Training-Platform.git
    cd Digital-Training-Platform
+# Digital Training Platform
+
+A modern digital training platform for efficient and interactive learning.
+
+## 🚀 快速开始
+
+请按顺序执行以下命令来启动项目：
+
+1. **安装 pnpm（如果尚未安装）**
+   ```bash
+   npm install pnpm -g
+2. pnpm install
+3. pnpm run dev
