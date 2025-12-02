@@ -57,6 +57,7 @@
     "sortablejs": "catalog:",
     "three": "^0.181.2",
     "tim-js-sdk": "^2.27.6",
+    "tim-upload-plugin": "^1.4.3",
     "trtc-js-sdk": "^4.15.22",
     "video.js": "^8.23.4",
     "vue": "catalog:",

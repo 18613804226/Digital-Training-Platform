@@ -10,6 +10,7 @@ export const overridesPreferences = defineOverridesPreferences({
   app: {
     locale: 'en-US',
     name: import.meta.env.VITE_APP_TITLE,
+    accessMode: 'frontend',
   },
   theme: {
     mode: 'light',

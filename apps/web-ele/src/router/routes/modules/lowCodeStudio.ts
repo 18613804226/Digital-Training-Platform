@@ -9,6 +9,7 @@ const routes: RouteRecordRaw[] = [
       keepAlive: true,
       order: 1000,
       title: $t('lowCodeStudio.title'),
+      authority: ['ADMIN', 'TEACHER'],
     },
     name: 'lowCodeStudio',
     path: '/lowCodeStudio',

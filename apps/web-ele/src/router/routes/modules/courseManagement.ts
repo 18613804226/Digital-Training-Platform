@@ -9,6 +9,7 @@ const routes: RouteRecordRaw[] = [
       keepAlive: true,
       order: 1000,
       title: $t('courseManagement.title'),
+      authority: ['ADMIN', 'TEACHER'],
     },
     name: 'courseManagement',
     path: '/courseManagement',
@@ -17,22 +18,23 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: $t('courseManagement.courseAdmin'),
           keepAlive: true,
+          authority: ['ADMIN', 'TEACHER'],
         },
         name: 'courseAdmin',
         path: '/courseManagement/courseAdmin',
         component: () =>
           import('#/views/courseManagement/courseAdmin/index.vue'),
       },
-      {
-        meta: {
-          title: $t('courseManagement.courseBank'),
-          keepAlive: true,
-        },
-        name: 'formalExam',
-        path: '/courseManagement/courseBank',
-        component: () =>
-          import('#/views/courseManagement/courseBank/index.vue'),
-      },
+      // {
+      //   meta: {
+      //     title: $t('courseManagement.courseBank'),
+      //     keepAlive: true,
+      //   },
+      //   name: 'formalExam',
+      //   path: '/courseManagement/courseBank',
+      //   component: () =>
+      //     import('#/views/courseManagement/courseBank/index.vue'),
+      // },
     ],
   },
 ];

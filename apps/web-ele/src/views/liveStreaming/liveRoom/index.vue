@@ -8,9 +8,13 @@ import { useUserStore } from '@vben/stores';
 
 import { ElCheckbox, ElMessage } from 'element-plus';
 import TIM from 'tim-js-sdk';
+import TIMUploadPlugin from 'tim-upload-plugin'; // 👈 加载上传插件
 import TRTC from 'trtc-js-sdk';
 
 import { getUserSigApi } from '#/api';
+
+// 注册插件（必须在 init 之前）
+
 // 如果你使用 Vben 内置的 useBreakpoint（推荐）
 const isMobile = ref(window.innerWidth < 768);
 
@@ -33,7 +37,16 @@ const getUserSig = async (userId: string): Promise<string> => {
 const joining = ref(true);
 const onlineCount = ref(0);
 const inputMessage = ref('');
-const chatMessages = ref<Array<{ body: string; from: string }>>([]);
+const chatMessages = ref<
+  Array<{
+    body: string; // 对于文本是实际文本内容；对于媒体类型是URL或文件名
+    duration?: number; // 仅对音频有效，单位为秒
+    fileName?: string; // 仅对文件有效
+    fileSize?: number; // 仅对文件有效
+    from: string;
+    type: 'audio' | 'file' | 'image' | 'system' | 'text'; // 消息类型
+  }>
+>([]);
 const showDanmaku = ref(true);
 const danmakuList = ref<Array<{ duration: number; text: string; top: number }>>(
   [],
@@ -108,7 +121,7 @@ const initTencent = async () => {
       remoteUsers.value.push({ userId, name: `用户${userId}` });
 
       nextTick(() => {
-        const thumbEl = document.getElementById(`thumb-${userId}`);
+        const thumbEl = document.querySelector(`thumb-${userId}`);
         if (thumbEl) {
           try {
             remoteStream.play(thumbEl.id);
@@ -126,7 +139,7 @@ const initTencent = async () => {
       );
       remoteUsers.value = remoteUsers.value.filter((u) => u.userId !== userId);
 
-      const thumbEl = document.getElementById(`thumb-${userId}`);
+      const thumbEl = document.querySelector(`thumb-${userId}`);
       if (thumbEl) thumbEl.innerHTML = '';
       // ✅ 不再处理 hoveredUser
     });
@@ -146,19 +159,137 @@ const initTencent = async () => {
 
     // --- TIM ---
     timInstance = TIM.create({ SDKAppID: SDK_APP_ID });
+    timInstance.registerPlugin({ 'tim-upload-plugin': TIMUploadPlugin });
     timInstance.setLogLevel(1);
 
-    timInstance.on(TIM.EVENT.MESSAGE_RECEIVED, (event: any) => {
-      event.data.forEach((msg: any) => {
-        if (msg.type === 'TIMTextElem') {
-          const content = msg.payload.text;
-          const from = msg.from;
-          chatMessages.value.push({ from, body: content });
-          addDanmaku(content);
-          scrollToBottom();
+    // ========== 消息处理函数 ==========
+    const onMessageReceived = (event: { data: any[] }) => {
+      event.data.forEach((msg) => {
+        console.warn('收到消息:', msg.type, msg.payload);
+        const from = msg.from;
+
+        switch (msg.type) {
+          // 📎 文件消息
+          case 'TIMFileElem': {
+            const fileUrl = msg.payload.url;
+            const fileName = msg.payload.fileName;
+            const fileSize = msg.payload.fileSize; // 字节
+            if (fileUrl) {
+              chatMessages.value.push({
+                from,
+                type: 'file',
+                body: fileUrl,
+                fileName,
+                fileSize,
+              });
+              scrollToBottom();
+            }
+            break;
+          }
+
+          // 处理 TIMGroupTipElem（群提示）
+          case 'TIMGroupTipElem': {
+            const { operationType, memberList = [] } = msg.payload;
+            const userNames = memberList
+              .map((m: { userID: any }) => m.userID)
+              .join('、');
+            let systemText = '';
+            if (operationType === 1) {
+              systemText = `${userNames} Joined the group chat`;
+            } else if (operationType === 2) {
+              systemText = `${userNames} Left the group chat`;
+            }
+
+            chatMessages.value.push({
+              from: 'System',
+              type: 'system',
+              body: systemText,
+            });
+            scrollToBottom();
+            break;
+          }
+
+          // 🖼️ 图片消息
+          case 'TIMImageElem': {
+            const imageInfo = msg.payload.imageInfoArray?.[0]; // 取原图或大图
+            const imageUrl = imageInfo?.url || '';
+            if (imageUrl) {
+              chatMessages.value.push({
+                from,
+                type: 'image',
+                body: imageUrl,
+              });
+              scrollToBottom();
+            }
+            break;
+          }
+
+          // 🔊 语音消息
+          case 'TIMSoundElem': {
+            const soundUrl = msg.payload.url;
+            const duration = msg.payload.duration; // 单位：秒
+            if (soundUrl) {
+              chatMessages.value.push({
+                from,
+                type: 'audio',
+                body: soundUrl,
+                duration,
+              });
+              scrollToBottom();
+            }
+            break;
+          }
+
+          // 📝 文本消息
+          case 'TIMTextElem': {
+            const textContent = msg.payload.text;
+            chatMessages.value.push({
+              from,
+              type: 'text',
+              body: textContent,
+            });
+            addDanmaku(textContent);
+            scrollToBottom();
+            break;
+          }
+          // ⚠️ 其他类型（群提示、自定义消息等）
+          default: {
+            if (msg.type === 'TIMGroupSystemNoticeElem') {
+              const notice =
+                msg.payload?.description ||
+                'An operation occurred in the group';
+              chatMessages.value.push({
+                from: 'System',
+                type: 'system',
+                body: notice,
+              });
+              scrollToBottom();
+            } else if (msg.type === 'TIMCustomElem') {
+              const desc = msg.payload?.description || '自定义消息';
+              chatMessages.value.push({
+                from: 'System',
+                type: 'system',
+                body: `[自定义] ${desc}`,
+              });
+              scrollToBottom();
+            } else {
+              // 其他完全未知的类型
+              console.warn('收到未处理的消息类型:', msg.type, msg);
+              chatMessages.value.push({
+                from: 'System',
+                type: 'system',
+                body: `[系统] 收到 ${msg.type} 类型消息`,
+              });
+              scrollToBottom();
+            }
+            break;
+          }
         }
       });
-    });
+    };
+
+    // 监听消息事件
+    timInstance.on(TIM.EVENT.MESSAGE_RECEIVED, onMessageReceived);
 
     try {
       await timInstance.login({ userID: USER_ID, userSig });
@@ -176,7 +307,7 @@ const initTencent = async () => {
     }
 
     joining.value = false;
-    console.log('TRTC + TIM 初始化成功');
+    console.warn('TRTC + TIM 初始化成功');
   } catch (error: any) {
     console.error('初始化失败:', error);
     ElMessage.error(error.message || '无法连接直播服务');
@@ -188,7 +319,7 @@ const sendChatMessage = async () => {
   if (!inputMessage.value.trim() || !timInstance) return;
 
   const text = inputMessage.value.trim();
-  const selfMsg = { from: USER_ID, body: text };
+  const selfMsg: any = { from: USER_ID, type: 'text', body: text };
 
   try {
     chatMessages.value.push(selfMsg);
@@ -209,6 +340,27 @@ const sendChatMessage = async () => {
 };
 
 // ====== 工具函数 ======
+// 格式化音频时长（秒 → mm:ss）
+function formatDuration(seconds?: number): string {
+  if (!seconds) return '00:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+// 格式化文件大小
+function formatFileSize(bytes?: number): string {
+  if (!bytes) return '0 B';
+  if (bytes < 1024) return `${bytes} B`;
+  else if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  else return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+// 可选：图片预览（简单弹窗）
+function openImagePreview(url: string) {
+  // 你可以用 modal、viewer 或直接 window.open
+  window.open(url, '_blank');
+}
 const addDanmaku = (text: string) => {
   if (!showDanmaku.value) return;
   const top = Math.floor(Math.random() * 80) + 200;
@@ -270,9 +422,9 @@ const playLocalStream = async () => {
   }, 100);
 };
 
-const requestToSpeak = () => {
-  ElMessage.info('已发送连麦请求，请等待老师同意');
-};
+// const requestToSpeak = () => {
+//   ElMessage.info('已发送连麦请求，请等待老师同意');
+// };
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -310,29 +462,19 @@ onUnmounted(() => {
   <div class="relative flex h-full flex-col overflow-hidden p-2 sm:p-4">
     <!-- 弹幕层 -->
     <div class="pointer-events-none absolute inset-0 z-50 overflow-hidden">
-      <div
-        v-for="(dm, idx) in danmakuList"
-        :key="idx"
+      <div v-for="(dm, idx) in danmakuList" :key="idx"
         class="animate-danmaku absolute whitespace-nowrap text-sm font-bold text-white"
-        :style="{ top: `${dm.top}px`, animationDuration: `${dm.duration}s` }"
-      >
+        :style="{ top: `${dm.top}px`, animationDuration: `${dm.duration}s` }">
         {{ dm.text }}
       </div>
     </div>
 
     <!-- Page 容器 -->
-    <Page
-      class="card-box relative flex-1 overflow-hidden rounded-lg"
-      title="Online live classroom (Tencent Cloud · TRTC + IM)"
-      :loading="joining"
-      loading-text="正在加入直播间..."
-    >
+    <Page class="card-box relative flex-1 overflow-hidden rounded-lg"
+      title="Online live classroom (Tencent Cloud · TRTC + IM)" :loading="joining" loading-text="正在加入直播间...">
       <!-- 顶部信息（仅桌面显示） -->
       <template #description>
-        <div
-          v-if="!isMobile"
-          class="flex justify-between text-sm text-gray-600"
-        >
+        <div v-if="!isMobile" class="flex justify-between text-sm text-gray-600">
           <span>Course: xx</span>
           <span>Online users：{{ onlineCount }} 人</span>
         </div>
@@ -342,41 +484,25 @@ onUnmounted(() => {
       <div v-if="!isMobile" class="flex h-full gap-6">
         <!-- 左侧：视频区域 -->
         <div class="relative flex-1">
-          <div
-            class="relative h-full w-full overflow-hidden rounded-lg bg-black"
-          >
+          <div class="relative h-full w-full overflow-hidden rounded-lg bg-black">
             <div id="local-video" class="relative h-full w-full"></div>
-            <div
-              class="absolute bottom-2 left-2 right-2 rounded bg-black bg-opacity-60 px-2 py-1 text-xs text-white"
-            >
-              Speaker：{{ USER_ID }}
+            <div class="absolute bottom-2 left-2 right-2 rounded bg-black bg-opacity-60 px-2 py-1 text-xs text-white">
+              Speaker: {{ USER_ID }}
             </div>
 
             <!-- 画中画小窗（右下角） -->
-            <div
-              v-if="allThumbs.length > 0"
-              class="absolute bottom-4 right-4 z-10 flex gap-2"
-            >
-              <div
-                v-for="(thumb, index) in allThumbs"
-                :key="thumb.key"
-                class="thumb-container relative h-16 w-24 cursor-pointer overflow-hidden rounded border border-gray-600 bg-gray-800 transition-all duration-200"
-              >
+            <div v-if="allThumbs.length > 0" class="absolute bottom-4 right-4 z-10 flex gap-2">
+              <div v-for="thumb in allThumbs" :key="thumb.key"
+                class="thumb-container relative h-16 w-24 cursor-pointer overflow-hidden rounded border border-gray-600 bg-gray-800 transition-all duration-200">
                 <template v-if="thumb.type === 'user'">
+                  <div :id="`thumb-${thumb.userId}`" class="h-full w-full"></div>
                   <div
-                    :id="`thumb-${thumb.userId}`"
-                    class="h-full w-full"
-                  ></div>
-                  <div
-                    class="absolute bottom-0 left-0 right-0 truncate bg-black bg-opacity-50 px-1 text-[10px] text-white"
-                  >
+                    class="absolute bottom-0 left-0 right-0 truncate bg-black bg-opacity-50 px-1 text-[10px] text-white">
                     {{ thumb.name }}
                   </div>
                 </template>
                 <template v-else-if="thumb.type === 'more'">
-                  <div
-                    class="flex h-full w-full items-center justify-center text-xs font-bold text-white"
-                  >
+                  <div class="flex h-full w-full items-center justify-center text-xs font-bold text-white">
                     +{{ thumb.count }}
                   </div>
                 </template>
@@ -399,51 +525,63 @@ onUnmounted(() => {
               </ElCheckbox>
             </div>
             <div
-              ref="chatContainer"
-              class="no-scrollbar mb-2 min-h-0 flex-1 overflow-y-auto border border-dashed border-gray-300 p-4 text-sm"
-            >
-              <div
-                v-for="(msg, idx) in chatMessages"
-                :key="idx"
-                class="mb-1 break-words"
-              >
+              class="no-scrollbar mb-2 min-h-0 flex-1 overflow-y-auto border border-dashed border-gray-300 p-4 text-sm">
+              <div v-for="(msg, idx) in chatMessages" :key="idx" class="mb-1 break-words">
                 <span class="font-medium text-blue-600">[{{ msg.from }}]:</span>
-                <span class="ml-1">{{ msg.body }}</span>
+
+                <!-- 📝 文本消息 -->
+                <span v-if="msg.type === 'text'" class="ml-1">{{
+                  msg.body
+                }}</span>
+
+                <!-- 🖼️ 图片消息 -->
+                <img v-else-if="msg.type === 'image'" :src="msg.body" alt="图片消息"
+                  class="ml-1 mt-1 max-w-[200px] rounded border" @click="openImagePreview(msg.body)" />
+
+                <!-- 🔊 语音消息 -->
+                <div v-else-if="msg.type === 'audio'" class="ml-1 mt-1 flex items-center">
+                  <audio :src="msg.body" controls class="rounded"></audio>
+                  <span class="ml-2 text-xs text-gray-500">({{ formatDuration(msg.duration) }})</span>
+                </div>
+
+                <!-- 📎 文件消息 -->
+                <div v-else-if="msg.type === 'file'" class="ml-1 mt-1">
+                  <a :href="msg.body" target="_blank" rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1 text-blue-600 hover:underline">
+                    📎 {{ msg.fileName || '未知文件' }}
+                  </a>
+                  <span class="ml-2 text-xs text-gray-500">
+                    ({{ formatFileSize(msg.fileSize) }})
+                  </span>
+                </div>
+
+                <!-- 🧾 系统消息（群提示、自定义等） -->
+                <span v-else-if="msg.type === 'system'" class="ml-1 text-[12px] italic text-gray-500">
+                  {{ msg.body }}
+                </span>
+
+                <!-- ⚠️ 其他完全未知的消息类型（兜底） -->
+                <span v-else class="ml-1 text-red-500">[不支持的消息类型: {{ msg.type }}]</span>
               </div>
             </div>
             <div class="mt-auto flex gap-2">
-              <input
-                v-model="inputMessage"
-                type="text"
-                placeholder="输入消息..."
-                class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm"
-                @keyup.enter="sendChatMessage"
-              />
+              <input v-model="inputMessage" type="text" placeholder="输入消息..."
+                class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm" @keyup.enter="sendChatMessage" />
               <VbenButton size="sm" @click="sendChatMessage">Send</VbenButton>
             </div>
           </div>
 
           <!-- 底部操作按钮 -->
           <div class="mt-4 flex justify-end gap-4">
-            <VbenButton
-              variant="default"
-              size="sm"
-              @click="toggleMute('audio')"
-              :class="{ 'bg-red-500': !isAudioEnabled }"
-            >
-              {{ isAudioEnabled ? '静音' : '取消静音' }}
+            <VbenButton :variant="isAudioEnabled ? 'default' : 'destructive'" size="sm" @click="toggleMute('audio')">
+              {{ isAudioEnabled ? 'Mute' : 'Cancel Mute' }}
             </VbenButton>
-            <VbenButton
-              variant="default"
-              size="sm"
-              @click="toggleMute('video')"
-              :class="{ 'bg-red-500': !isVideoEnabled }"
-            >
-              {{ isVideoEnabled ? '关摄像头' : '开摄像头' }}
+            <VbenButton :variant="isVideoEnabled ? 'default' : 'destructive'" size="sm" @click="toggleMute('video')">
+              {{ isVideoEnabled ? 'Turn off Camera' : 'Turn On Camera' }}
             </VbenButton>
-            <VbenButton variant="default" size="sm" @click="requestToSpeak">
+            <!-- <VbenButton variant="default" size="sm" @click="requestToSpeak">
               举手连麦
-            </VbenButton>
+            </VbenButton> -->
             <VbenButton variant="default" size="sm" @click="leaveRoom">
               Quit
             </VbenButton>
@@ -456,31 +594,17 @@ onUnmounted(() => {
         <!-- 全屏视频 -->
         <div class="relative h-full w-full overflow-hidden rounded-lg bg-black">
           <div id="local-video" class="h-full w-full"></div>
-          <div
-            class="absolute bottom-2 left-2 right-2 rounded bg-black bg-opacity-60 px-2 py-1 text-xs text-white"
-          >
-            Speaker：{{ USER_ID }}
+          <div class="absolute bottom-2 left-2 right-2 rounded bg-black bg-opacity-60 px-2 py-1 text-xs text-white">
+            Speaker: {{ USER_ID }}
           </div>
 
           <!-- 小窗移到左上角（最多显示2个） -->
-          <div
-            v-if="allThumbs.length > 0"
-            class="absolute left-2 top-2 z-10 flex gap-1"
-          >
-            <div
-              v-for="(thumb, index) in allThumbs.slice(0, 2)"
-              :key="thumb.key"
-              class="thumb-container relative h-12 w-16 overflow-hidden rounded border border-gray-600 bg-gray-800"
-            >
-              <div
-                v-if="thumb.type === 'user'"
-                :id="`thumb-${thumb.userId}`"
-                class="h-full w-full"
-              ></div>
-              <div
-                v-else-if="thumb.type === 'more'"
-                class="flex h-full w-full items-center justify-center text-[10px] font-bold text-white"
-              >
+          <div v-if="allThumbs.length > 0" class="absolute left-2 top-2 z-10 flex gap-1">
+            <div v-for="thumb in allThumbs.slice(0, 2)" :key="thumb.key"
+              class="thumb-container relative h-12 w-16 overflow-hidden rounded border border-gray-600 bg-gray-800">
+              <div v-if="thumb.type === 'user'" :id="`thumb-${thumb.userId}`" class="h-full w-full"></div>
+              <div v-else-if="thumb.type === 'more'"
+                class="flex h-full w-full items-center justify-center text-[10px] font-bold text-white">
                 +{{ thumb.count }}
               </div>
             </div>
@@ -490,33 +614,22 @@ onUnmounted(() => {
         <!-- 底部控制栏 -->
         <div class="absolute bottom-0 left-0 right-0 bg-white p-3 shadow-lg">
           <div class="flex items-center gap-2">
-            <input
-              v-model="inputMessage"
-              type="text"
-              placeholder="输入消息..."
-              class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm"
-              @keyup.enter="sendChatMessage"
-            />
-            <VbenButton size="sm" @click="sendChatMessage">发送</VbenButton>
+            <input v-model="inputMessage" type="text" placeholder="输入消息..."
+              class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm" @keyup.enter="sendChatMessage" />
+            <VbenButton size="sm" @click="sendChatMessage">Send</VbenButton>
           </div>
-          <div class="mt-2 flex flex-wrap justify-center gap-2">
-            <VbenButton
-              size="sm"
-              @click="toggleMute('audio')"
-              :class="{ 'bg-red-500': !isAudioEnabled }"
-            >
-              {{ isAudioEnabled ? '静音' : '取消静音' }}
+          <div class="mt-4 flex justify-end gap-4">
+            <VbenButton :variant="isAudioEnabled ? 'default' : 'destructive'" size="sm" @click="toggleMute('audio')">
+              {{ isAudioEnabled ? 'Mute' : 'Cancel Mute' }}
             </VbenButton>
-            <VbenButton
-              size="sm"
-              @click="toggleMute('video')"
-              :class="{ 'bg-red-500': !isVideoEnabled }"
-            >
-              {{ isVideoEnabled ? '关摄像头' : '开摄像头' }}
+            <VbenButton :variant="isVideoEnabled ? 'default' : 'destructive'" size="sm" @click="toggleMute('video')">
+              {{ isVideoEnabled ? 'Turn off Camera' : 'Turn On Camera' }}
             </VbenButton>
-            <VbenButton size="sm" @click="requestToSpeak">举手</VbenButton>
-            <VbenButton size="sm" variant="heavy" @click="leaveRoom">
-              退出
+            <!-- <VbenButton variant="default" size="sm" @click="requestToSpeak">
+              举手连麦
+            </VbenButton> -->
+            <VbenButton variant="default" size="sm" @click="leaveRoom">
+              Quit
             </VbenButton>
           </div>
         </div>

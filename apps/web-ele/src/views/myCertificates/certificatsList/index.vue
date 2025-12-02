@@ -203,6 +203,7 @@ const gridOptions = computed(
             ...formValues,
             startDate,
             endDate,
+            role: userStore.userInfo?.role,
           });
 
           return {
@@ -210,7 +211,6 @@ const gridOptions = computed(
             total: res.pagination.total || 0,
             currentPage: page.currentPage,
             pageSize: page.pageSize,
-
           };
         },
       },
@@ -244,7 +244,7 @@ function showIconConfirm(row: RowType) {
     return;
   }
   prompt({
-    component: () => { },
+    component: () => {},
     content: 'Confirm whether to delete',
     icon: 'error',
     modelPropName: 'value',
@@ -285,7 +285,12 @@ onMounted(() => {
     <!-- 列表 -->
     <Grid>
       <template #toolbar-actions>
-        <VbenButton variant="outline" size="default" @click="handleAdd">
+        <VbenButton
+          v-access:role="['ADMIN']"
+          variant="outline"
+          size="default"
+          @click="handleAdd"
+        >
           Add
         </VbenButton>
       </template>
@@ -293,8 +298,13 @@ onMounted(() => {
         <VbenButton variant="link" size="sm" @click="handlePreview(row)">
           PreView
         </VbenButton>
-        <VbenButton v-if="currentUserRole === 'ADMIN'" variant="link" size="sm" class="text-red-500 hover:text-red-700"
-          @click="showIconConfirm(row)">
+        <VbenButton
+          v-access:role="['ADMIN']"
+          variant="link"
+          size="sm"
+          class="text-red-500 hover:text-red-700"
+          @click="showIconConfirm(row)"
+        >
           Delete
         </VbenButton>
       </template>

@@ -16,6 +16,7 @@ const routes: RouteRecordRaw[] = [
       {
         meta: {
           title: $t('smartExam.AIexamGenerator'),
+          authority: ['ADMIN', 'TEACHER'],
         },
         name: 'AIexamGenerator',
         path: '/smartExam/AIexamGenerator',

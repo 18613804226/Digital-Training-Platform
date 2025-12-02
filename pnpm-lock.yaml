@@ -683,6 +683,9 @@ importers:
       tim-js-sdk:
         specifier: ^2.27.6
         version: 2.27.6
+      tim-upload-plugin:
+        specifier: ^1.4.3
+        version: 1.4.3
       trtc-js-sdk:
         specifier: ^4.15.22
         version: 4.15.22
@@ -5230,14 +5233,14 @@ packages:
   '@tencentcloud/call-engine-js@3.3.2':
     resolution: {integrity: sha512-5sgQ/gNUwZ2+wky17sx2d/+4/EDSVSs6M3RXw7mZeARCH4SNrD8iKUiH09AtxiBMUQmjbLLqmasfALKOITTFlA==}
 
-  '@tencentcloud/call-uikit-vue2.6@4.0.11':
-    resolution: {integrity: sha512-2f7raW37qG762pS8PQ+bobAjDy0dh6dIMCuyXcVIGJMAEpw9JkYdYYN/1J+I/hHqXboELhYTYBvxU4XvD0H7kw==}
+  '@tencentcloud/call-uikit-vue2.6@4.0.12':
+    resolution: {integrity: sha512-GMmNENINnH/EKv5hxYl7m1yfl1ve4TtT2gVC/f6RVe5CXXEjFLnmMoNq7alm3wJTSbb8mEmpqzc8kkcxznWCTw==}
 
-  '@tencentcloud/call-uikit-vue2@4.0.11':
-    resolution: {integrity: sha512-AlYdkzKDk5QMEAhZUR4MBnkD91Xou82KO/EZfO0fr5c2jrUKI9N0D8VpvMWWtPCGWO2hNrbeLAhdUxwcax++1g==}
+  '@tencentcloud/call-uikit-vue2@4.0.12':
+    resolution: {integrity: sha512-zDELjtAXnks986zmvQuQEvIoqZfxbq6B6n2ZpD7in+S2d8GoWhHOpx8TP4yK639P1oHo6DZcP9RqwRypZX3VUA==}
 
-  '@tencentcloud/call-uikit-vue@4.0.11':
-    resolution: {integrity: sha512-SeUPs5Ow/Y+spAlhzu7HeQY9Zjg4BWMl64JbLGrFv6M389hLOhL5ZFmHb9eqkUIggIQoY5Rrkn2A23CxMWUT/w==}
+  '@tencentcloud/call-uikit-vue@4.0.12':
+    resolution: {integrity: sha512-cKkYmDVAV2uXp0naelEcXLx0j5RIC0kvZ/4L6g95GXwQX2gsNaMCVEYX4GsFobz+qB3J1WBhuZVAxtAILnv8vw==}
 
   '@tencentcloud/chat-uikit-engine-lite@1.0.1':
     resolution: {integrity: sha512-xJPFqeuDvabEI9e7QFdmdBbpkNBHwNewWnTbiJBlVNkEb4tYMb30uEXg70deYsGkYiuWZihAM4JrjvqKTwY44g==}
@@ -17598,7 +17601,7 @@ snapshots:
       trtc-cloud-js-sdk: 2.9.3
       tuikit-logger: 0.0.4-beta.1
 
-  '@tencentcloud/call-uikit-vue2.6@4.0.11(vue@3.5.24(typescript@5.9.3))':
+  '@tencentcloud/call-uikit-vue2.6@4.0.12(vue@3.5.24(typescript@5.9.3))':
     dependencies:
       '@tencentcloud/call-engine-js': 3.3.2
       '@tencentcloud/chat': 3.6.1
@@ -17607,13 +17610,13 @@ snapshots:
     transitivePeerDependencies:
       - vue
 
-  '@tencentcloud/call-uikit-vue2@4.0.11':
+  '@tencentcloud/call-uikit-vue2@4.0.12':
     dependencies:
       '@tencentcloud/call-engine-js': 3.3.2
       '@tencentcloud/chat': 3.6.1
       '@tencentcloud/tui-core': 2.5.1
 
-  '@tencentcloud/call-uikit-vue@4.0.11':
+  '@tencentcloud/call-uikit-vue@4.0.12':
     dependencies:
       '@tencentcloud/call-engine-js': 3.3.2
       '@tencentcloud/chat': 3.6.1
@@ -17637,9 +17640,9 @@ snapshots:
 
   '@tencentcloud/chat-uikit-vue@2.3.3(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/extension-document@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1)))(@tiptap/extension-image@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1)))(@tiptap/extension-mention@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)(@tiptap/suggestion@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)))(@tiptap/extension-paragraph@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1)))(@tiptap/extension-placeholder@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1))(@tiptap/extension-text@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1)))(@tiptap/pm@2.27.1)(@tiptap/suggestion@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1))(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3)))(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3))':
     dependencies:
-      '@tencentcloud/call-uikit-vue': 4.0.11
-      '@tencentcloud/call-uikit-vue2': 4.0.11
-      '@tencentcloud/call-uikit-vue2.6': 4.0.11(vue@3.5.24(typescript@5.9.3))
+      '@tencentcloud/call-uikit-vue': 4.0.12
+      '@tencentcloud/call-uikit-vue2': 4.0.12
+      '@tencentcloud/call-uikit-vue2.6': 4.0.12(vue@3.5.24(typescript@5.9.3))
       '@tencentcloud/chat-uikit-engine': 2.5.7
       '@tencentcloud/roomkit-web-vue3': 3.2.0(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3)))(typescript@5.9.3)(vue@3.5.24(typescript@5.9.3))
       '@tencentcloud/tui-core': 2.5.1
