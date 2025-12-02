@@ -17,7 +17,7 @@ const router = useRouter();
 // 考试状态
 const questions = ref<any[]>([]);
 const selectedAnswers: any = ref<Record<number, string>>({});
-const loading = ref(false);
+const loading = ref(true);
 const examStatus = ref(false);
 const error = ref('');
 const submitted = ref(false);
