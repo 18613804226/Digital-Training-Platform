@@ -2,12 +2,12 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { Page, VbenButton, Spinner } from '@vben/common-ui';
+import { Page, Spinner, VbenButton } from '@vben/common-ui';
 
+import { ElMessage } from 'element-plus';
 import * as faceapi from 'face-api.js';
 
 import { getExamApi } from '#/api';
-import { ElMessage } from 'element-plus';
 // Thirdweb
 // import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 // import { Ethereum } from '@thirdweb-dev/chains';
@@ -127,7 +127,7 @@ const initFaceDetection = async () => {
       isFaceDetected.value = detections.length > 0;
       faceVerified.value = isFaceDetected.value;
     }, 2000); // 每2秒检测一次
-  } catch (error_) {
+  } catch {
     // console.log('人脸识别初始化失败:', error_);
     faceVerified.value = false;
   }
@@ -138,7 +138,7 @@ const handleVisibilityChange = () => {
   if (document.hidden) {
     // 用户切换走了
     visibilityChangeTimer = setTimeout(() => {
-      ElMessage.warning('检测到你离开了考试页面！系统已记录。')
+      ElMessage.warning('检测到你离开了考试页面！系统已记录。');
       // alert('检测到你离开了考试页面！系统已记录。');
       windowLocked.value = false; // 标记违规
     }, 3000); // 3秒内切回不算
@@ -225,9 +225,17 @@ const handleOptionChange = (option: string, questionIndex: number) => {
   <div class="relative flex h-full flex-col p-4">
     <Spinner v-if="loading" :spinning="loading" />
     <!-- 隐藏的视频流（用于人脸识别） -->
-    <video ref="videoRef" class="absolute left-0 top-0 h-0 w-0 opacity-0" muted playsinline></video>
+    <video
+      ref="videoRef"
+      class="absolute left-0 top-0 h-0 w-0 opacity-0"
+      muted
+      playsinline
+    ></video>
 
-    <Page class="card-box flex-1 overflow-hidden rounded-lg" title="Exam - Answer Questions">
+    <Page
+      class="card-box flex-1 overflow-hidden rounded-lg"
+      title="Exam - Answer Questions"
+    >
       <!-- <template #description>
         <div>
           正式考试（防作弊模式已开启）
@@ -246,7 +254,9 @@ const handleOptionChange = (option: string, questionIndex: number) => {
         <div class="space-y-4">
           <div v-if="examStatus === true">
             <!-- 考试信息 -->
-            <div class="rounded border border-gray-700 bg-gray-800 p-3 text-white">
+            <div
+              class="rounded border border-gray-700 bg-gray-800 p-3 text-white"
+            >
               <div class="text-sm font-medium">
                 Formal exam (anti-cheating mode is now enabled)
               </div>
@@ -276,28 +286,48 @@ const handleOptionChange = (option: string, questionIndex: number) => {
           <div v-if="examStatus === true" class="rounded border bg-gray-50 p-3">
             <div class="flex items-center justify-between text-sm">
               <div class="flex items-center">
-                <span class="mr-2">Facial recognition (hold for two seconds)：</span>
-                <span v-if="faceVerified" class="text-green-600">✅ Verified</span>
+                <span class="mr-2"
+                  >Facial recognition (hold for two seconds)：</span
+                >
+                <span v-if="faceVerified" class="text-green-600"
+                  >✅ Verified</span
+                >
                 <span v-else class="text-red-600">❌ Unverified</span>
               </div>
               <div class="flex items-center">
                 <span class="mr-2">Disable window switching：</span>
-                <span v-if="windowLocked" class="text-red-600">⚠️ Prohibit</span>
+                <span v-if="windowLocked" class="text-red-600"
+                  >⚠️ Prohibit</span
+                >
                 <span v-else class="text-orange-600">❌ Left</span>
               </div>
             </div>
           </div>
 
           <!-- 题目 -->
-          <div v-for="(q, index) in questions" :key="index" class="mt-6 rounded border p-4 shadow-sm">
+          <div
+            v-for="(q, index) in questions"
+            :key="index"
+            class="mt-6 rounded border p-4 shadow-sm"
+          >
             <p class="mb-4 text-base font-medium">
               {{ index + 1 }}. {{ q.question }}
             </p>
             <div class="ml-2 space-y-2">
-              <label v-for="(option, idx) in q.options" :key="idx" :disabled="examStatus === false"
-                class="flex cursor-pointer items-start rounded p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700">
-                <input type="radio" :value="option" v-model="selectedAnswers[index]" :disabled="examStatus === false"
-                  @change="handleOptionChange(option, index)" class="mr-2 mt-1 h-4 w-4 text-blue-600" />
+              <label
+                v-for="(option, idx) in q.options"
+                :key="idx"
+                :disabled="examStatus === false"
+                class="flex cursor-pointer items-start rounded p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
+              >
+                <input
+                  type="radio"
+                  :value="option"
+                  v-model="selectedAnswers[index]"
+                  :disabled="examStatus === false"
+                  @change="handleOptionChange(option, index)"
+                  class="mr-2 mt-1 h-4 w-4 text-blue-600"
+                />
                 <span class="">{{ option }}</span>
               </label>
             </div>
@@ -305,13 +335,20 @@ const handleOptionChange = (option: string, questionIndex: number) => {
 
           <!-- 交卷按钮 -->
           <div v-if="examStatus && !submitted" class="mt-4 flex justify-end">
-            <VbenButton variant="default" size="default" @click="submitAllAnswers">
+            <VbenButton
+              variant="default"
+              size="default"
+              @click="submitAllAnswers"
+            >
               Submit Exam
             </VbenButton>
           </div>
 
           <!-- 交卷结果 -->
-          <div v-if="submitted" class="mt-6 rounded border border-blue-200 bg-blue-50 p-4">
+          <div
+            v-if="submitted"
+            class="mt-6 rounded border border-blue-200 bg-blue-50 p-4"
+          >
             <div class="text-lg font-bold text-blue-800">
               Exam complete! Score：{{ score }}/100
             </div>
@@ -319,8 +356,12 @@ const handleOptionChange = (option: string, questionIndex: number) => {
               Scoring complete, certificate uploaded to blockchain！
             </div>
             <div class="mt-1 break-all text-sm text-blue-700">
-              Blockchain certificate link：<a :href="blockchainUrl" target="_blank" class="text-blue-600 underline">{{
-                blockchainUrl }}</a>
+              Blockchain certificate link：<a
+                :href="blockchainUrl"
+                target="_blank"
+                class="text-blue-600 underline"
+                >{{ blockchainUrl }}</a
+              >
             </div>
             <div class="mt-3 flex space-x-2">
               <VbenButton variant="default" size="sm" @click="openCert">
@@ -339,7 +380,6 @@ const handleOptionChange = (option: string, questionIndex: number) => {
 <style scoped>
 /* stylelint-disable-next-line keyframes-name-pattern */
 @keyframes pulseRed {
-
   0%,
   100% {
     opacity: 1;
