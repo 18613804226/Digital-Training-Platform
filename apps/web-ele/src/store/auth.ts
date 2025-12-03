@@ -59,7 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
                 userInfo.homePath || preferences.app.defaultHomePath,
               );
         }
-
+        // console.log(userInfo.homePath, preferences.app.defaultHomePath);
         if (userInfo?.realName) {
           ElNotification({
             message: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,

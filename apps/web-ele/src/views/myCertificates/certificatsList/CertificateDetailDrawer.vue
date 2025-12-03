@@ -13,9 +13,9 @@ const props = defineProps<{
   data?: any;
 }>();
 
-const emit = defineEmits(['update:modelValue', 'confirm']);
+// const emit = defineEmits(['update:modelValue', 'confirm']);
 
-const [Drawer, drawerApi] = useVbenDrawer({
+const [Drawer] = useVbenDrawer({
   onOpened: opened,
   onClosed: closed,
 });
@@ -30,16 +30,16 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
 const data = computed(() => props.data);
 
-const previewHtml = computed(() => {
-  if (!data.value) return '';
-  return `
-    <div style="font-family: 'STKaiti', serif; text-align: center;">
-      <h2>结业证书</h2>
-      <p>兹证明 <strong>${data.value.username}</strong> 已完成...</p>
-      <p>颁发日期：${data.value.createdAt?.split('T')[0]}</p>
-    </div>
-  `;
-});
+// const previewHtml = computed(() => {
+//   if (!data.value) return '';
+//   return `
+//     <div style="font-family: 'STKaiti', serif; text-align: center;">
+//       <h2>结业证书</h2>
+//       <p>兹证明 <strong>${data.value.username}</strong> 已完成...</p>
+//       <p>颁发日期：${data.value.createdAt?.split('T')[0]}</p>
+//     </div>
+//   `;
+// });
 
 async function downloadPdf() {
   // 调用后端接口：window.open(`/api/certificates/${data.value.id}/pdf`)
@@ -68,10 +68,10 @@ async function downloadPdf() {
   }
 }
 
-function onDelete() {
-  emit('confirm', data.value);
-  // visible.value = false;
-}
+// function onDelete() {
+//   emit('confirm', data.value);
+//   // visible.value = false;
+// }
 const pdfUrl: any = ref();
 const accessStore = useAccessStore().accessToken;
 const loading = ref(false);
@@ -82,7 +82,7 @@ async function opened() {
   // 2. 抽屉打开时才发起请求
   const BASE_URL = import.meta.env.VITE_GLOB_API_URL;
   const response = await fetch(
-    `${BASE_URL}/certificates/${data.value.id}/pdf`,
+    `${BASE_URL}/certificates/${data.value.id}/pdf/preview`,
     {
       headers: { Authorization: `Bearer ${accessStore}` },
     },

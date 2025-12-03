@@ -2,6 +2,8 @@
 import type { AnalysisOverviewItem } from '@vben/common-ui';
 import type { TabOption } from '@vben/types';
 
+import { computed, onMounted, ref } from 'vue';
+
 import { AnalysisChartsTabs, AnalysisOverview } from '@vben/common-ui';
 import {
   SvgBellIcon,
@@ -10,47 +12,132 @@ import {
   SvgDownloadIcon,
 } from '@vben/icons';
 
+import { getDashboardApi, trackPageApi } from '#/api';
+
 import AnalyticsTrends from './analytics-trends.vue';
 import AnalyticsVisits from './analytics-visits.vue';
 
-const overviewItems: AnalysisOverviewItem[] = [
-  {
-    icon: SvgCardIcon,
-    title: '用户量',
-    totalTitle: '总用户量',
-    totalValue: 120_000,
-    value: 2000,
-  },
-  {
-    icon: SvgCakeIcon,
-    title: '访问量',
-    totalTitle: '总访问量',
-    totalValue: 500_000,
-    value: 20_000,
-  },
-  {
-    icon: SvgDownloadIcon,
-    title: '下载量',
-    totalTitle: '总下载量',
-    totalValue: 120_000,
-    value: 8000,
-  },
-  {
-    icon: SvgBellIcon,
-    title: '使用量',
-    totalTitle: '总使用量',
-    totalValue: 50_000,
-    value: 5000,
-  },
-];
+onMounted(async () => {
+  await trackPageApi();
+  await getDashboard();
+});
+
+// Define data types
+interface TrafficPoint {
+  time: string;
+  value: number;
+}
+
+interface MonthlyVisitsType {
+  month: string;
+  value: number;
+}
+
+interface DashboardResult {
+  trafficTrend: TrafficPoint[];
+  monthlyVisits: MonthlyVisitsType[];
+  totalVisits: number;
+  userCount: number;
+  totalUsers: number;
+  totalDownloads: number;
+  totalUsage: number;
+  usageCount: number;
+  downloadCount: number;
+  visitCount: number;
+  // ...other fields
+}
+
+const result = ref<DashboardResult>({
+  trafficTrend: [],
+  monthlyVisits: [],
+  totalVisits: 0,
+  userCount: 0,
+  totalUsers: 0,
+  totalDownloads: 0,
+  totalUsage: 0,
+  usageCount: 0,
+  downloadCount: 0,
+  visitCount: 0,
+});
+
+async function getDashboard() {
+  result.value = await getDashboardApi();
+}
+
+// Dynamically compute overview items
+const overviewItems = computed<AnalysisOverviewItem[]>(() => {
+  if (!result.value) {
+    return [
+      {
+        icon: SvgCardIcon,
+        title: 'Users',
+        totalTitle: 'Total Users',
+        totalValue: 0,
+        value: 0,
+      },
+      {
+        icon: SvgCakeIcon,
+        title: 'Visits',
+        totalTitle: 'Total Visits',
+        totalValue: 0,
+        value: 0,
+      },
+      {
+        icon: SvgDownloadIcon,
+        title: 'Downloads',
+        totalTitle: 'Total Downloads',
+        totalValue: 0,
+        value: 0,
+      },
+      {
+        icon: SvgBellIcon,
+        title: 'Usage',
+        totalTitle: 'Total Usage',
+        totalValue: 0,
+        value: 0,
+      },
+    ];
+  }
+  const data = result.value;
+  return [
+    {
+      icon: SvgCardIcon,
+      title: 'Users',
+      totalTitle: 'Total Users',
+      totalValue: data.totalUsers,
+      value: data.userCount,
+    },
+    {
+      icon: SvgCakeIcon,
+      title: 'Visits',
+      totalTitle: 'Total Visits',
+      totalValue: data.totalVisits,
+      value: data.visitCount,
+    },
+    {
+      icon: SvgDownloadIcon,
+      title: 'Downloads',
+      totalTitle: 'Total Downloads',
+      totalValue: data.totalDownloads,
+      value: data.downloadCount,
+    },
+    {
+      icon: SvgBellIcon,
+      title: 'Usage',
+      totalTitle: 'Total Usage',
+      totalValue: data.totalUsage,
+      value: data.usageCount,
+    },
+  ];
+});
 
 const chartTabs: TabOption[] = [
   {
-    label: '流量趋势',
+    label: 'Traffic Trends',
     value: 'trends',
   },
   {
-    label: '月访问量',
+    label: 'Monthly Visits',
     value: 'visits',
   },
 ];
@@ -61,23 +148,11 @@ const chartTabs: TabOption[] = [
     <AnalysisOverview :items="overviewItems" />
     <AnalysisChartsTabs :tabs="chartTabs" class="mt-5">
       <template #trends>
-        <AnalyticsTrends />
+        <AnalyticsTrends :data="result.trafficTrend" />
       </template>
       <template #visits>
-        <AnalyticsVisits />
+        <AnalyticsVisits :data="result.monthlyVisits" />
       </template>
     </AnalysisChartsTabs>
-
-    <!-- <div class="mt-5 w-full md:flex">
-      <AnalysisChartCard class="mt-5 md:mr-4 md:mt-0 md:w-1/3" title="访问数量">
-        <AnalyticsVisitsData />
-      </AnalysisChartCard>
-      <AnalysisChartCard class="mt-5 md:mr-4 md:mt-0 md:w-1/3" title="访问来源">
-        <AnalyticsVisitsSource />
-      </AnalysisChartCard>
-      <AnalysisChartCard class="mt-5 md:mt-0 md:w-1/3" title="访问来源">
-        <AnalyticsVisitsSales />
-      </AnalysisChartCard>
-    </div> -->
   </div>
 </template>
