@@ -5,7 +5,7 @@ import type { TabOption } from '@vben/types';
 // import { VbenLoading } from '@vben-core/shadcn-ui';
 import { computed, onMounted, ref } from 'vue';
 
-import { AnalysisChartsTabs, AnalysisOverview, Spinner } from '@vben/common-ui';
+import { AnalysisChartsTabs, AnalysisOverview, VbenLoading } from '@vben/common-ui';
 import {
   SvgBellIcon,
   SvgCakeIcon,
@@ -148,7 +148,7 @@ const chartTabs: TabOption[] = [
 </script>
 <template>
   <div class="p-5">
-    <Spinner v-if="loading" :spinning="loading" />
+    <VbenLoading v-if="loading" :spinning="loading" />
     <AnalysisOverview :items="overviewItems" />
     <AnalysisChartsTabs :tabs="chartTabs" class="mt-5">
       <template #trends>
