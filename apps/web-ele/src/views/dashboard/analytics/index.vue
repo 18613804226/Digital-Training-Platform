@@ -2,9 +2,14 @@
 import type { AnalysisOverviewItem } from '@vben/common-ui';
 import type { TabOption } from '@vben/types';
 
+// import { VbenLoading } from '@vben-core/shadcn-ui';
 import { computed, onMounted, ref } from 'vue';
 
-import { AnalysisChartsTabs, AnalysisOverview } from '@vben/common-ui';
+import {
+  AnalysisChartsTabs,
+  AnalysisOverview,
+  Spinner,
+} from '@vben/common-ui';
 import {
   SvgBellIcon,
   SvgCakeIcon,
@@ -16,12 +21,13 @@ import { getDashboardApi, trackPageApi } from '#/api';
 
 import AnalyticsTrends from './analytics-trends.vue';
 import AnalyticsVisits from './analytics-visits.vue';
-const loading = ref(false)
+
+const loading = ref(false);
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
   await trackPageApi();
   await getDashboard();
-  loading.value = false
+  loading.value = false;
 });
 
 // Define data types
@@ -145,7 +151,8 @@ const chartTabs: TabOption[] = [
 ];
 </script>
 <template>
-  <div class="p-5" :loading="loading">
+  <div class="p-5">
+    <Spinner v-if="loading" :spinning="loading" />
     <AnalysisOverview :items="overviewItems" />
     <AnalysisChartsTabs :tabs="chartTabs" class="mt-5">
       <template #trends>
