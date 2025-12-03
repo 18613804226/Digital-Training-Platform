@@ -16,10 +16,12 @@ import { getDashboardApi, trackPageApi } from '#/api';
 
 import AnalyticsTrends from './analytics-trends.vue';
 import AnalyticsVisits from './analytics-visits.vue';
-
+const loading = ref(false)
 onMounted(async () => {
+  loading.value = true
   await trackPageApi();
   await getDashboard();
+  loading.value = false
 });
 
 // Define data types
@@ -142,9 +144,8 @@ const chartTabs: TabOption[] = [
   },
 ];
 </script>
-
 <template>
-  <div class="p-5">
+  <div class="p-5" :loading="loading">
     <AnalysisOverview :items="overviewItems" />
     <AnalysisChartsTabs :tabs="chartTabs" class="mt-5">
       <template #trends>
