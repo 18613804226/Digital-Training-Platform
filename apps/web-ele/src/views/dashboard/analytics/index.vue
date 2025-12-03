@@ -5,7 +5,11 @@ import type { TabOption } from '@vben/types';
 // import { VbenLoading } from '@vben-core/shadcn-ui';
 import { computed, onMounted, ref } from 'vue';
 
-import { AnalysisChartsTabs, AnalysisOverview, VbenLoading } from '@vben/common-ui';
+import {
+  AnalysisChartsTabs,
+  AnalysisOverview,
+  VbenLoading,
+} from '@vben/common-ui';
 import {
   SvgBellIcon,
   SvgCakeIcon,
