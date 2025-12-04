@@ -25,8 +25,16 @@ import AnalyticsVisits from './analytics-visits.vue';
 const loading = ref(false);
 onMounted(async () => {
   loading.value = true;
-  await trackPageApi();
-  await getDashboard();
+  try {
+    await trackPageApi();
+  } catch (error) {
+    console.warn(error);
+  }
+  try {
+    await getDashboard();
+  } catch (error) {
+    console.warn(error);
+  }
   loading.value = false;
 });
 

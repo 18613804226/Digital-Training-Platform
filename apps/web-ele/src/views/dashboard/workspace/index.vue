@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type {
-  VbenLoading,
   WorkbenchProjectItem,
   WorkbenchQuickNavItem,
   WorkbenchTodoItem,
@@ -10,7 +9,11 @@ import type {
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { WorkbenchHeader, WorkbenchProject } from '@vben/common-ui';
+import {
+  VbenLoading,
+  WorkbenchHeader,
+  WorkbenchProject,
+} from '@vben/common-ui';
 import { preferences } from '@vben/preferences';
 import { useUserStore } from '@vben/stores';
 import { openWindow } from '@vben/utils';
@@ -230,7 +233,7 @@ function getGreeting() {
   const hour = now.getHours(); // 从当前时间中提取小时部分
 
   const greeting =
-    hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good night';
+    hour < 12 ? 'Good morning' : (hour < 18 ? 'Good afternoon' : 'Good night');
 
   return greeting;
 }
@@ -253,12 +256,13 @@ async function fetchWeatherByLocation() {
     // 调你自己的后端，传 lat/lon
     const res = await getWeatherApi({ lat: latitude, lon: longitude });
     weather.value = res;
+    loading.value = false;
   } catch {
     console.warn('定位失败，回退到默认城市');
     const res = await getWeatherApi({ city: 'Vitebsk' });
     weather.value = res;
+    loading.value = false;
   }
-  loading.value = false;
 }
 const loading = ref(false);
 onMounted(async () => {
