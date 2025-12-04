@@ -9,6 +9,8 @@ export async function getDashboardApi() {
 export async function trackPageApi() {
   return requestClient.post<any>('/track/page-view');
 }
-export async function getWeatherApi(params: { city: string } | { lat: number; lon: number }) {
+export async function getWeatherApi(
+  params: { city: string } | { lat: number; lon: number },
+) {
   return requestClient.get<any>('/weather', { params });
 }

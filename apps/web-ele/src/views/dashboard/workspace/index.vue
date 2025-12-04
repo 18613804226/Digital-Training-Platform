@@ -1,28 +1,21 @@
 <script lang="ts" setup>
 import type {
+  VbenLoading,
   WorkbenchProjectItem,
   WorkbenchQuickNavItem,
   WorkbenchTodoItem,
   WorkbenchTrendItem,
-  VbenLoading
 } from '@vben/common-ui';
 
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import {
-  AnalysisChartCard,
-  WorkbenchHeader,
-  WorkbenchProject,
-  WorkbenchQuickNav,
-  WorkbenchTodo,
-  WorkbenchTrends,
-} from '@vben/common-ui';
+import { WorkbenchHeader, WorkbenchProject } from '@vben/common-ui';
 import { preferences } from '@vben/preferences';
 import { useUserStore } from '@vben/stores';
 import { openWindow } from '@vben/utils';
-import { getWeatherApi } from '#/api'
-import AnalyticsVisitsSource from '../analytics/analytics-visits-source.vue';
+
+import { getWeatherApi } from '#/api';
 
 const userStore = useUserStore();
 
@@ -236,56 +229,63 @@ function getGreeting() {
   const now = new Date(); // 获取当前日期和时间
   const hour = now.getHours(); // 从当前时间中提取小时部分
 
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good night';
+  const greeting =
+    hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good night';
 
   return greeting;
 }
-const weather: any = ref({})
+const weather: any = ref({});
 const iconUrl = computed(() => {
   return `https://openweathermap.org/img/wn/${weather.value.icon}@2x.png`;
 });
 async function fetchWeatherByLocation() {
   try {
-    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        timeout: 10000,
-      });
-    });
+    const position = await new Promise<GeolocationPosition>(
+      (resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          timeout: 10_000,
+        });
+      },
+    );
 
     const { latitude, longitude } = position.coords;
 
     // 调你自己的后端，传 lat/lon
     const res = await getWeatherApi({ lat: latitude, lon: longitude });
     weather.value = res;
-  } catch (err) {
+  } catch {
     console.warn('定位失败，回退到默认城市');
     const res = await getWeatherApi({ city: 'Vitebsk' });
     weather.value = res;
   }
-  loading.value = false
+  loading.value = false;
 }
-const loading = ref(false)
+const loading = ref(false);
 onMounted(async () => {
-  loading.value = true
-  fetchWeatherByLocation()
-})
+  loading.value = true;
+  fetchWeatherByLocation();
+});
 </script>
 
 <template>
   <div class="p-5">
     <VbenLoading v-if="loading" :spinning="loading" />
-    <WorkbenchHeader :avatar="userStore.userInfo?.avatar || preferences.app.defaultAvatar">
+    <WorkbenchHeader
+      :avatar="userStore.userInfo?.avatar || preferences.app.defaultAvatar"
+    >
       <template #title>
-        {{ getGreeting() }}, {{ userStore.userInfo?.realName }}, Let's get started on our workday!
+        {{ getGreeting() }}, {{ userStore.userInfo?.realName }}, Let's get
+        started on our workday!
       </template>
       <template #description>
         <span class="font-bold">{{ weather.city }}</span>
-        Today {{ weather.description }}，Current temperature：{{ weather.temp }}°C
+        Today {{ weather.description }}，Current temperature：{{
+          weather.temp
+        }}°C
         <div class="flex items-center">
           <div>
             <p>Feels Like：{{ weather.feels_like }}°C</p>
-            <p>Range：{{ weather.temp_min }}°C ~ {{ weather.temp_max }}°C
-            </p>
+            <p>Range：{{ weather.temp_min }}°C ~ {{ weather.temp_max }}°C</p>
           </div>
           <img :src="iconUrl" :alt="weather.description" />
         </div>

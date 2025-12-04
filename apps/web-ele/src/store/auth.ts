@@ -10,7 +10,13 @@ import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 import { ElNotification } from 'element-plus';
 import { defineStore } from 'pinia';
 
-import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi, guestLoginApi } from '#/api';
+import {
+  getAccessCodesApi,
+  getUserInfoApi,
+  guestLoginApi,
+  loginApi,
+  logoutApi,
+} from '#/api';
 import { $t } from '#/locales';
 
 export const useAuthStore = defineStore('auth', () => {
@@ -56,8 +62,8 @@ export const useAuthStore = defineStore('auth', () => {
           onSuccess
             ? await onSuccess?.()
             : await router.push(
-              userInfo.homePath || preferences.app.defaultHomePath,
-            );
+                userInfo.homePath || preferences.app.defaultHomePath,
+              );
         }
         // console.log(userInfo.homePath, preferences.app.defaultHomePath);
         if (userInfo?.realName) {
@@ -76,7 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
       userInfo,
     };
   }
-  async function guesAuthLogin(onSuccess?: () => Promise<void> | void,) {
+  async function guesAuthLogin(onSuccess?: () => Promise<void> | void) {
     const { accessToken } = await guestLoginApi();
     // 如果成功获取到 accessToken
     if (accessToken) {
@@ -97,8 +103,8 @@ export const useAuthStore = defineStore('auth', () => {
         onSuccess
           ? await onSuccess?.()
           : await router.push(
-            userInfo.homePath || preferences.app.defaultHomePath,
-          );
+              userInfo.homePath || preferences.app.defaultHomePath,
+            );
       }
       // console.log(userInfo.homePath, preferences.app.defaultHomePath);
       if (userInfo?.realName) {
@@ -129,8 +135,8 @@ export const useAuthStore = defineStore('auth', () => {
       path: LOGIN_PATH,
       query: redirect
         ? {
-          redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-        }
+            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+          }
         : {},
     });
   }
@@ -151,6 +157,7 @@ export const useAuthStore = defineStore('auth', () => {
     authLogin,
     fetchUserInfo,
     loginLoading,
-    logout, guesAuthLogin
+    logout,
+    guesAuthLogin,
   };
 });

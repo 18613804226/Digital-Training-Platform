@@ -59,7 +59,8 @@ const [Form, formApi] = useVbenForm({
           {
             label: 'STUDENT',
             value: 'STUDENT',
-          }, {
+          },
+          {
             label: 'TEACHER',
             value: 'TEACHER',
           },
