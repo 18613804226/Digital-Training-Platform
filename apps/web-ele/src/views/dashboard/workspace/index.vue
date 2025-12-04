@@ -4,9 +4,10 @@ import type {
   WorkbenchQuickNavItem,
   WorkbenchTodoItem,
   WorkbenchTrendItem,
+  VbenLoading
 } from '@vben/common-ui';
 
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import {
@@ -20,7 +21,7 @@ import {
 import { preferences } from '@vben/preferences';
 import { useUserStore } from '@vben/stores';
 import { openWindow } from '@vben/utils';
-
+import { getWeatherApi } from '#/api'
 import AnalyticsVisitsSource from '../analytics/analytics-visits-source.vue';
 
 const userStore = useUserStore();
@@ -231,36 +232,78 @@ function navTo(nav: WorkbenchProjectItem | WorkbenchQuickNavItem) {
     console.warn(`Unknown URL for navigation item: ${nav.title} -> ${nav.url}`);
   }
 }
+function getGreeting() {
+  const now = new Date(); // 获取当前日期和时间
+  const hour = now.getHours(); // 从当前时间中提取小时部分
+
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good night';
+
+  return greeting;
+}
+const weather: any = ref({})
+const iconUrl = computed(() => {
+  return `https://openweathermap.org/img/wn/${weather.value.icon}@2x.png`;
+});
+async function fetchWeatherByLocation() {
+  try {
+    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        timeout: 10000,
+      });
+    });
+
+    const { latitude, longitude } = position.coords;
+
+    // 调你自己的后端，传 lat/lon
+    const res = await getWeatherApi({ lat: latitude, lon: longitude });
+    weather.value = res;
+  } catch (err) {
+    console.warn('定位失败，回退到默认城市');
+    const res = await getWeatherApi({ city: 'Vitebsk' });
+    weather.value = res;
+  }
+  loading.value = false
+}
+const loading = ref(false)
+onMounted(async () => {
+  loading.value = true
+  fetchWeatherByLocation()
+})
 </script>
 
 <template>
   <div class="p-5">
-    <WorkbenchHeader
-      :avatar="userStore.userInfo?.avatar || preferences.app.defaultAvatar"
-    >
+    <VbenLoading v-if="loading" :spinning="loading" />
+    <WorkbenchHeader :avatar="userStore.userInfo?.avatar || preferences.app.defaultAvatar">
       <template #title>
-        早安, {{ userStore.userInfo?.realName }}, 开始您一天的工作吧！
+        {{ getGreeting() }}, {{ userStore.userInfo?.realName }}, Let's get started on our workday!
       </template>
-      <template #description> 今日晴，20℃ - 32℃！ </template>
+      <template #description>
+        <span class="font-bold">{{ weather.city }}</span>
+        Today {{ weather.description }}，Current temperature：{{ weather.temp }}°C
+        <div class="flex items-center">
+          <div>
+            <p>Feels Like：{{ weather.feels_like }}°C</p>
+            <p>Range：{{ weather.temp_min }}°C ~ {{ weather.temp_max }}°C
+            </p>
+          </div>
+          <img :src="iconUrl" :alt="weather.description" />
+        </div>
+      </template>
     </WorkbenchHeader>
 
     <div class="mt-5 flex flex-col lg:flex-row">
       <div class="mr-4 w-full lg:w-3/5">
         <WorkbenchProject :items="projectItems" title="项目" @click="navTo" />
-        <WorkbenchTrends :items="trendItems" class="mt-5" title="最新动态" />
+        <!-- <WorkbenchTrends :items="trendItems" class="mt-5" title="最新动态" /> -->
       </div>
-      <div class="w-full lg:w-2/5">
-        <WorkbenchQuickNav
-          :items="quickNavItems"
-          class="mt-5 lg:mt-0"
-          title="快捷导航"
-          @click="navTo"
-        />
+      <!-- <div class="w-full lg:w-2/5">
+        <WorkbenchQuickNav :items="quickNavItems" class="mt-5 lg:mt-0" title="快捷导航" @click="navTo" />
         <WorkbenchTodo :items="todoItems" class="mt-5" title="待办事项" />
         <AnalysisChartCard class="mt-5" title="访问来源">
           <AnalyticsVisitsSource />
         </AnalysisChartCard>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

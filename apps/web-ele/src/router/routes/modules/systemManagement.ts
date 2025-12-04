@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: $t('systemManagement.userManagement'),
           keepAlive: true,
-          authority: ['ADMIN'],
+          authority: ['ADMIN', 'GUEST'],
         },
         name: 'userManagement',
         path: '/systemManagement/userManagement',

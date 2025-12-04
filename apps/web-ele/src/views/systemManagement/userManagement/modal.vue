@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useVbenForm, useVbenModal, z } from '@vben/common-ui';
 
-import { registerApi } from '#/api';
+import { createUserApi } from '#/api';
 
 defineOptions({
   name: 'ExtraModal',
@@ -53,16 +53,19 @@ const [Form, formApi] = useVbenForm({
         filterOption: true,
         options: [
           {
-            label: 'ADMIN',
-            value: 'ADMIN',
+            label: 'USER',
+            value: 'USER',
           },
           {
+            label: 'STUDENT',
+            value: 'STUDENT',
+          }, {
             label: 'TEACHER',
             value: 'TEACHER',
           },
           {
-            label: 'USER',
-            value: 'USER',
+            label: 'ADMIN',
+            value: 'ADMIN',
           },
         ],
         placeholder: 'Please Chose',
@@ -111,10 +114,7 @@ const [Form, formApi] = useVbenForm({
 //   console.log(values)
 // }
 async function onConfirm() {
-  // console.log('1111111111');
-  // formApi.submitForm(values)
-  // console.log(formApi.form)
-  await registerApi(formApi.form.values);
+  await createUserApi(formApi.form.values);
   modalApi.close();
   notifyParent();
 }

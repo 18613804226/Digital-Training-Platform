@@ -64,5 +64,6 @@
   "verifyRequiredTip": "验证通过",
   "weChat": "微信",
   "wechatLogin": "微信登录",
-  "welcomeBack": "欢迎回来"
+  "welcomeBack": "欢迎回来",
+  "guestLogin": "游客登录"
 }

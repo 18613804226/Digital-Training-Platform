@@ -10,7 +10,7 @@ import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 import { ElNotification } from 'element-plus';
 import { defineStore } from 'pinia';
 
-import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi } from '#/api';
+import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi, guestLoginApi } from '#/api';
 import { $t } from '#/locales';
 
 export const useAuthStore = defineStore('auth', () => {
@@ -56,8 +56,8 @@ export const useAuthStore = defineStore('auth', () => {
           onSuccess
             ? await onSuccess?.()
             : await router.push(
-                userInfo.homePath || preferences.app.defaultHomePath,
-              );
+              userInfo.homePath || preferences.app.defaultHomePath,
+            );
         }
         // console.log(userInfo.homePath, preferences.app.defaultHomePath);
         if (userInfo?.realName) {
@@ -76,7 +76,40 @@ export const useAuthStore = defineStore('auth', () => {
       userInfo,
     };
   }
+  async function guesAuthLogin(onSuccess?: () => Promise<void> | void,) {
+    const { accessToken } = await guestLoginApi();
+    // 如果成功获取到 accessToken
+    if (accessToken) {
+      // 将 accessToken 存储到 accessStore 中
+      accessStore.setAccessToken(accessToken);
+      // 获取用户信息并存储到 accessStore 中
+      const [fetchUserInfoResult, accessCodes] = await Promise.all([
+        fetchUserInfo(),
+        getAccessCodesApi(),
+      ]);
+      const userInfo = fetchUserInfoResult;
+      userStore.setUserInfo(userInfo);
+      accessStore.setAccessCodes(accessCodes);
 
+      if (accessStore.loginExpired) {
+        accessStore.setLoginExpired(false);
+      } else {
+        onSuccess
+          ? await onSuccess?.()
+          : await router.push(
+            userInfo.homePath || preferences.app.defaultHomePath,
+          );
+      }
+      // console.log(userInfo.homePath, preferences.app.defaultHomePath);
+      if (userInfo?.realName) {
+        ElNotification({
+          message: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
+          title: $t('authentication.loginSuccess'),
+          type: 'success',
+        });
+      }
+    }
+  }
   async function logout(redirect: boolean = true) {
     try {
       await logoutApi();
@@ -96,8 +129,8 @@ export const useAuthStore = defineStore('auth', () => {
       path: LOGIN_PATH,
       query: redirect
         ? {
-            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-          }
+          redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+        }
         : {},
     });
   }
@@ -118,6 +151,6 @@ export const useAuthStore = defineStore('auth', () => {
     authLogin,
     fetchUserInfo,
     loginLoading,
-    logout,
+    logout, guesAuthLogin
   };
 });

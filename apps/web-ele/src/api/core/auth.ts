@@ -22,14 +22,14 @@ export namespace AuthApi {
  * 登录
  */
 export async function loginApi(data: AuthApi.LoginParams) {
-  return requestClient.post<AuthApi.LoginResult>('/auth/login', data);
+  return requestClient.post < AuthApi.LoginResult > ('/auth/login', data);
 }
 
 /**
  * 刷新accessToken
  */
 export async function refreshTokenApi() {
-  return baseRequestClient.post<AuthApi.RefreshTokenResult>('/auth/refresh', {
+  return baseRequestClient.post < AuthApi.RefreshTokenResult > ('/auth/refresh', {
     withCredentials: true,
   });
 }
@@ -47,11 +47,24 @@ export async function logoutApi() {
  * 获取用户权限码
  */
 export async function getAccessCodesApi() {
-  return requestClient.get<string[]>('/auth/codes');
+  return requestClient.get < string[] > ('/auth/codes');
 }
 /**
  * 用户注册
  */
 export async function registerApi(data: AuthApi.LoginParams) {
-  return requestClient.post<AuthApi.LoginResult>('/auth/register', data);
+  return requestClient.post < AuthApi.LoginResult > ('/auth/register', data);
+}
+/**
+ * 游客登录
+ */
+export async function guestLoginApi() {
+  return requestClient.post < AuthApi.LoginResult > ('/auth/guest-login', );
+}
+// create
+/**
+ * 管理员添加
+ */
+export async function createUserApi(data: AuthApi.LoginParams) {
+  return requestClient.post < AuthApi.LoginResult > ('/auth/create', data);
 }

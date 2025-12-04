@@ -9,7 +9,7 @@ const routes: RouteRecordRaw[] = [
       keepAlive: true,
       order: 1000,
       title: $t('courseManagement.title'),
-      authority: ['ADMIN', 'TEACHER'],
+      authority: ['ADMIN', 'TEACHER', 'GUEST'],
     },
     name: 'courseManagement',
     path: '/courseManagement',
@@ -18,7 +18,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: $t('courseManagement.courseAdmin'),
           keepAlive: true,
-          authority: ['ADMIN', 'TEACHER'],
+          authority: ['ADMIN', 'TEACHER', 'GUEST'],
         },
         name: 'courseAdmin',
         path: '/courseManagement/courseAdmin',
