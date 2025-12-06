@@ -12,7 +12,10 @@ interface AuthenticationProps {
    * @zh_CN 是否处于加载处理状态
    */
   loading?: boolean;
-
+  /**
+   * @zh_CN 游客按钮加载处理状态
+   */
+  guestLoading?: boolean;
   /**
    * @zh_CN 二维码登录路径
    */

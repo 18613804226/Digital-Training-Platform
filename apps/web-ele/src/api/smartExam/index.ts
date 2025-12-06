@@ -39,3 +39,11 @@ export async function publishExamApi(data: any) {
 export async function getExamApi() {
   return requestClient.get<any>('/ai-exam/current');
 }
+// judge
+export async function judgeExamApi(data: any) {
+  return requestClient.post<any>('/ai-exam/judge', data);
+}
+// submit
+export async function submitExamApi(data: any) {
+  return requestClient.post<any>('/ai-exam/submit', data);
+}

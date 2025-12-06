@@ -14,3 +14,6 @@ export async function getWeatherApi(
 ) {
   return requestClient.get<any>('/weather', { params });
 }
+export async function activitylogLatstApi() {
+  return requestClient.get<any>('/activity-log/latest');
+}

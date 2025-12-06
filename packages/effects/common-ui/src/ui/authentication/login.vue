@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
   forgetPasswordPath: '/auth/forget-password',
   formSchema: () => [],
   loading: true,
+  guestLoading: true,
   qrCodeLoginPath: '/auth/qrcode-login',
   registerPath: '/auth/register',
   showCodeLogin: false,
@@ -148,7 +149,12 @@ defineExpose({
     </VbenButton>
 
     <div class="mb-2 mt-4 flex items-center justify-between">
-      <VbenButton class="w-full" variant="outline" @click="guestHandleSubmit">
+      <VbenButton
+        class="w-full"
+        variant="outline"
+        :loading="guestLoading"
+        @click="guestHandleSubmit"
+      >
         {{ $t('authentication.guestLogin') }}
       </VbenButton>
     </div>

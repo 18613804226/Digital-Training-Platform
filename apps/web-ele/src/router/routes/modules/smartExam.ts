@@ -7,7 +7,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       icon: 'ic:baseline-margin',
       keepAlive: true,
-      order: 1000,
+      order: 4,
       title: $t('smartExam.title'),
     },
     name: 'smartExam',

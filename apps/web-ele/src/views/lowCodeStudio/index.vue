@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 
 import { confirm, Page, VbenButton } from '@vben/common-ui';
 
-import { createForm } from '@formily/core';
+import { createForm, onFieldValueChange } from '@formily/core';
 import {
   ArrayItems,
   FormItem,
@@ -25,12 +25,26 @@ import {
 
 import {
   deleteExamTemplateApi,
+  getCourseApi,
   getExamTemplateApi,
   postExamTemplateApi,
   putExamTemplateApi,
 } from '#/api';
 
-const form = createForm();
+const form = createForm({
+  effects(form) {
+    onFieldValueChange('courseId', (field) => {
+      const selectedCourse: any = courseOptions.value.find(
+        (item: any) => item.value === field.value,
+      );
+      if (selectedCourse) {
+        form.setValues({
+          name: selectedCourse.label, // 👈 自动填充模板名称
+        });
+      }
+    });
+  },
+});
 const { SchemaField } = createSchemaField({
   components: {
     FormItem,
@@ -111,116 +125,141 @@ const addQuestionTypeMobile = (item: any) => {
   }
   showQuestionDrawer.value = false;
 };
+// ------------
+const schema = ref({});
+const courseOptions = ref([]);
+async function getCourseList() {
+  const res = await getCourseApi({});
+  courseOptions.value = res.list.map((item: { id: any; title: any }) => ({
+    label: item.title,
+    value: item.id,
+  }));
 
-const schema = {
-  type: 'object',
-  properties: {
-    name: {
-      type: 'string',
-      title: 'Template Name',
-      required: true,
-      'x-decorator': 'FormItem',
-      'x-component': 'Input',
-    },
-    duration: {
-      type: 'number',
-      title: 'Exam Duration (minutes)',
-      default: 60,
-      'x-decorator': 'FormItem',
-      'x-component': 'InputNumber',
-      'x-component-props': { min: 1, max: 360, step: 5 },
-    },
-    sections: {
-      type: 'array',
-      'x-component': 'ArrayItems',
-      items: {
-        type: 'object',
-        'x-component': 'div',
+  schema.value = {
+    type: 'object',
+    properties: {
+      courseId: {
+        type: 'string',
+        title: 'Courses',
+        required: true,
+        'x-decorator': 'FormItem',
+        'x-component': 'Select',
         'x-component-props': {
-          style:
-            'display: flex; align-items: center; gap: 12px; padding: 8px;margin:8px;border:1px dashed #ccc;border-radius:7px',
+          options: courseOptions.value, // 👈 你需要准备这个数组
+          placeholder: 'Please select a course',
+          filterable: true, // ← 改这里
+          // filterOption: (input: string, option: { label: string; }) =>
+          //   option.label.toLowerCase().includes(input.toLowerCase()),
         },
-        properties: {
-          questionType: {
-            type: 'string',
-            title: 'Question Type',
-            'x-decorator': 'FormItem',
-            'x-component': 'Input',
-            'x-component-props': {
-              options: questionTypeOptions,
-              disabled: true,
-              size: 'small',
-            },
-            'x-decorator-props': {
-              feedbackLayout: 'none',
-              labelStyle: { fontSize: '13px' },
-            },
+      },
+      name: {
+        type: 'string',
+        title: 'Template Name',
+        required: true,
+        'x-decorator': 'FormItem',
+        'x-component': 'Input',
+      },
+      duration: {
+        type: 'number',
+        title: 'Exam Duration (minutes)',
+        default: 60,
+        'x-decorator': 'FormItem',
+        'x-component': 'InputNumber',
+        'x-component-props': { min: 1, max: 360, step: 5 },
+      },
+      sections: {
+        type: 'array',
+        'x-component': 'ArrayItems',
+        items: {
+          type: 'object',
+          'x-component': 'div',
+          'x-component-props': {
+            style:
+              'display: flex; align-items: center; gap: 12px; padding: 8px;margin:4px 8px;border:1px dashed #ccc;border-radius:7px',
           },
-          count: {
-            type: 'number',
-            title: 'Count',
-            default: 5,
-            'x-decorator': 'FormItem',
-            'x-component': 'InputNumber',
-            'x-component-props': {
-              min: 1,
-              max: 100,
-              size: 'small',
+          properties: {
+            questionType: {
+              type: 'string',
+              title: 'Question Type',
+              'x-decorator': 'FormItem',
+              'x-component': 'Input',
+              'x-component-props': {
+                options: questionTypeOptions,
+                disabled: true,
+                size: 'small',
+              },
+              'x-decorator-props': {
+                feedbackLayout: 'none',
+                labelStyle: { fontSize: '13px' },
+              },
             },
-            'x-decorator-props': {
-              feedbackLayout: 'none',
-              labelStyle: { fontSize: '14px' }, // fixed typo: "with" → "width"
+            count: {
+              type: 'number',
+              title: 'Count',
+              default: 5,
+              'x-decorator': 'FormItem',
+              'x-component': 'InputNumber',
+              'x-component-props': {
+                min: 1,
+                max: 100,
+                size: 'small',
+              },
+              'x-decorator-props': {
+                feedbackLayout: 'none',
+                labelStyle: { fontSize: '14px' }, // fixed typo: "with" → "width"
+              },
             },
-          },
-          score: {
-            type: 'number',
-            title: 'Score',
-            default: 2,
-            'x-decorator': 'FormItem',
-            'x-component': 'InputNumber',
-            'x-component-props': {
-              min: 1,
-              max: 100,
-              size: 'small',
+            score: {
+              type: 'number',
+              title: 'Score',
+              default: 2,
+              'x-decorator': 'FormItem',
+              'x-component': 'InputNumber',
+              'x-component-props': {
+                min: 1,
+                max: 100,
+                size: 'small',
+              },
+              'x-decorator-props': {
+                feedbackLayout: 'none',
+                labelStyle: { fontSize: '14px' },
+              },
             },
-            'x-decorator-props': {
-              feedbackLayout: 'none',
-              labelStyle: { fontSize: '14px' },
+            sort: {
+              type: 'void',
+              'x-component': 'ArrayItems.SortHandle',
+              'x-component-props': {
+                style: 'cursor: move; color: #9ca3af;',
+              },
             },
-          },
-          sort: {
-            type: 'void',
-            'x-component': 'ArrayItems.SortHandle',
-            'x-component-props': {
-              style: 'cursor: move; color: #9ca3af;',
-            },
-          },
-          remove: {
-            type: 'void',
-            'x-component': 'Button',
-            'x-component-props': {
-              innerHTML: 'Delete',
-              style: `
+            remove: {
+              type: 'void',
+              'x-component': 'Button',
+              'x-component-props': {
+                innerHTML: 'Delete',
+                style: `
                 color: #ef4444;
                 cursor: pointer;
                 line-height: 20px;
                 text-align: center;
                 font-size: 14px;
               `,
-              onClick: `{{() => {
+                onClick: `{{() => {
                 const currentId = $self.parent.value.id;
                 if (!currentId) return;
                 const sections = $form.query('sections').value() || [];
                 const newSections = sections.filter(item => item.id !== currentId);
                 $form.setValues({ sections: newSections });
               }}}`,
+              },
             },
           },
         },
       },
     },
-  },
-};
+  };
+}
+// --------
 
 const getTotalCount = (template: any) =>
   template.sections?.reduce(
@@ -382,9 +421,10 @@ async function getExamTemplateAll() {
   templates.value = res;
 }
 
-onMounted(() => {
-  createNew();
-  getExamTemplateAll();
+onMounted(async () => {
+  await getCourseList();
+  await createNew();
+  await getExamTemplateAll();
 });
 </script>
 

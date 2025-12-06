@@ -5,9 +5,9 @@ import { $t } from '#/locales';
 const routes: RouteRecordRaw[] = [
   {
     meta: {
+      order: 1,
       icon: 'ic:baseline-book',
       keepAlive: true,
-      order: 1000,
       title: $t('courseManagement.title'),
       authority: ['ADMIN', 'TEACHER', 'GUEST'],
     },

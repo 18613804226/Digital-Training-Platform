@@ -7,7 +7,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       icon: 'ic:baseline-menu-book',
       keepAlive: true,
-      order: 1000,
+      order: 2,
       title: $t('onlineLearning.title'),
     },
     name: 'onlineLearning',

@@ -1,12 +1,16 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { Page, VbenButton } from '@vben/common-ui';
 
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { aiGenerateQuestionsApi, publishExamApi } from '#/api';
+import {
+  aiGenerateQuestionsApi,
+  getExamTemplateApi,
+  publishExamApi,
+} from '#/api';
 // 定义题目类型
 interface Question {
   id: number;
@@ -75,6 +79,7 @@ async function publishing() {
     ElMessage.success(res.message);
   }
 }
+const templateOpton = ref([]);
 const [QueryForm, formApi] = useVbenForm({
   showDefaultActions: false,
   showCollapseButton: false,
@@ -98,29 +103,12 @@ const [QueryForm, formApi] = useVbenForm({
       componentProps: {
         allowClear: true,
         filterOption: true,
-        options: [
-          {
-            label: 'Safety',
-            value: 'Safety',
-          },
-          {
-            label: 'technology',
-            value: 'technology',
-          },
-          {
-            label: 'manage',
-            value: 'manage',
-          },
-          {
-            label: 'Compliance',
-            value: 'Compliance',
-          },
-        ],
+        options: templateOpton,
         placeholder: 'Please Chose',
         showSearch: true,
       },
-      fieldName: 'subject',
-      label: 'Subject',
+      fieldName: 'templateId',
+      label: 'Template',
       rules: 'required',
     },
     {
@@ -149,57 +137,65 @@ const [QueryForm, formApi] = useVbenForm({
       label: 'Difficulty',
       rules: 'required',
     },
-    {
-      component: 'Select',
-      componentProps: {
-        allowClear: true,
-        filterOption: true,
-        options: [
-          {
-            label: 'Single choice questions',
-            value: 'Single choice questions',
-          },
-          {
-            label: 'Multiple choice questions',
-            value: 'Multiple choice questions',
-          },
-          {
-            label: 'Fill in the blanks',
-            value: 'Fill in the blanks',
-          },
-          {
-            label: 'Short answer questions',
-            value: 'Short answer questions',
-          },
-        ],
-        placeholder: 'Please Chose',
-        showSearch: true,
-      },
-      fieldName: 'questionType',
-      label: 'Type',
-      rules: 'required',
-    },
-    {
-      // 组件需要在 #/adapter.ts内注册，并加上类型
-      component: 'InputNumber',
-      // 对应组件的参数
-      componentProps: {
-        placeholder: 'Please enter the quantity.',
-        min: 1, // 最小值
-        max: 30, // 最大值
-        step: 1, // 步长（可选
-      },
-      // 字段名
-      fieldName: 'count',
-      // 界面显示的label
-      label: 'count',
-      rules: 'required',
-    },
+    // {
+    //   component: 'Select',
+    //   componentProps: {
+    //     allowClear: true,
+    //     filterOption: true,
+    //     options: [
+    //       {
+    //         label: 'Single choice questions',
+    //         value: 'Single choice questions',
+    //       },
+    //       {
+    //         label: 'Multiple choice questions',
+    //         value: 'Multiple choice questions',
+    //       },
+    //       {
+    //         label: 'Fill in the blanks',
+    //         value: 'Fill in the blanks',
+    //       },
+    //       {
+    //         label: 'Short answer questions',
+    //         value: 'Short answer questions',
+    //       },
+    //     ],
+    //     placeholder: 'Please Chose',
+    //     showSearch: true,
+    //   },
+    //   fieldName: 'questionType',
+    //   label: 'Type',
+    //   rules: 'required',
+    // },
+    // {
+    //   // 组件需要在 #/adapter.ts内注册，并加上类型
+    //   component: 'InputNumber',
+    //   // 对应组件的参数
+    //   componentProps: {
+    //     placeholder: 'Please enter the quantity.',
+    //     min: 1, // 最小值
+    //     max: 30, // 最大值
+    //     step: 1, // 步长（可选
+    //   },
+    //   // 字段名
+    //   fieldName: 'count',
+    //   // 界面显示的label
+    //   label: 'count',
+    //   rules: 'required',
+    // },
   ],
   // submitButtonOptions: {
   //   content: '生成题目',
   // },
-  wrapperClass: 'grid-cols-1 md:grid-cols-4',
+  wrapperClass: 'grid-cols-1 md:grid-cols-3',
+});
+
+onMounted(async () => {
+  const res = await getExamTemplateApi();
+  templateOpton.value = res.map((e: { id: any; name: any }) => ({
+    value: e.id,
+    label: e.name,
+  }));
 });
 </script>
 
@@ -276,9 +272,37 @@ const [QueryForm, formApi] = useVbenForm({
               </div>
             </div>
             <!-- 答案与解析 -->
-            <p class="mt-2 text-sm text-red-600">
+            <!-- <p class="mt-2 text-sm text-red-600">
               <strong>Answer：</strong>{{ q.answer }}
             </p>
+            <p class="mt-1 text-sm text-gray-700">
+              <em>Analysis：</em>{{ q.explanation }}
+            </p> -->
+            <!-- 答案与解析 -->
+            <div class="mt-2 text-sm text-red-600">
+              <strong>Answer：</strong>
+              <!-- 单选题 / 简答题 -->
+              <span v-if="typeof q.answer === 'string'">{{ q.answer }}</span>
+
+              <!-- 多选题 -->
+              <span v-else-if="Array.isArray(q.answer)">{{
+                q.answer.join(', ')
+              }}</span>
+
+              <!-- 判断题 -->
+              <span v-else-if="typeof q.answer === 'boolean'">{{
+                q.answer ? 'True' : 'False'
+              }}</span>
+
+              <!-- 编程题 -->
+              <div v-else-if="typeof q.answer === 'object'" class="mt-2">
+                <!-- <p>Language：{{ q.answer.language }}</p> -->
+                <pre class="overflow-x-auto rounded bg-gray-200 p-2 text-xs">{{
+                  q.answer.code
+                }}</pre>
+              </div>
+            </div>
+
             <p class="mt-1 text-sm text-gray-700">
               <em>Analysis：</em>{{ q.explanation }}
             </p>

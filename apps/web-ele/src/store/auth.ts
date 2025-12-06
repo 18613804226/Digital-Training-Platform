@@ -25,6 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
   const router = useRouter();
 
   const loginLoading = ref(false);
+  const guestLoginLoading = ref(false);
 
   /**
    * 异步处理登录操作
@@ -83,37 +84,42 @@ export const useAuthStore = defineStore('auth', () => {
     };
   }
   async function guesAuthLogin(onSuccess?: () => Promise<void> | void) {
-    const { accessToken } = await guestLoginApi();
-    // 如果成功获取到 accessToken
-    if (accessToken) {
-      // 将 accessToken 存储到 accessStore 中
-      accessStore.setAccessToken(accessToken);
-      // 获取用户信息并存储到 accessStore 中
-      const [fetchUserInfoResult, accessCodes] = await Promise.all([
-        fetchUserInfo(),
-        getAccessCodesApi(),
-      ]);
-      const userInfo = fetchUserInfoResult;
-      userStore.setUserInfo(userInfo);
-      accessStore.setAccessCodes(accessCodes);
+    try {
+      guestLoginLoading.value = true;
+      const { accessToken } = await guestLoginApi();
+      // 如果成功获取到 accessToken
+      if (accessToken) {
+        // 将 accessToken 存储到 accessStore 中
+        accessStore.setAccessToken(accessToken);
+        // 获取用户信息并存储到 accessStore 中
+        const [fetchUserInfoResult, accessCodes] = await Promise.all([
+          fetchUserInfo(),
+          getAccessCodesApi(),
+        ]);
+        const userInfo = fetchUserInfoResult;
+        userStore.setUserInfo(userInfo);
+        accessStore.setAccessCodes(accessCodes);
 
-      if (accessStore.loginExpired) {
-        accessStore.setLoginExpired(false);
-      } else {
-        onSuccess
-          ? await onSuccess?.()
-          : await router.push(
-              userInfo.homePath || preferences.app.defaultHomePath,
-            );
+        if (accessStore.loginExpired) {
+          accessStore.setLoginExpired(false);
+        } else {
+          onSuccess
+            ? await onSuccess?.()
+            : await router.push(
+                userInfo.homePath || preferences.app.defaultHomePath,
+              );
+        }
+        // console.log(userInfo.homePath, preferences.app.defaultHomePath);
+        if (userInfo?.realName) {
+          ElNotification({
+            message: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
+            title: $t('authentication.loginSuccess'),
+            type: 'success',
+          });
+        }
       }
-      // console.log(userInfo.homePath, preferences.app.defaultHomePath);
-      if (userInfo?.realName) {
-        ElNotification({
-          message: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
-          title: $t('authentication.loginSuccess'),
-          type: 'success',
-        });
-      }
+    } finally {
+      guestLoginLoading.value = false;
     }
   }
   async function logout(redirect: boolean = true) {
@@ -157,6 +163,7 @@ export const useAuthStore = defineStore('auth', () => {
     authLogin,
     fetchUserInfo,
     loginLoading,
+    guestLoginLoading,
     logout,
     guesAuthLogin,
   };

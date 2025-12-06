@@ -6,8 +6,8 @@ const routes: RouteRecordRaw[] = [
   {
     meta: {
       icon: 'ic:baseline-card-membership',
-      keepAlive: true,
-      order: 1000,
+      keepAlive: false,
+      order: 5,
       title: $t('myCertificates.title'),
     },
     name: 'myCertificates',
