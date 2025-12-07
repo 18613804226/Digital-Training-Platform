@@ -1,5 +1,7 @@
 {
   "title": "在线学习",
   "videoPlayer": "视频播放",
-  "3DvirtualClassroom": "3D虚拟教室"
+  "3DvirtualClassroom": "3D虚拟教室",
+  "courseDetail": "课程详情",
+  "lessonPlayer": "课时学习"
 }

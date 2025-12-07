@@ -2,7 +2,7 @@
 import type { VbenFormProps } from '#/adapter/form';
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { prompt, useVbenModal, VbenButton } from '@vben/common-ui';
 import { ElMessage } from 'element-plus';
 
@@ -12,6 +12,7 @@ import { deleteCourseApi, getCourseApi } from '#/api';
 
 // Modal component (for create/edit)
 import ExtraModal from './modal.vue';
+import { router } from '#/router';
 
 const [Modal, modalApi] = useVbenModal({
   connectedComponent: ExtraModal,
@@ -102,7 +103,6 @@ const gridOptions: VxeGridProps<CourseRow> = {
     {
       field: 'action',
       title: 'Actions',
-      width: 100,
       fixed: 'right',
       slots: { default: 'action' },
     },
@@ -167,7 +167,12 @@ async function getCourseListData(
     },
   };
 }
+const modalData = ref()
 
+function handleEdit(params: any) {
+  modalData.value = params
+  modalApi.open();
+}
 // Delete confirmation
 function handleDelete(row: any) {
   // if (currentUserRole.value !== 'ADMIN') {
@@ -190,6 +195,7 @@ function handleDelete(row: any) {
 
 // Open create modal
 function handleAdd() {
+  modalData.value = undefined
   modalApi.open();
 }
 
@@ -207,7 +213,7 @@ onMounted(() => {
 <template>
   <div class="vp-raw w-full p-4">
     <!-- Create/Edit Modal -->
-    <Modal @confirm="gridApi.query()" />
+    <Modal @confirm="gridApi.query()" :modalData="modalData" />
 
     <!-- Grid Body -->
     <Grid>
@@ -220,6 +226,13 @@ onMounted(() => {
 
       <!-- Action column slot -->
       <template #action="{ row }">
+        <VbenButton class="" variant="link" size="sm"
+          @click="router.push({ name: 'courseDetail', params: { courseId: row.id } })">
+          Details
+        </VbenButton>
+        <VbenButton class="" variant="link" size="sm" @click="handleEdit(row)">
+          Edit
+        </VbenButton>
         <VbenButton class="text-red-500 hover:text-red-700" variant="link" size="sm" @click="handleDelete(row)">
           Delete
         </VbenButton>

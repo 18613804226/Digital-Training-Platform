@@ -232,7 +232,7 @@ const submitAllAnswers = async () => {
     return;
   }
   try {
-    ElMessage.warning('AI is judging the problem, please wait a moment...');
+    ElMessage.info('AI is judging the problem, please wait a moment...');
     submitLoading.value = true;
     // 📤 提交答案
     const payload = {
@@ -248,10 +248,10 @@ const submitAllAnswers = async () => {
       submitted.value = true;
       score.value = res.totalScore;
       questions.value = [];
+      stopCamera(); // 👈 统一调用！
+      clearInterval(timer.value);
     }
   } finally {
-    clearInterval(timer.value);
-    stopCamera(); // 👈 统一调用！
     submitLoading.value = false;
   }
 };
@@ -293,17 +293,9 @@ const handleMultipleChange = (
   <div class="relative flex h-full flex-col p-4">
     <VbenLoading v-if="loading" :spinning="loading" />
     <!-- 后台检测用（可继续隐藏） -->
-    <video
-      ref="detectionVideoRef"
-      class="absolute left-0 top-0 h-0 w-0 opacity-0"
-      muted
-      playsinline
-    ></video>
+    <video ref="detectionVideoRef" class="absolute left-0 top-0 h-0 w-0 opacity-0" muted playsinline></video>
 
-    <Page
-      class="card-box flex-1 overflow-hidden rounded-lg"
-      title="Exam - Answer Questions"
-    >
+    <Page class="card-box flex-1 overflow-hidden rounded-lg" title="Exam - Answer Questions">
       <!-- <template #description>
         <div>
           正式考试（防作弊模式已开启）
@@ -322,17 +314,13 @@ const handleMultipleChange = (
         <div class="space-y-4">
           <div v-if="examStatus === true">
             <!-- 考试信息 -->
-            <div
-              class="rounded border border-gray-700 bg-gray-800 p-3 text-white"
-            >
+            <div class="rounded border border-gray-700 bg-gray-800 p-3 text-white">
               <div class="text-sm font-medium">
                 Formal exam (anti-cheating mode is now enabled)
               </div>
             </div>
 
-            <div
-              class="flex flex-row justify-between rounded border bg-white p-4 shadow-sm"
-            >
+            <div class="flex flex-row justify-between rounded border bg-white p-4 shadow-sm">
               <div>
                 <div class="mb-2 text-sm text-gray-700">
                   <strong>Exam Name：</strong>{{ examConfig.title }}
@@ -354,19 +342,10 @@ const handleMultipleChange = (
 
               <!-- 前台预览用（可见） -->
               <div v-if="showPreview" class="mt-0 flex justify-center">
-                <div
-                  class="relative inline-block overflow-hidden rounded-lg border border-gray-300 shadow-sm"
-                >
-                  <video
-                    ref="previewVideoRef"
-                    autoplay
-                    muted
-                    playsinline
-                    class="h-28 w-44 object-cover"
-                  ></video>
+                <div class="relative inline-block overflow-hidden rounded-lg border border-gray-300 shadow-sm">
+                  <video ref="previewVideoRef" autoplay muted playsinline class="h-28 w-44 object-cover"></video>
                   <div
-                    class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 px-2 py-1 text-center text-xs text-white"
-                  >
+                    class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 px-2 py-1 text-center text-xs text-white">
                     {{
                       isFaceDetected
                         ? '✅ Face detected'
@@ -382,140 +361,80 @@ const handleMultipleChange = (
           <div v-if="examStatus === true" class="rounded border bg-gray-50 p-3">
             <div class="flex items-center justify-between text-sm">
               <div class="flex items-center">
-                <span class="mr-2"
-                  >Facial recognition (hold for two seconds)：</span
-                >
-                <span v-if="faceVerified" class="text-green-600"
-                  >✅ Verified</span
-                >
+                <span class="mr-2">Facial recognition (hold for two seconds)：</span>
+                <span v-if="faceVerified" class="text-green-600">✅ Verified</span>
                 <span v-else class="text-red-600">❌ Unverified</span>
               </div>
               <div class="flex items-center">
                 <span class="mr-2">Disable window switching：</span>
-                <span v-if="windowLocked" class="text-red-600"
-                  >⚠️ Prohibit</span
-                >
+                <span v-if="windowLocked" class="text-red-600">⚠️ Prohibit</span>
                 <span v-else class="text-orange-600">❌ Left</span>
               </div>
             </div>
           </div>
           <!-- 违规提示条 -->
-          <div
-            v-if="!windowLocked && examStatus"
-            class="mt-2 rounded border border-red-300 bg-red-50 p-2"
-          >
+          <div v-if="!windowLocked && examStatus" class="mt-2 rounded border border-red-300 bg-red-50 p-2">
             <div class="text-center text-sm font-medium text-red-700">
               ⚠️ It has been detected that you left the exam page; this has been
               recorded by the system.
             </div>
           </div>
           <!-- 题目 -->
-          <div
-            v-for="(q, index) in questions"
-            :key="index"
-            class="mt-6 rounded border p-4 shadow-sm"
-          >
+          <div v-for="(q, index) in questions" :key="index" class="mt-6 rounded border p-4 shadow-sm">
             <p class="mb-4 text-base font-medium">
               {{ index + 1 }}. {{ q.question }}
             </p>
 
             <!-- 单选题 -->
             <div v-if="q.questionType === 'single'" class="ml-2 space-y-2">
-              <label
-                v-for="(option, idx) in q.options"
-                :key="idx"
-                class="flex cursor-pointer items-start rounded p-2"
-              >
-                <input
-                  type="radio"
-                  :value="option"
-                  v-model="selectedAnswers[index]"
-                  :disabled="examStatus === false"
-                  class="mr-2 mt-1 h-4 w-4 text-blue-600"
-                />
+              <label v-for="(option, idx) in q.options" :key="idx" class="flex cursor-pointer items-start rounded p-2">
+                <input type="radio" :value="option" v-model="selectedAnswers[index]" :disabled="examStatus === false"
+                  class="mr-2 mt-1 h-4 w-4 text-blue-600" />
                 <span>{{ option }}</span>
               </label>
             </div>
 
             <!-- 多选题 -->
-            <div
-              v-else-if="q.questionType === 'multiple'"
-              class="ml-2 space-y-2"
-            >
-              <label
-                v-for="(option, idx) in q.options"
-                :key="idx"
-                class="flex cursor-pointer items-start rounded p-2"
-              >
-                <input
-                  type="checkbox"
-                  :value="option"
-                  :checked="
-                    Array.isArray(selectedAnswers[index]) &&
-                    selectedAnswers[index].includes(option)
-                  "
-                  @change="
+            <div v-else-if="q.questionType === 'multiple'" class="ml-2 space-y-2">
+              <label v-for="(option, idx) in q.options" :key="idx" class="flex cursor-pointer items-start rounded p-2">
+                <input type="checkbox" :value="option" :checked="Array.isArray(selectedAnswers[index]) &&
+                  selectedAnswers[index].includes(option)
+                  " @change="
                     (e) =>
                       handleMultipleChange(
                         index,
                         option,
                         (e.target as HTMLInputElement).checked,
                       )
-                  "
-                  :disabled="!examStatus"
-                  class="mr-2 mt-1 h-4 w-4 text-blue-600"
-                />
+                  " :disabled="!examStatus" class="mr-2 mt-1 h-4 w-4 text-blue-600" />
                 <span>{{ option }}</span>
               </label>
             </div>
 
             <!-- 判断题 -->
-            <div
-              v-else-if="q.questionType === 'true_false'"
-              class="ml-2 space-y-2"
-            >
+            <div v-else-if="q.questionType === 'true_false'" class="ml-2 space-y-2">
               <label class="flex items-center">
-                <input
-                  type="radio"
-                  value="true"
-                  v-model="selectedAnswers[index]"
-                  :disabled="examStatus === false"
-                  class="mr-2"
-                />
+                <input type="radio" value="true" v-model="selectedAnswers[index]" :disabled="examStatus === false"
+                  class="mr-2" />
                 True
               </label>
               <label class="flex items-center">
-                <input
-                  type="radio"
-                  value="false"
-                  v-model="selectedAnswers[index]"
-                  :disabled="examStatus === false"
-                  class="mr-2"
-                />
+                <input type="radio" value="false" v-model="selectedAnswers[index]" :disabled="examStatus === false"
+                  class="mr-2" />
                 False
               </label>
             </div>
 
             <!-- 简答题 -->
             <div v-else-if="q.questionType === 'essay'" class="ml-2">
-              <textarea
-                v-model="selectedAnswers[index]"
-                :disabled="examStatus === false"
-                rows="4"
-                class="w-full rounded border p-2"
-                placeholder="请输入答案..."
-              ></textarea>
+              <textarea v-model="selectedAnswers[index]" :disabled="examStatus === false" rows="4"
+                class="w-full rounded border p-2" placeholder="请输入答案..."></textarea>
             </div>
 
             <!-- 编程题 -->
             <div v-else-if="q.questionType === 'coding'" class="ml-2">
-              <textarea
-                v-model="selectedAnswers[index]"
-                :disabled="examStatus === false"
-                rows="8"
-                class="w-full rounded border p-2 font-mono"
-                placeholder="请输入代码..."
-              ></textarea>
+              <textarea v-model="selectedAnswers[index]" :disabled="examStatus === false" rows="8"
+                class="w-full rounded border p-2 font-mono" placeholder="请输入代码..."></textarea>
               <p class="mt-2 text-xs text-gray-500">
                 语言：{{ q.answer?.language || '未指定' }}
               </p>
@@ -524,21 +443,13 @@ const handleMultipleChange = (
 
           <!-- 交卷按钮 -->
           <div v-if="examStatus && !submitted" class="mt-4 flex justify-end">
-            <VbenButton
-              :loading="submitLoading"
-              variant="default"
-              size="default"
-              @click="submitAllAnswers"
-            >
+            <VbenButton :loading="submitLoading" variant="default" size="default" @click="submitAllAnswers">
               Submit Exam
             </VbenButton>
           </div>
 
           <!-- 交卷结果 -->
-          <div
-            v-if="submitted"
-            class="mt-6 rounded border border-blue-200 bg-blue-50 p-4"
-          >
+          <div v-if="submitted" class="mt-6 rounded border border-blue-200 bg-blue-50 p-4">
             <div class="text-lg font-bold text-blue-800">
               Exam complete! Score：{{ score }}/100
             </div>
@@ -546,12 +457,8 @@ const handleMultipleChange = (
               Scoring complete, certificate uploaded to blockchain！
             </div>
             <div class="mt-1 break-all text-sm text-blue-700">
-              Blockchain certificate link：<a
-                :href="blockchainUrl"
-                target="_blank"
-                class="text-blue-600 underline"
-                >{{ blockchainUrl }}</a
-              >
+              Blockchain certificate link：<a :href="blockchainUrl" target="_blank" class="text-blue-600 underline">{{
+                blockchainUrl }}</a>
             </div>
             <div class="mt-3 flex space-x-2">
               <VbenButton variant="default" size="sm" @click="openCert">
@@ -570,6 +477,7 @@ const handleMultipleChange = (
 <style scoped>
 /* stylelint-disable-next-line keyframes-name-pattern */
 @keyframes pulseRed {
+
   0%,
   100% {
     opacity: 1;

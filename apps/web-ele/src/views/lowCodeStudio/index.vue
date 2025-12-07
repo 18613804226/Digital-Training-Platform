@@ -304,7 +304,7 @@ const previewTemplate = (item: any) => {
 const deleteTemplate = async (id: number) => {
   try {
     showConfirm(id);
-  } catch {}
+  } catch { }
 };
 
 function showConfirm(id: null | number) {
@@ -319,7 +319,7 @@ function showConfirm(id: null | number) {
         getExamTemplateAll();
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 }
 
 const saveTemplate = () => {
@@ -329,9 +329,9 @@ const saveTemplate = () => {
       let res;
       res = await (activeTemplateId.value
         ? putExamTemplateApi({
-            ...values,
-            id: activeTemplateId.value,
-          })
+          ...values,
+          id: activeTemplateId.value,
+        })
         : postExamTemplateApi(values));
       if (res.success) {
         ElMessage.success('Saved successfully');
@@ -339,7 +339,7 @@ const saveTemplate = () => {
         getExamTemplateAll();
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
 const cancelEdit = () => createNew();
@@ -433,50 +433,26 @@ onMounted(async () => {
     <div class="flex h-full flex-col p-2 sm:p-4">
       <!-- Mobile: Template selector at top -->
       <ElCard class="mb-4 sm:hidden">
-        <label class="mb-1 block text-sm font-medium text-gray-700"
-          >Select Template</label
-        >
-        <ElSelect
-          v-model="activeTemplateId"
-          class="w-full rounded p-2"
-          @change="handleMobileSelect"
-        >
+        <label class="mb-1 block text-sm font-medium text-gray-700">Select Template</label>
+        <ElSelect v-model="activeTemplateId" class="w-full rounded p-2" @change="handleMobileSelect">
           <ElOption value="" label="Create New Template" />
-          <ElOption
-            v-for="item in templates"
-            :key="item.id"
-            :value="item.id"
-            :label="item.name"
-          />
+          <ElOption v-for="item in templates" :key="item.id" :value="item.id" :label="item.name" />
         </ElSelect>
       </ElCard>
 
       <!-- Desktop: Three-column layout -->
-      <div
-        class="hidden h-full gap-4 sm:flex"
-        :class="{ 'pointer-events-none opacity-50': isDragging }"
-      >
+      <div class="hidden h-full gap-4 sm:flex" :class="{ 'pointer-events-none opacity-50': isDragging }">
         <!-- Left: Template list -->
         <div class="flex w-1/5 flex-col overflow-hidden">
-          <Page
-            class="card-box flex-1 overflow-auto rounded-lg"
-            title="Template List"
-          >
-            <ElCard
-              v-for="item in templates"
-              :key="item.id"
-              shadow="hover"
+          <Page class="card-box flex-1 overflow-auto rounded-lg" title="Template List">
+            <ElCard v-for="item in templates" :key="item.id" shadow="hover"
               class="mb-2 cursor-pointer rounded-lg border transition-colors hover:border-blue-400"
-              :class="{ 'border-blue-500': activeTemplateId === item.id }"
-              @click="loadTemplate(item)"
-            >
+              :class="{ 'border-blue-500': activeTemplateId === item.id }" @click="loadTemplate(item)">
               <div class="flex items-start justify-between">
                 <h4 class="text-sm font-medium text-gray-800">
                   {{ item.name }}
                 </h4>
-                <span class="text-xs text-gray-500"
-                  >{{ item.duration }} min</span
-                >
+                <span class="text-xs text-gray-500">{{ item.duration }} min</span>
               </div>
               <p class="mt-1 text-xs text-gray-500">
                 Total {{ getTotalCount(item) }} questions
@@ -485,19 +461,10 @@ onMounted(async () => {
                 <VbenButton size="sm" @click.stop="previewTemplate(item)">
                   Preview
                 </VbenButton>
-                <VbenButton
-                  size="sm"
-                  variant="outline"
-                  plain
-                  @click.stop="editTemplate(item)"
-                >
+                <VbenButton size="sm" variant="outline" plain @click.stop="editTemplate(item)">
                   Edit
                 </VbenButton>
-                <VbenButton
-                  size="sm"
-                  variant="destructive"
-                  @click.stop="deleteTemplate(item.id)"
-                >
+                <VbenButton size="sm" variant="destructive" @click.stop="deleteTemplate(item.id)">
                   Delete
                 </VbenButton>
               </div>
@@ -507,41 +474,25 @@ onMounted(async () => {
 
         <!-- Middle: Form canvas -->
         <div class="flex h-full w-3/5 flex-col">
-          <Page
-            class="card-box relative flex flex-col overflow-hidden rounded-lg"
-            :title="
-              editingTemplate?.name
-                ? `Editing: ${editingTemplate.name}`
-                : 'Create New Exam Template'
-            "
-          >
-            <div
-              class="relative h-full flex-1 overflow-y-auto pb-16 pr-2"
-              @dragover.prevent
-              @dragenter="onDragEnter"
-              @dragleave="onDragLeave"
-              @drop="onDrop"
-            >
+          <Page class="card-box relative flex flex-col overflow-hidden rounded-lg" :title="editingTemplate?.name
+            ? `Editing: ${editingTemplate.name}`
+            : 'Create New Exam Template'
+            ">
+            <div class="relative h-full flex-1 overflow-y-auto pb-16 pr-2" @dragover.prevent @dragenter="onDragEnter"
+              @dragleave="onDragLeave" @drop="onDrop">
               <FormProvider :form="form">
                 <SchemaField :schema="schema" />
               </FormProvider>
 
-              <div
-                v-if="!form.query('sections').value()?.length"
-                class="py-4 text-center text-gray-400"
-              >
+              <div v-if="!form.query('sections').value()?.length" class="py-4 text-center text-gray-400">
                 Drag a question type from the right panel
               </div>
 
-              <div
-                v-show="isDragging"
-                class="absolute inset-0 top-24 z-10 rounded-lg"
-                style="
+              <div v-show="isDragging" class="absolute inset-0 top-24 z-10 rounded-lg" style="
                   pointer-events: auto;
                   background: rgb(66 155 245 / 8%);
                   border: 2px dashed #4299e1;
-                "
-              ></div>
+                "></div>
             </div>
 
             <div class="absolute bottom-4 right-4 flex gap-2">
@@ -557,18 +508,11 @@ onMounted(async () => {
 
         <!-- Right: Question type library -->
         <div class="flex w-1/5 flex-col">
-          <Page
-            class="card-box flex overflow-hidden rounded-lg"
-            title="Question Type Library"
-          >
+          <Page class="card-box flex overflow-hidden rounded-lg" title="Question Type Library">
             <div class="flex-1 overflow-y-auto py-2">
-              <div
-                v-for="item in questionTypeOptions"
-                :key="item.value"
+              <div v-for="item in questionTypeOptions" :key="item.value"
                 class="m-2 cursor-grab rounded-lg border border-dashed border-blue-200 p-2 text-center text-blue-600 transition-all hover:bg-blue-100"
-                draggable="true"
-                @dragstart="onDragStart($event, item)"
-              >
+                draggable="true" @dragstart="onDragStart($event, item)">
                 {{ item.label }}
               </div>
             </div>
@@ -578,41 +522,25 @@ onMounted(async () => {
 
       <!-- Mobile: Single-column layout -->
       <div class="flex h-full flex-col sm:hidden">
-        <Page
-          class="card-box relative flex flex-1 flex-col overflow-hidden rounded-lg"
-          :title="
-            editingTemplate?.name
-              ? `Editing: ${editingTemplate.name}`
-              : 'Create New Exam Template'
-          "
-        >
-          <div
-            class="relative h-full flex-1 overflow-y-auto pb-20 pr-2"
-            @dragover.prevent
-            @dragenter="onDragEnter"
-            @dragleave="onDragLeave"
-            @drop="onDrop"
-          >
+        <Page class="card-box relative flex flex-1 flex-col overflow-hidden rounded-lg" :title="editingTemplate?.name
+          ? `Editing: ${editingTemplate.name}`
+          : 'Create New Exam Template'
+          ">
+          <div class="relative h-full flex-1 overflow-y-auto pb-20 pr-2" @dragover.prevent @dragenter="onDragEnter"
+            @dragleave="onDragLeave" @drop="onDrop">
             <FormProvider :form="form">
               <SchemaField :schema="schema" />
             </FormProvider>
 
-            <div
-              v-if="!form.query('sections').value()?.length"
-              class="py-4 text-center text-gray-400"
-            >
+            <div v-if="!form.query('sections').value()?.length" class="py-4 text-center text-gray-400">
               Tap "Add Question Type" below
             </div>
 
-            <div
-              v-show="isDragging"
-              class="absolute inset-0 top-20 z-10 rounded-lg"
-              style="
+            <div v-show="isDragging" class="absolute inset-0 top-20 z-10 rounded-lg" style="
                 pointer-events: auto;
                 background: rgb(66 155 245 / 8%);
                 border: 2px dashed #4299e1;
-              "
-            ></div>
+              "></div>
           </div>
 
           <div class="absolute bottom-2 left-2 right-2 flex gap-2">
@@ -629,44 +557,27 @@ onMounted(async () => {
     </div>
 
     <!-- Mobile: Question type drawer -->
-    <ElDialog
-      v-model="showQuestionDrawer"
-      title="Select Question Type"
-      width="90%"
-      append-to-body
-      @close="showQuestionDrawer = false"
-    >
+    <ElDialog v-model="showQuestionDrawer" title="Select Question Type" width="90%" append-to-body
+      @close="showQuestionDrawer = false">
       <div class="grid grid-cols-2 gap-3">
-        <VbenButton
-          v-for="item in questionTypeOptions"
-          :key="item.value"
-          block
-          @click="addQuestionTypeMobile(item)"
-        >
+        <VbenButton v-for="item in questionTypeOptions" :key="item.value" block @click="addQuestionTypeMobile(item)">
           {{ item.label }}
         </VbenButton>
       </div>
     </ElDialog>
 
     <!-- Preview dialog -->
-    <ElDialog
-      v-model="previewVisible"
-      title="Exam Template Preview"
-      width="90%"
-      max-width="600px"
-      append-to-body
-    >
+    <ElDialog v-model="previewVisible" title="Exam Template Preview" width="90%" max-width="600px" append-to-body>
       <div v-if="previewData" class="space-y-4">
         <h3 class="text-lg font-bold">{{ previewData.name }}</h3>
-        <p class="text-sm text-gray-600">
+        <p class="text-md text-gray-600">
           Duration: {{ previewData.duration }} minutes
         </p>
+        <p class="text-md text-gray-600">
+          TotalScore: {{ previewData.totalScore }}
+        </p>
         <ElDivider />
-        <div
-          v-for="(section, index) in previewData.sections"
-          :key="index"
-          class="mb-3"
-        >
+        <div v-for="(section, index) in previewData.sections" :key="index" class="mb-3">
           <div class="font-medium text-gray-800">
             {{ getQuestionTypeName(section.questionType) }} (
             {{ section.count }} questions, {{ section.score }} points each )

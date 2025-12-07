@@ -1,5 +1,7 @@
 {
   "title": "Online Learning",
   "videoPlayer": "Video Player",
-  "3DvirtualClassroom": "3D Virtual Classroom"
+  "3DvirtualClassroom": "3D Virtual Classroom",
+  "courseDetail": "CourseDetail",
+  "lessonPlayer": "LessonPlayer"
 }

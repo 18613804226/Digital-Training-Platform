@@ -26,6 +26,7 @@
     "#/*": "./src/*"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
     "@formily/core": "^2.3.7",
     "@formily/element-plus": "^1.1.0",
     "@formily/json-schema": "^2.3.7",
