@@ -12,6 +12,7 @@ const routes: RouteRecordRaw[] = [
     },
     name: 'systemManagement',
     path: '/systemManagement',
+    redirect: 'userManagement',
     children: [
       {
         meta: {
@@ -20,13 +21,13 @@ const routes: RouteRecordRaw[] = [
           authority: ['ADMIN', 'GUEST'],
         },
         name: 'userManagement',
-        path: '/systemManagement/userManagement',
+        path: '/userManagement',
         component: () =>
           import('#/views/systemManagement/userManagement/index.vue'),
       },
       {
         name: 'Profile',
-        path: 'Profile',
+        path: '/Profile',
         component: () => import('#/views/_core/profile/index.vue'),
         meta: {
           title: $t('page.auth.profile'),

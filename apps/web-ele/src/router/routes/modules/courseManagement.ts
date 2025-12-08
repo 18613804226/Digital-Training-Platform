@@ -7,9 +7,8 @@ const routes: RouteRecordRaw[] = [
     meta: {
       order: 1,
       icon: 'ic:baseline-book',
-      keepAlive: true,
+      keepAlive: false,
       title: $t('courseManagement.title'),
-      authority: ['ADMIN', 'TEACHER', 'GUEST'],
     },
     name: 'courseManagement',
     path: '/courseManagement',
@@ -21,26 +20,28 @@ const routes: RouteRecordRaw[] = [
           authority: ['ADMIN', 'TEACHER', 'GUEST'],
         },
         name: 'courseAdmin',
-        path: '/courseManagement/courseAdmin',
+        path: 'courseAdmin',
         component: () =>
           import('#/views/courseManagement/courseAdmin/index.vue'),
-
-      }, {
+      },
+      {
         meta: {
           title: $t('onlineLearning.courseDetail'),
-          keepAlive: true,
-          hideInMenu: true
+          keepAlive: false,
+          hideInMenu: true,
         },
         name: 'courseDetail',
         // 动态课程详情
         path: 'courseDetail/:courseId',
-        component: () => import('#/views/courseManagement/courseDetail/index.vue'),
+        component: () =>
+          import('#/views/courseManagement/courseDetail/index.vue'),
         children: [
           {
             meta: {
               title: $t('onlineLearning.lessonPlayer'),
-              keepAlive: true,
-              hideInMenu: true
+              keepAlive: false,
+              hideInMenu: true,
+              hideDetail: true,
             },
             name: 'lessonPlayer',
             // 动态课时学习
@@ -48,7 +49,18 @@ const routes: RouteRecordRaw[] = [
             component: () =>
               import('#/views/courseManagement/lessonPlayer/index.vue'),
           },
-        ]
+        ],
+      },
+
+      {
+        meta: {
+          title: $t('courseManagement.courseLearning'),
+          keepAlive: true,
+        },
+        name: 'courseLearning',
+        path: 'courseLearning',
+        component: () =>
+          import('#/views/courseManagement/courseLearning/index.vue'),
       },
       // {
       //   meta: {

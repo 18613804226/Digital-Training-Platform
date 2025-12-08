@@ -1,11 +1,23 @@
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { VbenButton } from '@vben/common-ui';
+
+import { Page, VbenButton } from '@vben/common-ui';
+
+import { getLessonApi } from '#/api';
 
 const route = useRoute();
 const router = useRouter();
+const lessonId = Number(route.params.lessonId);
 
+onMounted(async () => {
+  if (lessonId) {
+    const res = await getLessonApi({ lessonId });
+    console.log(res);
+    lesson.value.title = res.title;
+    lesson.value.description = res.description;
+  }
+});
 // 假数据：当前课程结构（用于“下一课”逻辑）
 const mockCourseStructure = [
   { moduleId: 'm1', lessons: ['l1', 'l2'] },
@@ -52,7 +64,9 @@ function markCompleted() {
 function goToNextLesson() {
   const next = findNextLesson(lesson.value.id);
   if (next) {
-    router.push(`/courses/${route.params.courseId}/modules/${next.moduleId}/lessons/${next.lessonId}`);
+    router.push(
+      `/courses/${route.params.courseId}/modules/${next.moduleId}/lessons/${next.lessonId}`,
+    );
   } else {
     // 课程结束，跳回课程详情页
     router.push(`/courses/${route.params.courseId}`);
@@ -93,68 +107,94 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="p-4 md:p-6 space-y-6 bg-gray-50 min-h-screen">
-    <!-- 课时信息 -->
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-        <div>
-          <h1 class="text-xl md:text-2xl font-bold text-gray-800">{{ lesson.title }}</h1>
-          <p class="text-sm text-gray-600 mt-1">{{ lesson.description }}</p>
+  <div class="h-full p-4">
+    <Page
+      class="card-box h-full overflow-hidden rounded-lg"
+      :title="lesson.title"
+      :description="lesson.description"
+    >
+      <!-- 课时信息 -->
+      <!-- <div class="flex">
+        <VbenButton v-access:role="['ADMIN', 'GUEST', 'TEACHER']" variant="ghost" size="sm" class="w-8">
+          <ElIcon>
+            <Edit />
+          </ElIcon>
+        </VbenButton>
+        <VbenButton variant="icon" size="sm" icon="ri:edit-line" />
+        <VbenButton variant="icon" size="sm" icon="ri:star-line" />
+      </div> -->
+
+      <!-- 播放区 -->
+      <div class="rounded-xl p-5">
+        <h2 class="mb-4 font-semibold text-gray-800">学习内容</h2>
+
+        <!-- 视频加载中 / 错误状态 -->
+        <div v-if="lesson.type === 'video'" class="relative">
+          <video
+            ref="videoRef"
+            class="aspect-video w-full rounded-lg bg-black"
+            controls
+            @timeupdate="handleTimeUpdate"
+            @loadeddata="handleLoadedData"
+            @error="handleVideoError"
+          >
+            <source :src="lesson.contentUrl" type="video/mp4" />
+            您的浏览器不支持视频播放。
+          </video>
+
+          <!-- 加载遮罩 -->
+          <div
+            v-if="!isVideoLoaded && !videoError"
+            class="absolute inset-0 flex items-center justify-center rounded-lg bg-black bg-opacity-50"
+          >
+            <div class="text-white">正在加载视频...</div>
+          </div>
+
+          <!-- 错误提示 -->
+          <div
+            v-if="videoError"
+            class="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-gray-100"
+          >
+            <div class="mb-2 text-red-600">⚠️ 视频加载失败</div>
+            <div class="text-sm text-gray-600">请检查网络或稍后重试</div>
+          </div>
         </div>
+
+        <!-- 非视频内容（如文本、PDF等） -->
+        <div
+          v-else
+          class="prose max-w-none rounded-lg bg-gray-50 p-4 text-gray-700"
+        >
+          {{ lesson.contentUrl }}
+        </div>
+      </div>
+
+      <!-- 操作区 -->
+      <div
+        class="flex flex-wrap items-center justify-between gap-3 rounded-xl p-5"
+      >
         <div class="flex gap-2">
-          <!-- 笔记按钮（预留） -->
-          <VbenButton variant="ghost" size="sm" icon="ri:edit-line" />
-          <!-- 收藏按钮（预留） -->
-          <VbenButton variant="ghost" size="sm" icon="ri:star-line" />
-        </div>
-      </div>
-    </div>
-
-    <!-- 播放区 -->
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-4">学习内容</h2>
-
-      <!-- 视频加载中 / 错误状态 -->
-      <div v-if="lesson.type === 'video'" class="relative">
-        <video ref="videoRef" class="w-full aspect-video rounded-lg border bg-black" controls
-          @timeupdate="handleTimeUpdate" @loadeddata="handleLoadedData" @error="handleVideoError">
-          <source :src="lesson.contentUrl" type="video/mp4" />
-          您的浏览器不支持视频播放。
-        </video>
-
-        <!-- 加载遮罩 -->
-        <div v-if="!isVideoLoaded && !videoError"
-          class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
-          <div class="text-white">正在加载视频...</div>
+          <VbenButton
+            variant="default"
+            size="sm"
+            @click="markCompleted"
+            :disabled="lesson.completed"
+            class="whitespace-nowrap"
+          >
+            {{ lesson.completed ? '✅ 已完成' : '标记为已完成' }}
+          </VbenButton>
         </div>
 
-        <!-- 错误提示 -->
-        <div v-if="videoError"
-          class="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-lg">
-          <div class="text-red-600 mb-2">⚠️ 视频加载失败</div>
-          <div class="text-sm text-gray-600">请检查网络或稍后重试</div>
-        </div>
-      </div>
-
-      <!-- 非视频内容（如文本、PDF等） -->
-      <div v-else class="prose max-w-none text-gray-700 p-4 bg-gray-50 rounded-lg">
-        {{ lesson.contentUrl }}
-      </div>
-    </div>
-
-    <!-- 操作区 -->
-    <div class="bg-white rounded-xl shadow-sm p-5 flex flex-wrap gap-3 justify-between items-center">
-      <div class="flex gap-2">
-        <VbenButton variant="default" size="sm" @click="markCompleted" :disabled="lesson.completed"
-          class="whitespace-nowrap">
-          {{ lesson.completed ? '✅ 已完成' : '标记为已完成' }}
+        <VbenButton
+          variant="outline"
+          size="sm"
+          @click="goToNextLesson"
+          class="whitespace-nowrap"
+        >
+          下一课时 →
         </VbenButton>
       </div>
-
-      <VbenButton variant="outline" size="sm" @click="goToNextLesson" class="whitespace-nowrap">
-        下一课时 →
-      </VbenButton>
-    </div>
+    </Page>
   </div>
 </template>
 

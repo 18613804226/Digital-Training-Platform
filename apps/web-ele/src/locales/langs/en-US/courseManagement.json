@@ -1,5 +1,6 @@
 {
-  "title": "Course Management",
+  "title": "Course",
   "courseAdmin": "Course Admin",
-  "courseBank": "Course Bank"
+  "courseBank": "Course Bank",
+  "courseLearning": "Course Learning"
 }

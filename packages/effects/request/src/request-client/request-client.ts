@@ -118,6 +118,17 @@ class RequestClient {
   }
 
   /**
+   * PUT请求方法
+   */
+  public patch<T = any>(
+    url: string,
+    data?: any,
+    config?: RequestClientConfig,
+  ): Promise<T> {
+    return this.request<T>(url, { ...config, data, method: 'PATCH' });
+  }
+
+  /**
    * POST请求方法
    */
   public post<T = any>(
@@ -138,7 +149,6 @@ class RequestClient {
   ): Promise<T> {
     return this.request<T>(url, { ...config, data, method: 'PUT' });
   }
-
   /**
    * 通用的请求方法
    */

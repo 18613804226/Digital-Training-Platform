@@ -1,22 +1,22 @@
 <script lang="ts" setup>
-import { useVbenForm, useVbenModal, z } from '@vben/common-ui';
 import { ref } from 'vue';
-import { getUserListApi, createCourseApi, putCourseApi } from '#/api';
+
+import { useVbenForm, useVbenModal, z } from '@vben/common-ui';
+
+import { createCourseApi, getUserListApi, putCourseApi } from '#/api';
 
 defineOptions({ name: 'CourseModal' });
 const props = defineProps<{
-  modalData: any
+  modalData: any;
 }>();
 
-
-
 const emit = defineEmits<{ (e: 'confirm'): void }>();
-const formData: any = ref({
-  title: 'Add Course'
-})
+const modalData: any = ref({
+  title: 'Add Course',
+});
 const [Modal, modalApi] = useVbenModal({
   draggable: true,
-  title: formData.value.title,
+  title: modalData.value.title,
   onConfirm,
   onOpened: fetchTeachers,
 });
@@ -25,9 +25,9 @@ const teacherOptions = ref<{ label: string; value: number }[]>([]);
 
 async function fetchTeachers() {
   if (props.modalData) {
-    formData.value = props.modalData
-    modalApi.setState({ title: 'Edit Course' })
-    formApi.setValues(props.modalData)
+    modalData.value = props.modalData;
+    modalApi.setState({ title: 'Edit Course' });
+    formApi.setValues(props.modalData);
   }
   try {
     const { list }: any = await getUserListApi({}); // 确保结构是 { list: [...] }
@@ -38,7 +38,6 @@ async function fetchTeachers() {
   } catch (error) {
     console.error('Failed to load teachers:', error);
   }
-
 }
 
 const [Form, formApi] = useVbenForm({
@@ -106,11 +105,12 @@ const [Form, formApi] = useVbenForm({
     },
     {
       component: 'Select',
-      fieldName: 'teacherId', defaultValue: undefined,
+      fieldName: 'teacherId',
+      defaultValue: undefined,
       label: 'Teacher',
       componentProps: {
         clearable: true,
-        filterable: true,       // ✅ Element 的搜索
+        filterable: true, // ✅ Element 的搜索
         options: teacherOptions,
         placeholder: 'Select a teacher',
       },
@@ -126,8 +126,8 @@ async function onConfirm() {
       try {
         const params = {
           id: props.modalData.id,
-          ...await formApi.getValues()
-        }
+          ...(await formApi.getValues()),
+        };
 
         await putCourseApi(params);
         modalApi.close();
@@ -146,7 +146,6 @@ async function onConfirm() {
         // 可选：用 message.error() 提示用户
       }
     }
-
   }
 }
 

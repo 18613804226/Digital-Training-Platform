@@ -19,7 +19,7 @@ const routes: RouteRecordRaw[] = [
           authority: ['ADMIN', 'TEACHER', 'GUEST'],
         },
         name: 'AIexamGenerator',
-        path: '/smartExam/AIexamGenerator',
+        path: '/AIexamGenerator',
         component: () => import('#/views/smartExam/AIexamGenerator/index.vue'),
       },
       {
@@ -27,7 +27,7 @@ const routes: RouteRecordRaw[] = [
           title: $t('smartExam.formalExam'),
         },
         name: 'formalExam',
-        path: '/smartExam/formalExam',
+        path: '/formalExam',
         component: () => import('#/views/smartExam/formalExam/index.vue'),
       },
     ],

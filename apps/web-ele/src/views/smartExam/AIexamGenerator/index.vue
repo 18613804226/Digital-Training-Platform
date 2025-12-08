@@ -16,7 +16,7 @@ interface Question {
   id: number;
   question: string;
   options?: string[];
-  answer: string;
+  answer: string | { code: string };
   explanation: string;
 }
 
@@ -92,7 +92,7 @@ const [QueryForm, formApi] = useVbenForm({
     componentProps: {
       class: 'w-full',
     },
-    labelWidth: 50,
+    labelWidth: 80,
   },
   // 提交函数
   handleSubmit: onSubmit,

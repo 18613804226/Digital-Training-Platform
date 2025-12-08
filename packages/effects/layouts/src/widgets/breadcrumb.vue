@@ -38,10 +38,27 @@ const breadcrumbs = computed((): IBreadcrumb[] => {
     if (hideInBreadcrumb || hideChildrenInMenu || !path) {
       continue;
     }
+    // 👇 关键：把 :courseId 和 :lessonId 替换成真实值
+    let resolvedPath = path;
 
+    // 替换 courseId
+    if (resolvedPath.includes(':courseId') && route.params.courseId) {
+      resolvedPath = resolvedPath.replace(
+        ':courseId',
+        String(route.params.courseId),
+      );
+    }
+
+    // 替换 lessonId（如果有的话）
+    if (resolvedPath.includes(':lessonId') && route.params.lessonId) {
+      resolvedPath = resolvedPath.replace(
+        ':lessonId',
+        String(route.params.lessonId),
+      );
+    }
     resultBreadcrumb.push({
       icon,
-      path: path || route.path,
+      path: resolvedPath,
       title: title ? $t((title || name) as string) : '',
     });
   }

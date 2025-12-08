@@ -3,16 +3,18 @@ import type { VbenFormProps } from '#/adapter/form';
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { onMounted, ref } from 'vue';
+
 import { prompt, useVbenModal, VbenButton } from '@vben/common-ui';
+
 import { ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 // Replace with your course API
 import { deleteCourseApi, getCourseApi } from '#/api';
+import { router } from '#/router';
 
 // Modal component (for create/edit)
 import ExtraModal from './modal.vue';
-import { router } from '#/router';
 
 const [Modal, modalApi] = useVbenModal({
   connectedComponent: ExtraModal,
@@ -108,6 +110,7 @@ const gridOptions: VxeGridProps<CourseRow> = {
     },
   ],
   keepSource: true,
+  exportConfig: {},
   proxyConfig: {
     showLoading: true,
     autoLoad: false,
@@ -133,7 +136,6 @@ const gridOptions: VxeGridProps<CourseRow> = {
           total: res.page.total || 0,
           currentPage: page.currentPage,
           pageSize: page.pageSize,
-
         };
       },
     },
@@ -167,10 +169,10 @@ async function getCourseListData(
     },
   };
 }
-const modalData = ref()
+const modalData = ref();
 
 function handleEdit(params: any) {
-  modalData.value = params
+  modalData.value = params;
   modalApi.open();
 }
 // Delete confirmation
@@ -180,7 +182,7 @@ function handleDelete(row: any) {
   //   return;
   // }
   prompt({
-    component: () => { },
+    component: () => {},
     content: 'Confirm whether to delete',
     icon: 'error',
     modelPropName: 'value',
@@ -195,7 +197,7 @@ function handleDelete(row: any) {
 
 // Open create modal
 function handleAdd() {
-  modalData.value = undefined
+  modalData.value = undefined;
   modalApi.open();
 }
 
@@ -213,7 +215,7 @@ onMounted(() => {
 <template>
   <div class="vp-raw w-full p-4">
     <!-- Create/Edit Modal -->
-    <Modal @confirm="gridApi.query()" :modalData="modalData" />
+    <Modal @confirm="gridApi.query()" :modal-data="modalData" />
 
     <!-- Grid Body -->
     <Grid>
@@ -226,14 +228,25 @@ onMounted(() => {
 
       <!-- Action column slot -->
       <template #action="{ row }">
-        <VbenButton class="" variant="link" size="sm"
-          @click="router.push({ name: 'courseDetail', params: { courseId: row.id } })">
-          Details
+        <VbenButton
+          class=""
+          variant="link"
+          size="sm"
+          @click="
+            router.push({ name: 'courseDetail', params: { courseId: row.id } })
+          "
+        >
+          Start learning
         </VbenButton>
         <VbenButton class="" variant="link" size="sm" @click="handleEdit(row)">
           Edit
         </VbenButton>
-        <VbenButton class="text-red-500 hover:text-red-700" variant="link" size="sm" @click="handleDelete(row)">
+        <VbenButton
+          class="text-red-500 hover:text-red-700"
+          variant="link"
+          size="sm"
+          @click="handleDelete(row)"
+        >
           Delete
         </VbenButton>
       </template>

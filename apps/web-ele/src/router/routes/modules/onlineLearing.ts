@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router';
+
 import { $t } from '#/locales';
 
 const routes: RouteRecordRaw[] = [
@@ -18,7 +19,7 @@ const routes: RouteRecordRaw[] = [
           keepAlive: true,
         },
         name: 'videoPlayer',
-        path: 'videoPlayer',
+        path: '/videoPlayer',
         component: () => import('#/views/onlineLearning/videoPlayer/index.vue'),
       },
       {
@@ -27,7 +28,7 @@ const routes: RouteRecordRaw[] = [
           keepAlive: true,
         },
         name: '3DvirtualClassroom',
-        path: '3DvirtualClassroom',
+        path: '/3DvirtualClassroom',
         component: () =>
           import('#/views/onlineLearning/3DvirtualClassroom/index.vue'),
       },
