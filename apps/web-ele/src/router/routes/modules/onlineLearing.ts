@@ -13,14 +13,26 @@ const routes: RouteRecordRaw[] = [
     name: 'onlineLearning',
     path: '/onlineLearning',
     children: [
+      // {
+      //   meta: {
+      //     title: $t('onlineLearning.videoPlayer'),
+      //     keepAlive: true,
+      //   },
+      //   name: 'videoPlayer',
+      //   path: '/videoPlayer',
+      //   component: () => import('#/views/onlineLearning/videoPlayer/index.vue'),
+      // },
+
       {
         meta: {
-          title: $t('onlineLearning.videoPlayer'),
+          icon: 'ic:baseline-live-tv',
           keepAlive: true,
+          order: 1000,
+          title: $t('liveStrenming.title'),
         },
-        name: 'videoPlayer',
-        path: '/videoPlayer',
-        component: () => import('#/views/onlineLearning/videoPlayer/index.vue'),
+        name: 'liveStreaming',
+        path: '/liveStreaming',
+        component: () => import('#/views/liveStreaming/liveRoom/index.vue'),
       },
       {
         meta: {

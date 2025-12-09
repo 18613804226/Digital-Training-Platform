@@ -20,7 +20,7 @@ const routes: RouteRecordRaw[] = [
           authority: ['ADMIN', 'TEACHER', 'GUEST'],
         },
         name: 'courseAdmin',
-        path: 'courseAdmin',
+        path: '/courseAdmin',
         component: () =>
           import('#/views/courseManagement/courseAdmin/index.vue'),
       },
@@ -32,7 +32,7 @@ const routes: RouteRecordRaw[] = [
         },
         name: 'courseDetail',
         // 动态课程详情
-        path: 'courseDetail/:courseId',
+        path: '/courseDetail/:courseId',
         component: () =>
           import('#/views/courseManagement/courseDetail/index.vue'),
         children: [
@@ -58,7 +58,7 @@ const routes: RouteRecordRaw[] = [
           keepAlive: true,
         },
         name: 'courseLearning',
-        path: 'courseLearning',
+        path: '/courseLearning',
         component: () =>
           import('#/views/courseManagement/courseLearning/index.vue'),
       },

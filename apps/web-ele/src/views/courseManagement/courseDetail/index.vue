@@ -112,7 +112,7 @@ function deleteLesson(lessonId: number) {
 
 // —————— Edit / Add Lesson ——————
 function openAddLesson(lesson?: any) {
-  lessonData.value = lesson || {};
+  lessonData.value = lesson;
   modalApi.open();
 }
 
@@ -150,6 +150,15 @@ const progressPercent = computed(() => {
     ? Math.round((completedLessons.value / totalLessons.value) * 100)
     : 0;
 });
+// -----------------------------
+// 假设 lessons 是响应式数组，每个 lesson 有 contentBlocks: ContentBlock[]
+const hasTypeInLesson = (lesson: any, type: string): boolean => {
+  return (
+    lesson?.content &&
+    Array.isArray(lesson.content) &&
+    lesson.content.some((block: any) => block.type === type)
+  );
+};
 </script>
 
 <template>
@@ -158,8 +167,8 @@ const progressPercent = computed(() => {
       <!-- Top Course Info -->
       <div class="card-box flex items-start justify-between p-6">
         <div>
-          <h1 class="text-xl font-bold text-gray-800">{{ course.title }}</h1>
-          <p class="mt-2 text-sm text-gray-600">{{ course.description }}</p>
+          <h1 class="text-xl font-bold">{{ course.title }}</h1>
+          <p class="mt-2 text-sm">{{ course.description }}</p>
 
           <div class="mt-4">
             <div class="flex items-center gap-2">
@@ -197,80 +206,131 @@ const progressPercent = computed(() => {
       </div>
 
       <!-- Lesson List -->
-      <div class="card-box p-5">
-        <h3 class="mb-3 text-lg font-bold text-gray-800">Course Content</h3>
-        <ul ref="lessonListRef" class="ml-2 space-y-2">
-          <li
-            v-for="(lesson, index) in lessons"
-            :key="lesson.id"
-            class="group flex items-center justify-between rounded px-2 py-2 hover:bg-gray-50"
-          >
-            <!-- Left: Drag Handle + Icon + Title -->
-            <div class="flex items-center gap-2">
-              <ElIcon v-if="lesson.completed" color="#409EFF" size="16">
-                <Check />
-              </ElIcon>
-              <ElIcon v-else color="#ccc" size="16">
-                <Clock />
-              </ElIcon>
-              <span class="text-gray-700">{{ lesson.title }}</span>
-            </div>
+      <div class="card-box rounded-lg border p-5">
+        <h3 class="mb-3 text-lg font-bold">Course Content</h3>
 
-            <!-- Right: Action Buttons -->
-            <div class="flex items-center gap-1">
-              <!-- Drag Handle -->
-              <div
-                class="drag-handle cursor-grab text-gray-400 hover:text-gray-600"
-              >
+        <ul ref="lessonListRef" class="space-y-3">
+          <li
+            v-for="lesson in lessons"
+            :key="lesson.id"
+            class="group flex flex-col rounded border border-transparent px-3 py-3 transition hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-600 dark:hover:bg-gray-700"
+          >
+            <!-- Title & Status Row -->
+            <div class="flex w-full items-center justify-between">
+              <div>
+                <div class="flex items-center gap-2">
+                  <ElIcon
+                    v-if="lesson.completed"
+                    color="#409EFF"
+                    size="16"
+                    class="dark:text-blue-400"
+                  >
+                    <Check />
+                  </ElIcon>
+                  <ElIcon
+                    v-else
+                    color="#9CA3AF"
+                    size="16"
+                    class="dark:text-gray-400"
+                  >
+                    <Clock />
+                  </ElIcon>
+                  <span class="font-medium text-gray-700 dark:text-gray-200">
+                    {{ lesson.title }}
+                  </span>
+                </div>
+
+                <div
+                  v-if="
+                    lesson.content &&
+                    Array.isArray(lesson.content) &&
+                    lesson.content.length > 0
+                  "
+                  class="mt-2 flex flex-wrap gap-1"
+                >
+                  <span
+                    v-if="hasTypeInLesson(lesson, 'text')"
+                    class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                  >
+                    📝 Text
+                  </span>
+                  <span
+                    v-if="hasTypeInLesson(lesson, 'video')"
+                    class="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                  >
+                    🎬 Video
+                  </span>
+                  <span
+                    v-if="hasTypeInLesson(lesson, 'code')"
+                    class="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
+                  >
+                    💻 Code
+                  </span>
+                  <span
+                    v-if="hasTypeInLesson(lesson, 'document')"
+                    class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                  >
+                    📄 Document
+                  </span>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex items-center gap-1">
+                <!-- Drag Handle -->
                 <VbenButton
                   v-access:role="['ADMIN', 'GUEST', 'TEACHER']"
                   variant="ghost"
                   size="sm"
-                  class="w-8"
+                  class="w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                 >
                   <ElIcon>
                     <Rank />
                   </ElIcon>
                 </VbenButton>
+
+                <!-- Edit -->
+                <VbenButton
+                  v-access:role="['ADMIN', 'GUEST', 'TEACHER']"
+                  variant="ghost"
+                  size="sm"
+                  class="w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  @click="openAddLesson(lesson)"
+                >
+                  <ElIcon>
+                    <Edit />
+                  </ElIcon>
+                </VbenButton>
+
+                <!-- Delete -->
+                <VbenButton
+                  v-access:role="['ADMIN', 'GUEST', 'TEACHER']"
+                  variant="ghost"
+                  size="sm"
+                  class="w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  @click="deleteLesson(lesson.id)"
+                >
+                  <ElIcon>
+                    <Delete />
+                  </ElIcon>
+                </VbenButton>
+
+                <!-- Toggle Completion -->
+                <VbenButton
+                  variant="link"
+                  size="sm"
+                  @click="toggleLessonComplete(lesson.id)"
+                  class="ml-2 w-24 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  {{ lesson.completed ? 'Relearning' : 'Start Learning' }}
+                </VbenButton>
               </div>
-              <!-- Edit -->
-              <VbenButton
-                v-access:role="['ADMIN', 'GUEST', 'TEACHER']"
-                variant="ghost"
-                size="sm"
-                class="w-8"
-                @click="openAddLesson(lesson)"
-              >
-                <ElIcon>
-                  <Edit />
-                </ElIcon>
-              </VbenButton>
-              <!-- Delete -->
-              <VbenButton
-                v-access:role="['ADMIN', 'GUEST', 'TEACHER']"
-                variant="ghost"
-                size="sm"
-                class="w-8"
-                @click="deleteLesson(lesson.id)"
-              >
-                <ElIcon>
-                  <Delete />
-                </ElIcon>
-              </VbenButton>
-              <!-- Toggle Completion -->
-              <VbenButton
-                variant="link"
-                size="sm"
-                @click="toggleLessonComplete(lesson.id)"
-                class="ml-2 w-24 text-sm"
-              >
-                {{ lesson.completed ? 'Relearning' : 'Start Learning' }}
-              </VbenButton>
             </div>
           </li>
+
           <li
             v-if="lessons.length === 0"
-            class="py-2 text-sm italic text-gray-400"
+            class="py-4 text-center text-sm italic text-gray-400 dark:text-gray-500"
           >
             No lessons available.
           </li>

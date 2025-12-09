@@ -1,4 +1,5 @@
 import { defineConfig } from '@vben/vite-config';
+import path from 'path';
 
 import ElementPlus from 'unplugin-element-plus/vite';
 
@@ -10,7 +11,12 @@ export default defineConfig(async () => {
         ElementPlus({
           format: 'esm',
         }),
-      ],
+      ], resolve: {
+        alias: {
+          // ✅ 配置 @ 指向 src 目录
+          '@': path.resolve(__dirname, './src'),
+        },
+      },
       server: {
         proxy: {
           '/api': {

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { Page, VbenButton } from '@vben/common-ui';
@@ -10,49 +10,34 @@ const route = useRoute();
 const router = useRouter();
 const lessonId = Number(route.params.lessonId);
 
-onMounted(async () => {
-  if (lessonId) {
-    const res = await getLessonApi({ lessonId });
-    console.log(res);
-    lesson.value.title = res.title;
-    lesson.value.description = res.description;
-  }
-});
-// 假数据：当前课程结构（用于“下一课”逻辑）
-const mockCourseStructure = [
-  { moduleId: 'm1', lessons: ['l1', 'l2'] },
-  { moduleId: 'm2', lessons: ['l3', 'l4'] },
-];
-
-// 当前课时信息
+// 当前课时数据
 const lesson = ref({
   id: (route.params.lessonId as string) || 'l1',
   title: 'HTML简介',
-  type: 'video',
-  contentUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
   description: '本课时介绍 HTML 的基本概念和作用。',
   completed: false,
+  content: [] as Array<{
+    content?: string;
+    id: string;
+    type: string;
+    url?: string;
+  }>,
 });
 
-const videoRef = ref<HTMLVideoElement | null>(null);
-const isVideoLoaded = ref(false);
-const videoError = ref(false);
-
-// 查找下一课时（支持跨模块）
-function findNextLesson(currentLessonId: string) {
-  let found = false;
-  for (const module of mockCourseStructure) {
-    for (const lessonId of module.lessons) {
-      if (found) {
-        return { moduleId: module.moduleId, lessonId };
-      }
-      if (lessonId === currentLessonId) {
-        found = true;
-      }
+onMounted(async () => {
+  if (lessonId) {
+    try {
+      const res = await getLessonApi({ lessonId });
+      console.log('Lesson Data:', res);
+      lesson.value = {
+        ...res,
+        content: Array.isArray(res.content) ? res.content : [],
+      };
+    } catch (error) {
+      console.error('Failed to load lesson:', error);
     }
   }
-  return null; // 已到最后
-}
+});
 
 // 手动标记完成
 function markCompleted() {
@@ -60,50 +45,22 @@ function markCompleted() {
   console.log(`课时 ${lesson.value.id} 已手动完成`);
 }
 
-// 跳转到下一课
+// 跳转到下一课（简化：直接返回课程页）
 function goToNextLesson() {
-  const next = findNextLesson(lesson.value.id);
-  if (next) {
-    router.push(
-      `/courses/${route.params.courseId}/modules/${next.moduleId}/lessons/${next.lessonId}`,
-    );
-  } else {
-    // 课程结束，跳回课程详情页
-    router.push(`/courses/${route.params.courseId}`);
-  }
+  router.push(`/courses/${route.params.courseId}`);
 }
 
-// 视频事件监听（自动完成）
-function handleTimeUpdate() {
-  const video = videoRef.value;
-  if (video && !lesson.value.completed) {
-    const progress = video.currentTime / video.duration;
-    if (progress >= 0.9) {
-      // 播放到 90% 自动标记完成
-      lesson.value.completed = true;
-      console.log('视频播放完成，自动标记为已完成');
-    }
-  }
+// 提取 YouTube 视频 ID
+function extractVideoId(url: string): string {
+  const regExp = /^.*(youtu\.be\/|v\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match: any = url.match(regExp);
+  return match && match[2].length === 11 ? match[2] : '';
 }
 
-// 视频加载状态
-function handleLoadedData() {
-  isVideoLoaded.value = true;
-  videoError.value = false;
+// 下载文档（打开新标签页）
+function downloadDocument(url: string) {
+  window.open(url, '_blank');
 }
-
-function handleVideoError() {
-  isVideoLoaded.value = true;
-  videoError.value = true;
-}
-
-onMounted(() => {
-  // 可在此处调用真实 API 获取 lesson 数据
-});
-
-onUnmounted(() => {
-  // 清理（如果需要）
-});
 </script>
 
 <template>
@@ -113,77 +70,82 @@ onUnmounted(() => {
       :title="lesson.title"
       :description="lesson.description"
     >
-      <!-- 课时信息 -->
-      <!-- <div class="flex">
-        <VbenButton v-access:role="['ADMIN', 'GUEST', 'TEACHER']" variant="ghost" size="sm" class="w-8">
-          <ElIcon>
-            <Edit />
-          </ElIcon>
-        </VbenButton>
-        <VbenButton variant="icon" size="sm" icon="ri:edit-line" />
-        <VbenButton variant="icon" size="sm" icon="ri:star-line" />
-      </div> -->
-
-      <!-- 播放区 -->
+      <!-- 学习内容区域 -->
       <div class="rounded-xl p-5">
-        <h2 class="mb-4 font-semibold text-gray-800">学习内容</h2>
+        <h2 class="mb-4 font-semibold">Learning content</h2>
 
-        <!-- 视频加载中 / 错误状态 -->
-        <div v-if="lesson.type === 'video'" class="relative">
-          <video
-            ref="videoRef"
-            class="aspect-video w-full rounded-lg bg-black"
-            controls
-            @timeupdate="handleTimeUpdate"
-            @loadeddata="handleLoadedData"
-            @error="handleVideoError"
-          >
-            <source :src="lesson.contentUrl" type="video/mp4" />
-            您的浏览器不支持视频播放。
-          </video>
-
-          <!-- 加载遮罩 -->
-          <div
-            v-if="!isVideoLoaded && !videoError"
-            class="absolute inset-0 flex items-center justify-center rounded-lg bg-black bg-opacity-50"
-          >
-            <div class="text-white">正在加载视频...</div>
+        <!-- 遍历每个 content block -->
+        <div
+          v-for="(block, index) in lesson.content"
+          :key="block.id"
+          class="mb-6"
+        >
+          <!-- Video Block -->
+          <div v-if="block.type === 'video'" class="flex justify-center">
+            <div
+              class="relative aspect-video w-full max-w-3xl overflow-hidden rounded-lg bg-black"
+            >
+              <iframe
+                :src="`https://www.youtube.com/embed/${extractVideoId(block.url || '')}`"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                class="absolute inset-0 h-full w-full"
+              ></iframe>
+            </div>
           </div>
 
-          <!-- 错误提示 -->
+          <!-- Text Block -->
           <div
-            v-if="videoError"
-            class="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-gray-100"
+            v-else-if="block.type === 'text'"
+            class="prose max-w-none rounded-lg bg-gray-50 p-4 text-gray-700"
+            v-html="block.content || ''"
+          ></div>
+
+          <!-- Code Block -->
+          <div
+            v-else-if="block.type === 'code'"
+            class="overflow-x-auto rounded-lg bg-gray-900 p-4 font-mono text-sm text-green-400"
           >
-            <div class="mb-2 text-red-600">⚠️ 视频加载失败</div>
-            <div class="text-sm text-gray-600">请检查网络或稍后重试</div>
+            <pre>{{ block.content || '' }}</pre>
+          </div>
+
+          <!-- Document Block -->
+          <div
+            v-else-if="block.type === 'document'"
+            class="flex cursor-pointer items-center gap-2 text-blue-600 hover:underline"
+            @click="downloadDocument(block.url || '')"
+          >
+            📄 <span>Download Document</span>
+          </div>
+
+          <!-- 未知类型 -->
+          <div v-else class="italic text-gray-500">
+            不支持的内容类型：{{ block.type }}
           </div>
         </div>
 
-        <!-- 非视频内容（如文本、PDF等） -->
+        <!-- 无内容提示 -->
         <div
-          v-else
-          class="prose max-w-none rounded-lg bg-gray-50 p-4 text-gray-700"
+          v-if="lesson.content.length === 0"
+          class="py-8 text-center text-gray-500"
         >
-          {{ lesson.contentUrl }}
+          尚未添加任何学习内容。
         </div>
       </div>
 
-      <!-- 操作区 -->
+      <!-- 操作按钮区 -->
       <div
         class="flex flex-wrap items-center justify-between gap-3 rounded-xl p-5"
       >
-        <div class="flex gap-2">
-          <VbenButton
-            variant="default"
-            size="sm"
-            @click="markCompleted"
-            :disabled="lesson.completed"
-            class="whitespace-nowrap"
-          >
-            {{ lesson.completed ? '✅ 已完成' : '标记为已完成' }}
-          </VbenButton>
-        </div>
+        <VbenButton
+          variant="default"
+          size="sm"
+          @click="markCompleted"
+          :disabled="lesson.completed"
+        >
+          {{ lesson.completed ? '✅ 已完成' : '标记为已完成' }}
+        </VbenButton>
 
         <VbenButton
           variant="outline"
@@ -199,8 +161,10 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* 确保视频比例正确 */
-video {
-  object-fit: contain;
+/* 确保 iframe 填充容器 */
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 </style>
