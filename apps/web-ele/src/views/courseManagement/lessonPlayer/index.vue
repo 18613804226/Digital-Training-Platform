@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { Page, VbenButton } from '@vben/common-ui';
+import { Page, VbenButton, VbenLoading } from '@vben/common-ui';
 
 import { ElMessage } from 'element-plus';
 
@@ -24,10 +24,11 @@ const lesson = ref({
     url?: string;
   }>,
 });
-
+const loading = ref(false)
 onMounted(async () => {
   if (lessonId) {
     try {
+      loading.value = true
       const res = await getLessonApi({ lessonId });
       lesson.value = {
         ...res,
@@ -35,6 +36,8 @@ onMounted(async () => {
       };
     } catch (error) {
       console.error('Failed to load lesson:', error);
+    } finally {
+      loading.value = false
     }
   }
 });
@@ -101,66 +104,39 @@ function parseFiles(content: any): { name: string; url: string }[] {
 
 <template>
   <div class="h-full p-4">
-    <Page
-      class="card-box h-full overflow-hidden rounded-lg"
-      :title="lesson.title"
-      :description="lesson.description"
-    >
+    <VbenLoading v-if="loading" :spinning="loading" />
+    <Page class="card-box h-full overflow-hidden rounded-lg" :title="lesson.title" :description="lesson.description">
       <div class="">
         <!-- <h2 class="mb-4 font-semibold">Learning content</h2> -->
 
-        <div
-          v-for="(block, index) in lesson.content"
-          :key="block.id"
-          class="mb-6"
-        >
+        <div v-for="(block, index) in lesson.content" :key="block.id" class="mb-6">
           <!-- Video Block -->
-          <div
-            v-if="block.type === 'video'"
-            class="card-box flex justify-center"
-          >
-            <div
-              class="relative aspect-video w-full max-w-3xl overflow-hidden rounded-lg bg-black"
-            >
-              <iframe
-                :src="`https://www.youtube.com/embed/${extractVideoId(block.url || '')}`"
-                frameborder="0"
+          <div v-if="block.type === 'video'" class="card-box flex justify-center">
+            <div class="relative aspect-video w-full max-w-3xl overflow-hidden rounded-lg bg-black">
+              <iframe :src="`https://www.youtube.com/embed/${extractVideoId(block.url || '')}`" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                class="absolute inset-0 h-full w-full"
-              ></iframe>
+                allowfullscreen class="absolute inset-0 h-full w-full"></iframe>
             </div>
           </div>
           <!-- Text Block -->
-          <div
-            v-else-if="block.type === 'text'"
-            class="card-box prose max-w-none rounded-lg p-4 text-gray-700"
-            v-html="block.content || ''"
-          ></div>
+          <div v-else-if="block.type === 'text'" class="card-box prose max-w-none rounded-lg p-4 text-gray-700"
+            v-html="block.content || ''"></div>
           <!-- Code Block -->
-          <div
-            v-else-if="block.type === 'code'"
-            class="card-box overflow-x-auto rounded-lg bg-gray-900 p-4 font-mono text-sm text-green-400"
-          >
+          <div v-else-if="block.type === 'code'"
+            class="card-box overflow-x-auto rounded-lg bg-gray-900 p-4 font-mono text-sm text-green-400">
             <pre>{{ block.content || '' }}</pre>
           </div>
           <!-- Document Block -->
-          <div
-            v-else-if="block.type === 'document'"
-            class="card-box rounded-lg p-4"
-          >
+          <div v-else-if="block.type === 'document'" class="card-box rounded-lg p-4">
             <h3 class="mb-2 font-medium text-gray-800">📄 附加文档</h3>
             <ul class="space-y-2">
-              <li
-                v-for="(file, idx) in parseFiles(block.content)"
-                :key="idx"
+              <li v-for="(file, idx) in parseFiles(block.content)" :key="idx"
                 class="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 transition-colors hover:bg-gray-100"
-                @click="downloadDocument(file.url, file.name)"
-              >
+                @click="downloadDocument(file.url, file.name)">
                 <span class="text-sm text-blue-600">📄</span>
                 <span class="truncate text-sm text-gray-700">{{
                   file.name
-                }}</span>
+                  }}</span>
               </li>
             </ul>
           </div>
@@ -171,32 +147,17 @@ function parseFiles(content: any): { name: string; url: string }[] {
           </div>
         </div>
 
-        <div
-          v-if="lesson.content.length === 0"
-          class="py-8 text-center text-gray-500"
-        >
+        <div v-if="lesson.content.length === 0" class="py-8 text-center text-gray-500">
           尚未添加任何学习内容。
         </div>
       </div>
 
-      <div
-        class="flex flex-wrap items-center justify-between gap-3 rounded-xl p-5"
-      >
-        <VbenButton
-          variant="default"
-          size="sm"
-          @click="markCompleted"
-          :disabled="lesson.completed"
-        >
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl p-5">
+        <VbenButton variant="default" size="sm" @click="markCompleted" :disabled="lesson.completed">
           {{ lesson.completed ? '✅ 已完成' : '标记为已完成' }}
         </VbenButton>
 
-        <VbenButton
-          variant="outline"
-          size="sm"
-          @click="goToNextLesson"
-          class="whitespace-nowrap"
-        >
+        <VbenButton variant="outline" size="sm" @click="goToNextLesson" class="whitespace-nowrap">
           下一课时 →
         </VbenButton>
       </div>

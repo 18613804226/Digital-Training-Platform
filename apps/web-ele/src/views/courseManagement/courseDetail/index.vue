@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { prompt, useVbenModal, VbenButton } from '@vben/common-ui';
+import { prompt, useVbenModal, VbenButton, VbenLoading } from '@vben/common-ui';
 
 import { Check, Clock, Delete, Edit, Rank } from '@element-plus/icons-vue';
 import { ElIcon, ElMessage } from 'element-plus';
@@ -36,12 +36,14 @@ const course = ref({
 
 const lessons = ref<any[]>([]);
 const lessonData = ref({});
-
+const loading = ref(false)
 // —————— Load Course ——————
 onMounted(async () => {
   if (!route.meta.hideDetail) {
+    loading.value = true
     await loadCourse();
     initSortable();
+    loading.value = false
   }
 });
 
@@ -98,7 +100,7 @@ async function loadCourse() {
 // —————— Delete Lesson ——————
 function deleteLesson(lessonId: number) {
   prompt({
-    component: () => {},
+    component: () => { },
     content: 'Are you sure you want to delete this lesson?',
     icon: 'error',
     modelPropName: 'value',
@@ -169,6 +171,7 @@ const hasTypeInLesson = (lesson: any, type: string): boolean => {
 
 <template>
   <div class="h-full">
+    <VbenLoading v-if="loading" :spinning="loading" />
     <div class="m-4 space-y-4" v-if="!route.meta.hideDetail">
       <!-- Top Course Info -->
       <div class="card-box flex items-start justify-between p-6">
@@ -183,14 +186,10 @@ const hasTypeInLesson = (lesson: any, type: string): boolean => {
                 {{ totalLessons }} Lessons
               </span>
               <div class="h-2 flex-1 overflow-hidden rounded-full bg-gray-200">
-                <div
-                  class="h-full bg-blue-500 transition-all duration-300"
-                  :style="{ width: `${progressPercent}%` }"
-                ></div>
+                <div class="h-full bg-blue-500 transition-all duration-300" :style="{ width: `${progressPercent}%` }">
+                </div>
               </div>
-              <span class="whitespace-nowrap text-xs text-gray-500"
-                >{{ progressPercent }}%</span
-              >
+              <span class="whitespace-nowrap text-xs text-gray-500">{{ progressPercent }}%</span>
             </div>
           </div>
 
@@ -201,12 +200,7 @@ const hasTypeInLesson = (lesson: any, type: string): boolean => {
           </div>
         </div>
 
-        <VbenButton
-          v-access:role="['ADMIN', 'GUEST', 'TEACHER']"
-          variant="default"
-          size="sm"
-          @click="openAddLesson"
-        >
+        <VbenButton v-access:role="['ADMIN', 'GUEST', 'TEACHER']" variant="default" size="sm" @click="openAddLesson">
           + Add Lesson
         </VbenButton>
       </div>
@@ -216,29 +210,16 @@ const hasTypeInLesson = (lesson: any, type: string): boolean => {
         <h3 class="mb-3 text-lg font-bold">Course Content</h3>
 
         <ul ref="lessonListRef" class="space-y-3">
-          <li
-            v-for="lesson in lessons"
-            :key="lesson.id"
-            class="group flex flex-col rounded border border-transparent px-3 py-3 transition hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-600 dark:hover:bg-gray-700"
-          >
+          <li v-for="lesson in lessons" :key="lesson.id"
+            class="group flex flex-col rounded border border-transparent px-3 py-3 transition hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-600 dark:hover:bg-gray-700">
             <!-- Title & Status Row -->
             <div class="flex w-full items-center justify-between">
               <div>
                 <div class="flex items-center gap-2">
-                  <ElIcon
-                    v-if="lesson.completed"
-                    color="#409EFF"
-                    size="16"
-                    class="dark:text-blue-400"
-                  >
+                  <ElIcon v-if="lesson.completed" color="#409EFF" size="16" class="dark:text-blue-400">
                     <Check />
                   </ElIcon>
-                  <ElIcon
-                    v-else
-                    color="#9CA3AF"
-                    size="16"
-                    class="dark:text-gray-400"
-                  >
+                  <ElIcon v-else color="#9CA3AF" size="16" class="dark:text-gray-400">
                     <Clock />
                   </ElIcon>
                   <span class="font-medium text-gray-700 dark:text-gray-200">
@@ -246,36 +227,25 @@ const hasTypeInLesson = (lesson: any, type: string): boolean => {
                   </span>
                 </div>
 
-                <div
-                  v-if="
-                    lesson.content &&
-                    Array.isArray(lesson.content) &&
-                    lesson.content.length > 0
-                  "
-                  class="mt-2 flex flex-wrap gap-1"
-                >
-                  <span
-                    v-if="hasTypeInLesson(lesson, 'text')"
-                    class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
-                  >
+                <div v-if="
+                  lesson.content &&
+                  Array.isArray(lesson.content) &&
+                  lesson.content.length > 0
+                " class="mt-2 flex flex-wrap gap-1">
+                  <span v-if="hasTypeInLesson(lesson, 'text')"
+                    class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
                     📝 Text
                   </span>
-                  <span
-                    v-if="hasTypeInLesson(lesson, 'video')"
-                    class="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-300"
-                  >
+                  <span v-if="hasTypeInLesson(lesson, 'video')"
+                    class="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-300">
                     🎬 Video
                   </span>
-                  <span
-                    v-if="hasTypeInLesson(lesson, 'code')"
-                    class="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
-                  >
+                  <span v-if="hasTypeInLesson(lesson, 'code')"
+                    class="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
                     💻 Code
                   </span>
-                  <span
-                    v-if="hasTypeInLesson(lesson, 'document')"
-                    class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                  >
+                  <span v-if="hasTypeInLesson(lesson, 'document')"
+                    class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-300">
                     📄 Document
                   </span>
                 </div>
@@ -284,71 +254,47 @@ const hasTypeInLesson = (lesson: any, type: string): boolean => {
               <!-- Action Buttons -->
               <div class="flex items-center gap-1">
                 <!-- Drag Handle -->
-                <VbenButton
-                  v-access:role="['ADMIN', 'GUEST', 'TEACHER']"
-                  variant="ghost"
-                  size="sm"
-                  class="w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                >
+                <VbenButton v-access:role="['ADMIN', 'GUEST', 'TEACHER']" variant="ghost" size="sm"
+                  class="w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                   <ElIcon>
                     <Rank />
                   </ElIcon>
                 </VbenButton>
 
                 <!-- Edit -->
-                <VbenButton
-                  v-access:role="['ADMIN', 'GUEST', 'TEACHER']"
-                  variant="ghost"
-                  size="sm"
-                  class="w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                  @click="openAddLesson(lesson)"
-                >
+                <VbenButton v-access:role="['ADMIN', 'GUEST', 'TEACHER']" variant="ghost" size="sm"
+                  class="w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" @click="openAddLesson(lesson)">
                   <ElIcon>
                     <Edit />
                   </ElIcon>
                 </VbenButton>
 
                 <!-- Delete -->
-                <VbenButton
-                  v-access:role="['ADMIN', 'GUEST', 'TEACHER']"
-                  variant="ghost"
-                  size="sm"
+                <VbenButton v-access:role="['ADMIN', 'GUEST', 'TEACHER']" variant="ghost" size="sm"
                   class="w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                  @click="deleteLesson(lesson.id)"
-                >
+                  @click="deleteLesson(lesson.id)">
                   <ElIcon>
                     <Delete />
                   </ElIcon>
                 </VbenButton>
 
                 <!-- Toggle Completion -->
-                <VbenButton
-                  variant="link"
-                  size="sm"
-                  @click="toggleLessonComplete(lesson.id)"
-                  class="ml-2 w-24 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                >
+                <VbenButton variant="link" size="sm" @click="toggleLessonComplete(lesson.id)"
+                  class="ml-2 w-24 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                   {{ lesson.completed ? 'Relearning' : 'Start Learning' }}
                 </VbenButton>
               </div>
             </div>
           </li>
 
-          <li
-            v-if="lessons.length === 0"
-            class="py-4 text-center text-sm italic text-gray-400 dark:text-gray-500"
-          >
+          <li v-if="lessons.length === 0" class="py-4 text-center text-sm italic text-gray-400 dark:text-gray-500">
             No lessons available.
           </li>
         </ul>
       </div>
 
       <!-- Modal -->
-      <Modal
-        :course-id="courseId"
-        :lesson-data="lessonData"
-        @confirm="loadCourse()"
-      />
+      <Modal :course-id="courseId" :lesson-data="lessonData" @confirm="loadCourse()" />
     </div>
     <router-view v-else />
   </div>
