@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 
 import { useVbenForm, useVbenModal, z } from '@vben/common-ui';
 
@@ -51,13 +51,13 @@ const [Form, formApi] = useVbenForm({
 });
 
 // 同步 contentBlocks 到 formApi，用于验证和 getValues()
-watch(
-  contentBlocks,
-  (val) => {
-    formApi.setFieldValue('contentBlocks', val);
-  },
-  { immediate: true },
-);
+// watch(
+//   contentBlocks,
+//   (val) => {
+//     formApi.setFieldValue('contentBlocks', val);
+//   },
+//   { immediate: true },
+// );
 
 // 初始化数据
 async function initFormData() {
@@ -75,7 +75,9 @@ async function initFormData() {
       blocks = rawContent;
     }
   }
-  contentBlocks.value = blocks;
+  // contentBlocks.value = blocks;
+  // ✅ 深拷贝原始数据
+  contentBlocks.value = JSON.parse(JSON.stringify(blocks));
 }
 
 const [Modal, modalApi] = useVbenModal({
@@ -116,7 +118,7 @@ async function onConfirm() {
   const payload = {
     title: values.title,
     description: values.description,
-    content: values.contentBlocks, // 提交时用这个字段
+    content: JSON.parse(JSON.stringify(contentBlocks.value)), // ✅ 提交当前编辑状态
   };
 
   try {

@@ -4,13 +4,14 @@ import { useRoute, useRouter } from 'vue-router';
 
 import { Page, VbenButton } from '@vben/common-ui';
 
-import { getLessonApi } from '#/api';
+import { ElMessage } from 'element-plus';
+
+import { getLessonApi, updateCompleteApi } from '#/api';
 
 const route = useRoute();
 const router = useRouter();
 const lessonId = Number(route.params.lessonId);
 
-// 当前课时数据
 const lesson = ref({
   id: (route.params.lessonId as string) || 'l1',
   title: 'HTML简介',
@@ -28,7 +29,6 @@ onMounted(async () => {
   if (lessonId) {
     try {
       const res = await getLessonApi({ lessonId });
-      console.log('Lesson Data:', res);
       lesson.value = {
         ...res,
         content: Array.isArray(res.content) ? res.content : [],
@@ -39,27 +39,63 @@ onMounted(async () => {
   }
 });
 
-// 手动标记完成
-function markCompleted() {
-  lesson.value.completed = true;
-  console.log(`课时 ${lesson.value.id} 已手动完成`);
+async function markCompleted() {
+  // getLessonApi，updateCompleteApi
+  // lesson.value.completed = true;
+  const data = {
+    courseId: route.params.courseId,
+    lessonId,
+  };
+  const res = await updateCompleteApi(data);
+  if (res.success) {
+    lesson.value.completed = true;
+    ElMessage.success(res.message);
+  }
 }
 
-// 跳转到下一课（简化：直接返回课程页）
 function goToNextLesson() {
-  router.push(`/courses/${route.params.courseId}`);
+  router.push(`/courseDetail/${route.params.courseId}`);
 }
 
-// 提取 YouTube 视频 ID
 function extractVideoId(url: string): string {
   const regExp = /^.*(youtu\.be\/|v\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match: any = url.match(regExp);
   return match && match[2].length === 11 ? match[2] : '';
 }
 
-// 下载文档（打开新标签页）
-function downloadDocument(url: string) {
-  window.open(url, '_blank');
+async function downloadDocument(url: string, name: string) {
+  const fullUrl = import.meta.env.VITE_BASE_API + url;
+
+  try {
+    const response = await fetch(fullUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch document: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = name;
+    document.body.append(link);
+    link.click();
+
+    link.remove();
+    URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error('Download failed:', error);
+  }
+}
+
+// ✅ 新增：解析文件列表
+function parseFiles(content: any): { name: string; url: string }[] {
+  try {
+    return JSON.parse(content || '[]');
+  } catch (error) {
+    console.warn('Failed to parse document content:', error);
+    return [];
+  }
 }
 </script>
 
@@ -70,18 +106,19 @@ function downloadDocument(url: string) {
       :title="lesson.title"
       :description="lesson.description"
     >
-      <!-- 学习内容区域 -->
-      <div class="rounded-xl p-5">
-        <h2 class="mb-4 font-semibold">Learning content</h2>
+      <div class="">
+        <!-- <h2 class="mb-4 font-semibold">Learning content</h2> -->
 
-        <!-- 遍历每个 content block -->
         <div
           v-for="(block, index) in lesson.content"
           :key="block.id"
           class="mb-6"
         >
           <!-- Video Block -->
-          <div v-if="block.type === 'video'" class="flex justify-center">
+          <div
+            v-if="block.type === 'video'"
+            class="card-box flex justify-center"
+          >
             <div
               class="relative aspect-video w-full max-w-3xl overflow-hidden rounded-lg bg-black"
             >
@@ -94,29 +131,38 @@ function downloadDocument(url: string) {
               ></iframe>
             </div>
           </div>
-
           <!-- Text Block -->
           <div
             v-else-if="block.type === 'text'"
-            class="prose max-w-none rounded-lg bg-gray-50 p-4 text-gray-700"
+            class="card-box prose max-w-none rounded-lg p-4 text-gray-700"
             v-html="block.content || ''"
           ></div>
-
           <!-- Code Block -->
           <div
             v-else-if="block.type === 'code'"
-            class="overflow-x-auto rounded-lg bg-gray-900 p-4 font-mono text-sm text-green-400"
+            class="card-box overflow-x-auto rounded-lg bg-gray-900 p-4 font-mono text-sm text-green-400"
           >
             <pre>{{ block.content || '' }}</pre>
           </div>
-
           <!-- Document Block -->
           <div
             v-else-if="block.type === 'document'"
-            class="flex cursor-pointer items-center gap-2 text-blue-600 hover:underline"
-            @click="downloadDocument(block.url || '')"
+            class="card-box rounded-lg p-4"
           >
-            📄 <span>Download Document</span>
+            <h3 class="mb-2 font-medium text-gray-800">📄 附加文档</h3>
+            <ul class="space-y-2">
+              <li
+                v-for="(file, idx) in parseFiles(block.content)"
+                :key="idx"
+                class="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 transition-colors hover:bg-gray-100"
+                @click="downloadDocument(file.url, file.name)"
+              >
+                <span class="text-sm text-blue-600">📄</span>
+                <span class="truncate text-sm text-gray-700">{{
+                  file.name
+                }}</span>
+              </li>
+            </ul>
           </div>
 
           <!-- 未知类型 -->
@@ -125,7 +171,6 @@ function downloadDocument(url: string) {
           </div>
         </div>
 
-        <!-- 无内容提示 -->
         <div
           v-if="lesson.content.length === 0"
           class="py-8 text-center text-gray-500"
@@ -134,7 +179,6 @@ function downloadDocument(url: string) {
         </div>
       </div>
 
-      <!-- 操作按钮区 -->
       <div
         class="flex flex-wrap items-center justify-between gap-3 rounded-xl p-5"
       >
@@ -161,10 +205,36 @@ function downloadDocument(url: string) {
 </template>
 
 <style scoped>
-/* 确保 iframe 填充容器 */
-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
+/* 文件列表样式优化 */
+.doc-list {
+  padding: 1rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.doc-item {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s;
+}
+
+.doc-item:hover {
+  background-color: #f9fafb;
+}
+
+.doc-item:last-child {
+  border-bottom: none;
+}
+
+.doc-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

@@ -12,6 +12,7 @@ import {
   deleteLessonApi,
   getCourseByIdApi,
   updateLessonsOrderApi,
+  updateUncompleteApi,
 } from '#/api';
 
 import ExtraModal from './modal.vue';
@@ -118,11 +119,16 @@ function openAddLesson(lesson?: any) {
 
 // —————— Toggle Completion Status ——————
 async function toggleLessonComplete(lessonId: number) {
-  // const lesson = lessons.value.find((l: any) => l.id === lessonId);
-  // const data = {
-  //   lessonId,
-  //   courseId,
-  // };
+  const lesson = lessons.value.find((l: any) => l.id === lessonId);
+  const data = {
+    lessonId,
+    courseId,
+  };
+  if (lesson.completed) {
+    const res = await updateUncompleteApi(data);
+    if (res.success) {
+    }
+  }
   router.push({ name: 'lessonPlayer', params: { lessonId } });
   // if (lesson) {
   //   lesson.completed = !lesson.completed;

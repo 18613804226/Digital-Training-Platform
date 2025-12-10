@@ -4,7 +4,7 @@ import { ref, watch } from 'vue';
 import CodePreview from '@/components/CodePreview.vue';
 import MarkdownBlock from '@/components/MarkdownBlock.vue';
 // Element Plus 图标
-import { Delete, Document, Upload } from '@element-plus/icons-vue';
+import { Close, Delete, Document, Upload } from '@element-plus/icons-vue';
 import {
   ElAlert,
   ElButton,
@@ -14,25 +14,26 @@ import {
   ElInput,
   ElMessage,
   ElRow,
-  ElSkeleton,
   ElUpload,
 } from 'element-plus';
+
+import { uploadFileApi } from '#/api';
 
 interface ContentBlock {
   id: string;
   type: 'code' | 'document' | 'text' | 'video';
-  content: string;
+  content: string; // 👈 统一存储：文本、代码、JSON 文件列表等
   url?: string;
-  filename?: string;
+  uploadStatus?: 'error' | 'idle' | 'uploading';
 }
 
 const props = defineProps<{ value?: ContentBlock[] }>();
 const emit = defineEmits<{ (e: 'update:value', v: ContentBlock[]): void }>();
 
 const blocks = ref<ContentBlock[]>([]);
-const isExternalUpdate = ref(false); // 👈 关键：区分外部 vs 内部变化
+const isExternalUpdate = ref(false);
 
-// 1️⃣ 同步父组件传入的值（外部更新）
+// 1️⃣ 同步父组件值（外部更新）
 watch(
   () => props.value,
   (v) => {
@@ -40,29 +41,27 @@ watch(
       blocks.value = [];
       return;
     }
-    isExternalUpdate.value = true; // 标记：这次是外部触发
-    blocks.value = JSON.parse(JSON.stringify(v)); // 深拷贝避免引用污染
+    isExternalUpdate.value = true;
+    blocks.value = [...v]; // 浅拷贝，保留对象响应性
   },
   { immediate: true },
 );
 
-// 2️⃣ 监听内部变化并通知父组件（仅当不是外部更新时）
-watch(
-  blocks,
-  (newVal) => {
-    if (isExternalUpdate.value) {
-      isExternalUpdate.value = false; // 重置标志
-      return; // ❌ 不要 emit，避免闭环
-    }
+// 2️⃣ 内部变化通知父组件
+// watch(
+//   blocks,
+//   (newVal) => {
+//     if (isExternalUpdate.value) {
+//       isExternalUpdate.value = false;
+//       return;
+//     }
+//     emit('update:value', newVal);
+//   },
+//   { deep: true }
+// );
 
-    // ✅ 安全地向上同步
-    const plain = JSON.parse(JSON.stringify(newVal));
-    emit('update:value', plain);
-  },
-  { deep: true },
-);
-
-// 3️⃣ 修改方法：始终替换整个数组
+// const getEditedBlocks = () => blocks.value;
+// 3️⃣ 增删块
 const addBlock = (type: ContentBlock['type']) => {
   blocks.value = [
     ...blocks.value,
@@ -71,16 +70,17 @@ const addBlock = (type: ContentBlock['type']) => {
       type,
       content: type === 'text' ? '<p></p>' : '',
       url: '',
-      filename: undefined,
     },
   ];
+  emit('update:value', [...blocks.value]);
 };
 
 const removeBlock = (id: string) => {
   blocks.value = blocks.value.filter((b) => b.id !== id);
+  emit('update:value', [...blocks.value]);
 };
 
-// 视频 URL 处理
+// 视频处理
 const isValidEmbedUrl = (url: string | undefined) => {
   if (!url) return false;
   try {
@@ -105,8 +105,20 @@ const getEmbedUrl = (url: string) => {
   return url;
 };
 
+// ✅ 解析 document 的 content 为文件列表
+const parseFiles = (block: ContentBlock) => {
+  if (!block.content || block.content === 'uploading') return [];
+  try {
+    const parsed = JSON.parse(block.content);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    console.warn('Invalid content JSON:', block.content);
+    return [];
+  }
+};
+
 // 文档上传处理
-const handleFileUpload = async (file: File, block: ContentBlock) => {
+const handleFileUpload = async (rawFile: any, block: ContentBlock) => {
   const allowedTypes = [
     'application/pdf',
     'application/msword',
@@ -119,35 +131,78 @@ const handleFileUpload = async (file: File, block: ContentBlock) => {
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   ];
 
+  const file = rawFile.raw;
+  if (!file) {
+    ElMessage.warning('未选择文件');
+    return;
+  }
+
   if (!allowedTypes.includes(file.type)) {
     ElMessage.error('Unsupported file type');
     return false;
   }
 
-  try {
-    block.content = 'uploading...';
+  // 设置上传中状态
+  // block.content = 'uploading';
+  // block.uploadStatus = 'uploading';
 
-    // TODO: 替换为你的真实上传接口
-    const formData = new FormData();
-    formData.append('file', file);
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
+  try {
+    const res = await uploadFileApi({ file });
+    if (!res.success) throw new Error('Upload failed');
+
+    // 获取当前文件列表（可能为空）
+    const files = parseFiles(block);
+    files.push({
+      name: file.name, // ✅ 使用 file.name
+      url: res.url,
     });
 
-    if (!res.ok) throw new Error('Upload failed');
-    const data = await res.json();
-
-    block.content = data.url;
-    block.filename = file.name;
+    // 序列化回 content
+    block.content = JSON.stringify(files);
+    // block.uploadStatus = 'idle';
+    emit('update:value', [...blocks.value]);
+    ElMessage.success('Upload success');
     return true;
   } catch (error) {
     console.error('Upload error:', error);
     ElMessage.error('Failed to upload document');
     block.content = '';
+    // block.uploadStatus = 'error';
     return false;
   }
 };
+
+// 删除文件
+const removeFile = (block: ContentBlock, index: number) => {
+  const files = parseFiles(block);
+  if (index >= 0 && index < files.length) {
+    files.splice(index, 1);
+    block.content = files.length > 0 ? JSON.stringify(files) : '';
+  }
+};
+async function downloadDocument(url: string, name: string) {
+  const fullUrl = import.meta.env.VITE_BASE_API + url;
+  try {
+    const response = await fetch(fullUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch document: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = name;
+    document.body.append(link);
+    link.click();
+
+    link.remove();
+    URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error('Download failed:', error);
+  }
+}
 </script>
 
 <template>
@@ -157,7 +212,6 @@ const handleFileUpload = async (file: File, block: ContentBlock) => {
       <template #header>
         <div class="flex items-center justify-between">
           <span class="text-sm font-medium capitalize">{{ block.type }}</span>
-          <!-- 删除按钮：圆形危险色，带图标 -->
           <ElButton
             size="small"
             circle
@@ -235,10 +289,14 @@ const handleFileUpload = async (file: File, block: ContentBlock) => {
 
       <!-- 文档块 -->
       <div v-else-if="block.type === 'document'" class="mt-2">
+        <!-- 上传区域 -->
         <ElUpload
           :auto-upload="false"
           :show-file-list="false"
-          :onchange="(file: { raw: File }) => handleFileUpload(file.raw, block)"
+          :on-change="
+            (uploadFile) =>
+              uploadFile?.raw && handleFileUpload(uploadFile, block)
+          "
           :drag="true"
           accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md,.xls,.xlsx"
           class="document-upload"
@@ -254,32 +312,40 @@ const handleFileUpload = async (file: File, block: ContentBlock) => {
           </div>
         </ElUpload>
 
-        <div
-          v-if="block.content && !block.content.startsWith('uploading')"
-          class="mt-3 flex items-center gap-2"
-        >
-          <ElIcon :size="16" class="text-blue-500">
-            <Document />
-          </ElIcon>
-          <a
-            :href="block.content"
-            target="_blank"
-            class="max-w-[200px] truncate text-blue-600 hover:underline md:max-w-none"
-            :title="block.filename || block.content"
+        <!-- 已上传文件列表 -->
+        <div v-if="parseFiles(block).length > 0" class="mt-3 space-y-2">
+          <div
+            v-for="(file, index) in parseFiles(block)"
+            :key="index"
+            class="flex items-center gap-2 py-1"
           >
-            {{ block.filename || 'Download Document' }}
-          </a>
+            <ElIcon :size="16" class="text-blue-500">
+              <Document />
+            </ElIcon>
+            <a
+              @click="downloadDocument(file.url, file.name)"
+              target="_blank"
+              class="max-w-[200px] cursor-pointer truncate text-sm text-blue-600 hover:underline md:max-w-none"
+              :title="file.name"
+            >
+              {{ file.name }}
+            </a>
+            <ElButton
+              type="text"
+              size="small"
+              @click="removeFile(block, index)"
+              class="ml-auto text-gray-500 hover:text-red-500"
+            >
+              <ElIcon>
+                <Close />
+              </ElIcon>
+            </ElButton>
+          </div>
         </div>
-
-        <ElSkeleton
-          v-else-if="block.content?.startsWith('uploading')"
-          :rows="1"
-          animated
-        />
       </div>
     </ElCard>
 
-    <!-- 添加按钮区域 -->
+    <!-- 添加按钮 -->
     <div class="flex flex-wrap justify-center gap-2 pt-2">
       <ElButton type="primary" @click="addBlock('text')">+ Text</ElButton>
       <ElButton type="success" @click="addBlock('video')">+ Video</ElButton>
@@ -290,8 +356,8 @@ const handleFileUpload = async (file: File, block: ContentBlock) => {
 </template>
 
 <style scoped>
-/* 可选：微调样式以匹配 Vben */
-.el-card {
-  border-radius: 8px;
+.document-upload :deep(.el-upload-dragger) {
+  height: 120px;
+  padding: 16px;
 }
 </style>

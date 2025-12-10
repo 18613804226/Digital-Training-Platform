@@ -26,7 +26,6 @@ class FileUploader {
         !isUndefined(value) && formData.append(key, value);
       }
     });
-
     const finalConfig: RequestClientConfig = {
       ...config,
       headers: {
@@ -34,7 +33,6 @@ class FileUploader {
         ...config?.headers,
       },
     };
-
     return this.client.post(url, formData, finalConfig);
   }
 }

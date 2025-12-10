@@ -44,7 +44,9 @@ export async function updateLessonsOrderApi(data: any) {
     data,
   );
 }
-// :courseId/lessons/:lessonId/complete
+/**
+ * 课时完成
+ */
 export async function updateCompleteApi(data: any) {
   return requestClient.post<any>(
     `/courses/${data.courseId}/lessons/${data.lessonId}/complete`,
@@ -56,4 +58,10 @@ export async function updateUncompleteApi(data: any) {
     `/courses/${data.courseId}/lessons/${data.lessonId}/uncomplete`,
     data,
   );
+}
+/**
+ * 文档上传
+ */
+export async function uploadFileApi(file: any) {
+  return requestClient.upload<any>(`/upload/file`, file);
 }
