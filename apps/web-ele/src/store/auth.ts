@@ -19,6 +19,11 @@ import {
 } from '#/api';
 import { $t } from '#/locales';
 
+import {
+  destroyNotificationSocket,
+  initNotificationSocket,
+} from '../utils/notification-socket';
+
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
   const userStore = useUserStore();
@@ -56,6 +61,11 @@ export const useAuthStore = defineStore('auth', () => {
 
         userStore.setUserInfo(userInfo);
         accessStore.setAccessCodes(accessCodes);
+
+        // 👇 新增：初始化 WebSocket
+        if (userInfo?.id && accessToken) {
+          initNotificationSocket(userInfo.id, accessToken);
+        }
 
         if (accessStore.loginExpired) {
           accessStore.setLoginExpired(false);
@@ -99,6 +109,10 @@ export const useAuthStore = defineStore('auth', () => {
         const userInfo = fetchUserInfoResult;
         userStore.setUserInfo(userInfo);
         accessStore.setAccessCodes(accessCodes);
+        // 👇 新增：初始化 WebSocket
+        if (userInfo?.id && accessToken) {
+          initNotificationSocket(userInfo.id, accessToken);
+        }
 
         if (accessStore.loginExpired) {
           accessStore.setLoginExpired(false);
@@ -123,6 +137,9 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
   async function logout(redirect: boolean = true) {
+    // 👇 新增：先关闭 WebSocket
+    destroyNotificationSocket();
+
     try {
       await logoutApi();
     } catch (error) {

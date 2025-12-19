@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { NotificationItem } from '@vben/layouts';
 
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
@@ -18,107 +18,97 @@ import { preferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 import { openWindow } from '@vben/utils';
 
+// 👇 这些 API 保留，用于手动操作（标记已读、删除等）
+import {
+  deleteNotificationsAllApi,
+  deleteNotificationsOneApi,
+  getNotificationsApi,
+  patchMarkAllAsReadApi,
+  patchNotificationsReadApi,
+} from '#/api';
 import { $t } from '#/locales';
 import { useAuthStore } from '#/store';
+// 👇 新增：引入通知 Store
+import { useNotificationStore } from '#/store/notification'; // 路径根据你实际调整
+import { initNotificationSocket } from '#/utils/notification-socket';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
-const notifications = ref<NotificationItem[]>([
-  {
-    id: 1,
-    avatar: 'https://avatar.vercel.sh/vercel.svg?text=VB',
-    date: '3小时前',
-    isRead: true,
-    message: '描述信息描述信息描述信息',
-    title: '收到了 14 份新周报',
-  },
-  {
-    id: 2,
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '刚刚',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '朱偏右 回复了你',
-  },
-  {
-    id: 3,
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '2024-01-01',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '曲丽丽 评论了你',
-  },
-  {
-    id: 4,
-    avatar: 'https://avatar.vercel.sh/satori',
-    date: '1天前',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '代办提醒',
-  },
-  {
-    id: 5,
-    avatar: 'https://avatar.vercel.sh/satori',
-    date: '1天前',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '跳转Workspace示例',
-    link: '/workspace',
-  },
-  {
-    id: 6,
-    avatar: 'https://avatar.vercel.sh/satori',
-    date: '1天前',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '跳转外部链接示例',
-    link: 'https://doc.vben.pro',
-  },
-]);
+// 👇 不再用本地 ref，改用 Store
+const notificationStore = useNotificationStore();
+const accessStore = useAccessStore();
+// 初始化：加载历史通知（可选，如果你希望首次进入显示历史记录）
+onMounted(async () => {
+  // 监听 userInfo 变化（应对刷新后异步加载）
+  watch(
+    () => userStore.userInfo,
+    (userInfo) => {
+      const token = accessStore.accessToken;
+      if (userInfo?.id && token) {
+        // console.log('🔁 Initializing WebSocket after page load...');
+        initNotificationSocket(userInfo.id, token);
+      }
+    },
+    { immediate: true },
+  );
+  const res = await getNotificationsApi();
+  if (res.items.length > 0) {
+    // 注意：这里只是初始化，后续由 WebSocket 实时更新
+    notificationStore.notifications = res.items || [];
+  }
+});
 
+// 👇 所有操作都通过 Store + API 同步
+async function makeRead(item: NotificationItem) {
+  const res = await patchNotificationsReadApi({ ids: [item.id] });
+  if (res.success) {
+    notificationStore.markAsRead(item.id);
+  }
+}
+
+async function deleteNotificationsOne(item: { id: number | string }) {
+  const res = await deleteNotificationsOneApi(item);
+  if (res.success) {
+    notificationStore.remove(item.id);
+  }
+}
+
+async function deleteNotificationsAll() {
+  const res = await deleteNotificationsAllApi();
+  if (res.success) {
+    notificationStore.$reset(); // 或直接调用 $reset()
+  }
+}
+
+async function patchMarkAllAsRead() {
+  const res = await patchMarkAllAsReadApi();
+  if (res.success) {
+    notificationStore.markAllAsRead();
+  }
+}
+
+// 其他逻辑保持不变...
 const router = useRouter();
 const userStore = useUserStore();
 const authStore = useAuthStore();
-const accessStore = useAccessStore();
+// const accessStore = useAccessStore();
 const { destroyWatermark, updateWatermark } = useWatermark();
+
+// 👇 计算属性从 Store 读取
 const showDot = computed(() =>
-  notifications.value.some((item) => !item.isRead),
+  notificationStore.notifications.some((item) => !item.read),
 );
 
 const menus = computed(() => [
   {
-    handler: () => {
-      router.push({ name: 'Profile' });
-    },
+    handler: () => router.push({ name: 'Profile' }),
     icon: 'lucide:user',
     text: $t('page.auth.profile'),
   },
-  // {
-  //   handler: () => {
-  //     openWindow(VBEN_DOC_URL, {
-  //       target: '_blank',
-  //     });
-  //   },
-  //   icon: BookOpenText,
-  //   text: $t('ui.widgets.document'),
-  // },
   {
-    handler: () => {
-      openWindow(VBEN_GITHUB_URL, {
-        target: '_blank',
-      });
-    },
+    handler: () => openWindow(VBEN_GITHUB_URL, { target: '_blank' }),
     icon: SvgGithubIcon,
     text: 'GitHub',
   },
-  // {
-  //   handler: () => {
-  //     openWindow(`${VBEN_GITHUB_URL}/issues`, {
-  //       target: '_blank',
-  //     });
-  //   },
-  //   icon: CircleHelp,
-  //   text: $t('ui.widgets.qa'),
-  // },
 ]);
 
 const avatar = computed(() => {
@@ -129,24 +119,9 @@ async function handleLogout() {
   await authStore.logout(false);
 }
 
-function handleNoticeClear() {
-  notifications.value = [];
-}
+// 👇 移除本地方法，全部交给 Store
+// markRead / remove / handleMakeAll / handleNoticeClear 已在 Store 中实现
 
-function markRead(id: number | string) {
-  const item = notifications.value.find((item) => item.id === id);
-  if (item) {
-    item.isRead = true;
-  }
-}
-
-function remove(id: number | string) {
-  notifications.value = notifications.value.filter((item) => item.id !== id);
-}
-
-function handleMakeAll() {
-  notifications.value.forEach((item) => (item.isRead = true));
-}
 watch(
   () => ({
     enable: preferences.app.watermark,
@@ -163,9 +138,7 @@ watch(
       destroyWatermark();
     }
   },
-  {
-    immediate: true,
-  },
+  { immediate: true },
 );
 </script>
 
@@ -182,13 +155,14 @@ watch(
       />
     </template>
     <template #notification>
+      <!-- 👇 直接传 Store 的数据 -->
       <Notification
         :dot="showDot"
-        :notifications="notifications"
-        @clear="handleNoticeClear"
-        @read="(item) => item.id && markRead(item.id)"
-        @remove="(item) => item.id && remove(item.id)"
-        @make-all="handleMakeAll"
+        :notifications="notificationStore.notifications"
+        @clear="deleteNotificationsAll"
+        @read="makeRead"
+        @remove="deleteNotificationsOne"
+        @make-all="patchMarkAllAsRead"
       />
     </template>
     <template #extra>

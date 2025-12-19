@@ -315,7 +315,11 @@ onMounted(async () => {
       <div class="flex flex-col lg:flex-row">
         <div class="mr-4 w-full lg:w-3/5">
           <!-- <WorkbenchProject :items="projectItems" title="项目" @click="navTo" /> -->
-          <WorkbenchTrends :items="trendItems" class="mt-5" title="最新动态" />
+          <WorkbenchTrends
+            :items="trendItems"
+            class="mt-5"
+            title="Latest news"
+          />
           <!-- <WorkbenchTodo :items="todoItems" class="mt-5" title="待办事项" /> -->
         </div>
         <!-- <div class="w-full lg:w-2/5">

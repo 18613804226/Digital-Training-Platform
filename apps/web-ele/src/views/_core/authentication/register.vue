@@ -86,8 +86,7 @@ const formSchema = computed((): VbenFormSchema[] => {
 });
 
 async function handleSubmit(value: Recordable<any>) {
-  // eslint-disable-next-line no-console
-  console.log('register submit:', value);
+  // console.log('register submit:', value);
   const result = await registerApi(value);
   if (result.accessToken) {
     authStore.authLogin(value);

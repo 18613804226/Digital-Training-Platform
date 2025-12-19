@@ -1,9 +1,10 @@
 interface NotificationItem {
+  content: string;
   id: number | string;
   avatar: string;
   date: string;
-  isRead?: boolean;
-  message: string;
+  read?: boolean;
+  // message: string;
   title: string;
   /**
    * 跳转链接，可以是路由路径或完整 URL

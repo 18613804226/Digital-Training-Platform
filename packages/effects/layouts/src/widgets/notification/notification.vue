@@ -122,7 +122,7 @@ function navigateTo(
               @click="handleClick(item)"
             >
               <span
-                v-if="!item.isRead"
+                v-if="!item.read"
                 class="bg-primary absolute right-2 top-2 h-2 w-2 rounded"
               ></span>
 
@@ -137,7 +137,7 @@ function navigateTo(
               <div class="flex flex-col gap-1 leading-none">
                 <p class="font-semibold">{{ item.title }}</p>
                 <p class="text-muted-foreground my-1 line-clamp-2 text-xs">
-                  {{ item.message }}
+                  {{ item.content }}
                 </p>
                 <p class="text-muted-foreground line-clamp-2 text-xs">
                   {{ item.date }}
@@ -147,7 +147,7 @@ function navigateTo(
                 class="absolute right-3 top-1/2 flex -translate-y-1/2 flex-col gap-2"
               >
                 <VbenIconButton
-                  v-if="!item.isRead"
+                  v-if="!item.read"
                   size="xs"
                   variant="ghost"
                   class="h-6 px-2"
@@ -157,7 +157,7 @@ function navigateTo(
                   <CircleCheckBig class="size-4" />
                 </VbenIconButton>
                 <VbenIconButton
-                  v-if="item.isRead"
+                  v-if="item.read"
                   size="xs"
                   variant="ghost"
                   class="text-destructive h-6 px-2"

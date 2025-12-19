@@ -2,6 +2,7 @@ import type { BasicUserInfo } from '@vben-core/typings';
 
 /** 用户信息 */
 interface UserInfo extends BasicUserInfo {
+  id: number; // 或 string，根据后端返回
   /**
    * 用户描述
    */

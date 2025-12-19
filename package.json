@@ -120,5 +120,8 @@
       "canvas",
       "node-gyp"
     ]
+  },
+  "dependencies": {
+    "pinia-plugin-persistedstate": "catalog:"
   }
 }

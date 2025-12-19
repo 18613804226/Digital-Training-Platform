@@ -346,7 +346,7 @@ async function downloadDocument(url: string, name: string) {
     </ElCard>
 
     <!-- 添加按钮 -->
-    <div class="flex flex-wrap justify-center gap-2 pt-2">
+    <div class="flex flex-wrap justify-end gap-2 pt-2">
       <ElButton type="primary" @click="addBlock('text')">+ Text</ElButton>
       <ElButton type="success" @click="addBlock('video')">+ Video</ElButton>
       <ElButton type="warning" @click="addBlock('code')">+ Code</ElButton>

@@ -2,6 +2,7 @@ export * from './certificate';
 export * from './core';
 export * from './courseManagement';
 export * from './dashboard';
+export * from './layouts';
 export * from './liveStreaming';
 export * from './lowCodeStudio';
 export * from './smartExam';
