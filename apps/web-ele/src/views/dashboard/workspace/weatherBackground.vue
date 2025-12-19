@@ -2,15 +2,15 @@
 import { computed } from 'vue';
 
 const props = defineProps<{
-  type: string; // 传入天气描述，如 "mist", "rain", "clear"
+  type: string;
 }>();
 
 const backgroundClass = computed(() => {
   const desc = props.type.toLowerCase();
-  if (desc.includes('mist') || desc.includes('fog')) return 'bg-blur-glass';
-  if (desc.includes('rain')) return 'bg-rainy';
-  if (desc.includes('snow')) return 'bg-snowy';
-  if (desc.includes('clear')) return 'bg-sunny';
+  if (desc.includes('mist') || desc.includes('fog')) return 'bg-mist';
+  if (desc.includes('rain')) return 'bg-rain';
+  if (desc.includes('snow')) return 'bg-snow';
+  if (desc.includes('clear') || desc.includes('sun')) return 'bg-sunny';
   if (desc.includes('cloud')) return 'bg-cloudy';
   return 'bg-default';
 });
@@ -24,48 +24,16 @@ const backgroundClass = computed(() => {
 
 <style scoped>
 /* stylelint-disable-next-line keyframes-name-pattern */
-@keyframes sunnyGradient {
-  0% {
+@keyframes sunnyFlow {
+  0%,
+  100% {
     background-position: 0% 50%;
+    filter: hue-rotate(0deg) brightness(1);
   }
 
   50% {
     background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .bg-blur-glass {
-    background: linear-gradient(
-      135deg,
-      rgb(40 40 40 / 60%),
-      rgb(80 80 80 / 40%)
-    );
-    backdrop-filter: blur(10px) saturate(120%);
-  }
-
-  .bg-rainy {
-    background: linear-gradient(180deg, #0d47a1 0%, #000 100%);
-  }
-
-  .bg-snowy {
-    background: linear-gradient(180deg, #90caf9 0%, #e3f2fd 100%);
-  }
-
-  .bg-sunny {
-    background: linear-gradient(180deg, #f57f17 0%, #fbc02d 100%);
-  }
-
-  .bg-cloudy {
-    background: linear-gradient(180deg, #37474f 0%, #607d8b 100%);
-  }
-
-  .bg-default {
-    /* background: #121212; */
+    filter: hue-rotate(15deg) brightness(1.05);
   }
 }
 
@@ -73,74 +41,90 @@ const backgroundClass = computed(() => {
   position: relative;
   min-height: 100%;
   overflow: hidden;
-  transition:
-    background 300ms ease,
-    backdrop-filter 300ms ease;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 模糊玻璃（适合雾/霾） */
-.bg-blur-glass {
+/* 基础层：柔和渐变底色 */
+.weather-wrapper::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: '';
+  background: inherit;
+  opacity: 0.6;
+  filter: blur(80px);
+}
+
+/* 晴天：梦幻金色流动光 */
+.bg-sunny {
   background: linear-gradient(
     135deg,
-    rgb(255 255 255 / 15%),
-    rgb(200 200 200 / 8%)
+    #ffecd2 0%,
+    #fcb69f 30%,
+    #ff9a9e 60%,
+    #fad0c4 100%
   );
-  backdrop-filter: blur(10px) saturate(120%);
+  animation: sunnyFlow 30s ease infinite;
 }
 
-/* 雨天：蓝黑渐变 */
-.bg-rainy {
-  background: linear-gradient(180deg, #4a90e2 0%, #1c1c1c 100%);
+/* 雨天：深蓝神秘 + 微光 */
+.bg-rain {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 40%, #0f2027 100%);
 }
 
-/* 雪天：浅蓝白渐变 */
-.bg-snowy {
-  background: linear-gradient(180deg, #e0f7fa 0%, #fff 100%);
+/* 雪天：清新冷调蓝白 */
+.bg-snow {
+  background: linear-gradient(135deg, #e0f6ff 0%, #c0e8f9 40%, #a8d8ea 100%);
 }
 
-/* 晴天：暖色渐变 */
-
-.bg-sunny {
-  background: linear-gradient(270deg, #e7cd89, #ece498, #ebbf99);
-  background-size: 600% 600%;
-  animation: sunnyGradient 20s ease infinite;
-}
-
-/* 多云：灰色渐变 */
+/* 多云：柔和灰蓝 */
 .bg-cloudy {
-  background: linear-gradient(180deg, #c7dde7 0%, #d5dbde 100%);
+  background: linear-gradient(135deg, #89a8c2 0%, #a8c6d9 40%, #d0e0ed 100%);
 }
 
-/* 默认背景 */
+/* 雾/霾：高级磨玻璃 + 轻微纹理 */
+.bg-mist {
+  background: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 10%) 0%,
+    rgb(200 220 255 / 15%) 100%
+  );
+  backdrop-filter: blur(12px) saturate(180%);
+}
+
+/* 默认：中性优雅 */
 .bg-default {
-  /* background: #f5f5f5; */
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
 }
 
-/* ✅ Vben 项目暗色模式（切换时 html/body 会加 .dark） */
-.dark .bg-blur-glass {
-  background: linear-gradient(135deg, rgb(40 40 40 / 60%), rgb(80 80 80 / 40%));
-  backdrop-filter: blur(10px) saturate(120%);
-}
-
-.dark .bg-rainy {
-  background: linear-gradient(180deg, #0d47a1 0%, #000 100%);
-}
-
-.dark .bg-snowy {
-  background: linear-gradient(180deg, #90caf9 0%, #e3f2fd 100%);
-}
-
+/* ========== 暗色模式优化 ========== */
 .dark .bg-sunny {
-  background: linear-gradient(180deg, #f57f17 0%, #fbc02d 100%);
+  background: linear-gradient(135deg, #ff8a00 0%, #e52e71 50%, #9a1e5e 100%);
+  animation: sunnyFlow 35s ease infinite;
+}
+
+.dark .bg-rain {
+  background: linear-gradient(135deg, #0c2b5a 0%, #0f172a 50%, #020617 100%);
+}
+
+.dark .bg-snow {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
 }
 
 .dark .bg-cloudy {
-  background: linear-gradient(180deg, #37474f 0%, #607d8b 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 60%, #475569 100%);
+}
+
+.dark .bg-mist {
+  background: linear-gradient(
+    135deg,
+    rgb(30 41 59 / 80%) 0%,
+    rgb(51 65 85 / 60%) 100%
+  );
+  backdrop-filter: blur(16px) saturate(150%);
 }
 
 .dark .bg-default {
-  /* background: #121212; */
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
-
-/* ✅ 系统暗色模式下的替代背景 */
 </style>

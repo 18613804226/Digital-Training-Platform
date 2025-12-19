@@ -20,7 +20,7 @@ export const useNotificationStore = defineStore('notification', () => {
     // };
 
     notifications.value.unshift(raw);
-    if (!item.read) {
+    if (!raw.read) {
       unreadCount.value++;
     }
   }

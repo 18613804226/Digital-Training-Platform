@@ -7,103 +7,178 @@ const props = defineProps<{
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 let ctx: CanvasRenderingContext2D | null = null;
-let particles: any[] = [];
-let animationId: number;
+let particles: Particle[] = [];
+let animationId = 0;
+let width = 0;
+let height = 0;
+
+class Particle {
+  opacity: number = 1;
+  rotation: number = 0; // 雪花旋转
+  rotationSpeed: number = 0;
+  size: number = 1;
+  speedX: number = 0; // 横向漂移
+  speedY: number = 1;
+  x: number = 0;
+  y: number = 0;
+
+  reset() {
+    this.x = Math.random() * width;
+    this.y = -10;
+    this.opacity = Math.random() * 0.5 + 0.5;
+    this.rotation = Math.random() * Math.PI * 2;
+  }
+}
+
+function resizeCanvas() {
+  if (!canvas.value) return;
+  width = window.innerWidth;
+  height = window.innerHeight;
+  canvas.value.width = width;
+  canvas.value.height = height;
+}
 
 function initParticles() {
   if (!canvas.value) return;
   ctx = canvas.value.getContext('2d');
   if (!ctx) return;
 
-  canvas.value.width = window.innerWidth;
-  canvas.value.height = window.innerHeight;
+  resizeCanvas();
 
   particles = [];
-  const count = props.type === 'snow' ? 120 : (props.type === 'rain' ? 100 : 80);
+  const count = props.type === 'snow' ? 150 : (props.type === 'rain' ? 120 : 60);
 
   for (let i = 0; i < count; i++) {
-    particles.push({
-      x: Math.random() * canvas.value.width,
-      y: Math.random() * canvas.value.height,
-      r: props.type === 'rain' ? Math.random() * 2 + 1 : Math.random() * 3 + 1, // 大小随机
-      d: Math.random() * 2 + 0.5, // 下落速度随机
-      opacity: Math.random() * 0.5 + 0.3, // 透明度随机
-      trail: Math.random() * 15 + 5, // 雨滴拖尾长度
-    });
+    const p = new Particle();
+    p.reset();
+
+    switch (props.type) {
+      case 'fog': {
+        p.size = Math.random() * 30 + 20;
+        p.speedY = Math.random() * 0.5 + 0.2;
+        p.speedX = Math.random() * 1 - 0.5;
+
+        break;
+      }
+      case 'rain': {
+        p.size = Math.random() * 2 + 1;
+        p.speedY = Math.random() * 15 + 10;
+        p.speedX = Math.random() * 8 + 4; // 雨倾斜
+
+        break;
+      }
+      case 'snow': {
+        p.size = Math.random() * 4 + 2;
+        p.speedY = Math.random() * 2 + 1;
+        p.speedX = Math.random() * 2 - 1; // 轻微左右
+        p.rotationSpeed = Math.random() * 0.02 - 0.01;
+
+        break;
+      }
+      // No default
+    }
+
+    particles.push(p);
   }
 }
 
 function draw() {
   if (!ctx || !canvas.value) return;
-  ctx.clearRect(0, 0, canvas.value.width, canvas.value.height);
+  ctx.clearRect(0, 0, width, height);
 
   for (const p of particles) {
-    if (props.type === 'rain') {
-      ctx.strokeStyle = `rgba(0,150,255,${p.opacity})`;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
-      ctx.lineTo(p.x, p.y + p.trail); // 拖尾效果
-      ctx.stroke();
-    } else {
-      ctx.fillStyle = `rgba(255,255,255,${p.opacity})`;
-      ctx.shadowBlur = 8;
-      ctx.shadowColor = 'rgba(255,255,255,0.9)';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
-      ctx.fill();
+    ctx.save();
+    ctx.globalAlpha = p.opacity;
+
+    switch (props.type) {
+      case 'fog': {
+        // 雾气大模糊圆点
+        ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity * 0.3})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        break;
+      }
+      case 'rain': {
+        // 雨滴拖尾线
+        ctx.strokeStyle = '#64b5f6';
+        ctx.lineWidth = p.size;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x + p.speedX * 3, p.y + p.speedY * 3);
+        ctx.stroke();
+
+        break;
+      }
+      case 'snow': {
+        // 雪花圆点 + 轻微发光
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#e3f2fd';
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        p.rotation += p.rotationSpeed;
+
+        break;
+      }
+      // No default
+    }
+
+    ctx.restore();
+
+    // 更新位置
+    p.y += p.speedY;
+    p.x += p.speedX;
+
+    if (p.y > height) {
+      p.reset();
     }
   }
 
-  update();
   animationId = requestAnimationFrame(draw);
 }
 
-function update() {
-  for (const p of particles) {
-    p.y += p.d;
-    if (p.y > canvas.value!.height) {
-      p.y = 0;
-      p.x = Math.random() * canvas.value!.width;
-    }
-  }
-}
-
-watch(
-  () => props.type,
-  (newType) => {
-    cancelAnimationFrame(animationId);
-    if (newType !== 'none') {
-      initParticles();
-      draw();
-    }
-  },
-  { immediate: true },
-);
-
-onMounted(() => {
+function startAnimation() {
+  cancelAnimationFrame(animationId);
   if (props.type !== 'none') {
     initParticles();
     draw();
   }
+}
+
+watch(() => props.type, startAnimation, { immediate: true });
+
+onMounted(() => {
+  window.addEventListener('resize', resizeCanvas);
+  startAnimation();
 });
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(animationId);
+  window.removeEventListener('resize', resizeCanvas);
 });
 </script>
 
 <template>
-  <!-- 粒子层覆盖在背景上 -->
   <canvas ref="canvas" class="particle-layer"></canvas>
 </template>
 
 <style scoped>
 .particle-layer {
-  position: absolute;
+  position: fixed;
+
+  /* 改成 fixed 更沉浸 */
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 0;
+
+  /* 放在背景之上，内容之下 */
+  width: 100vw;
+  height: 100vh;
   pointer-events: none;
 }
 </style>

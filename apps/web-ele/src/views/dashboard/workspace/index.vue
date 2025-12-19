@@ -286,50 +286,54 @@ onMounted(async () => {
 </script>
 
 <template>
-  <WeatherBackground :type="weather.description || ''">
-    <VbenLoading v-if="loading" :spinning="loading" />
-    <WeatherParticles :type="particleType" />
-    <div class="p-5">
-      <WorkbenchHeader
-        :avatar="userStore.userInfo?.avatar || preferences.app.defaultAvatar"
-      >
-        <template #title>
-          {{ getGreeting() }}, {{ userStore.userInfo?.realName }}, Let's get
-          started on our workday!
-        </template>
-        <template #description>
-          <span class="font-bold">{{ weather.city }}</span>
-          Today {{ weather.description }}，Current temperature：{{
-            weather.temp
-          }}°C
-          <div class="flex items-center">
-            <div>
-              <p>Feels Like：{{ weather.feels_like }}°C</p>
-              <p>Range：{{ weather.temp_min }}°C ~ {{ weather.temp_max }}°C</p>
+  <div class="h-full">
+    <WeatherBackground :type="weather.description || ''">
+      <VbenLoading v-if="loading" :spinning="loading" />
+      <WeatherParticles :type="particleType" />
+      <div class="p-5">
+        <WorkbenchHeader
+          :avatar="userStore.userInfo?.avatar || preferences.app.defaultAvatar"
+        >
+          <template #title>
+            {{ getGreeting() }}, {{ userStore.userInfo?.realName }}, Let's get
+            started on our workday!
+          </template>
+          <template #description>
+            <span class="font-bold">{{ weather.city }}</span>
+            Today {{ weather.description }}，Current temperature：{{
+              weather.temp
+            }}°C
+            <div class="flex items-center">
+              <div>
+                <p>Feels Like：{{ weather.feels_like }}°C</p>
+                <p>
+                  Range：{{ weather.temp_min }}°C ~ {{ weather.temp_max }}°C
+                </p>
+              </div>
+              <img class="ml-3" :src="iconUrl" :alt="weather.description" />
             </div>
-            <img class="ml-3" :src="iconUrl" :alt="weather.description" />
-          </div>
-        </template>
-      </WorkbenchHeader>
+          </template>
+        </WorkbenchHeader>
 
-      <div class="flex flex-col lg:flex-row">
-        <div class="mr-4 w-full lg:w-3/5">
-          <!-- <WorkbenchProject :items="projectItems" title="项目" @click="navTo" /> -->
-          <WorkbenchTrends
-            :items="trendItems"
-            class="mt-5"
-            title="Latest news"
-          />
-          <!-- <WorkbenchTodo :items="todoItems" class="mt-5" title="待办事项" /> -->
-        </div>
-        <!-- <div class="w-full lg:w-2/5">
+        <div class="flex flex-col lg:flex-row">
+          <div class="mr-4 w-full lg:w-3/5">
+            <!-- <WorkbenchProject :items="projectItems" title="项目" @click="navTo" /> -->
+            <WorkbenchTrends
+              :items="trendItems"
+              class="mt-5"
+              title="Latest news"
+            />
+            <!-- <WorkbenchTodo :items="todoItems" class="mt-5" title="待办事项" /> -->
+          </div>
+          <!-- <div class="w-full lg:w-2/5">
           <WorkbenchQuickNav :items="quickNavItems" class="mt-5 lg:mt-0" title="快捷导航" @click="navTo" />
           <WorkbenchTodo :items="todoItems" class="mt-5" title="待办事项" />
           <AnalysisChartCard class="mt-5" title="访问来源">
             <AnalyticsVisitsSource />
           </AnalysisChartCard>
         </div> -->
+        </div>
       </div>
-    </div>
-  </WeatherBackground>
+    </WeatherBackground>
+  </div>
 </template>
