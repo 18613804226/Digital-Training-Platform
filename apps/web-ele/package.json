@@ -35,7 +35,7 @@
     "@thirdweb-dev/chains": "^0.1.120",
     "@thirdweb-dev/react": "^4.9.4",
     "@thirdweb-dev/sdk": "^4.0.99",
-    "@tiptap/core": "^3.13.0",
+    "@tiptap/core": "^3.14.0",
     "@vben/access": "workspace:*",
     "@vben/common-ui": "workspace:*",
     "@vben/constants": "workspace:*",
@@ -61,7 +61,7 @@
     "pinia": "catalog:",
     "socket.io-client": "^4.8.1",
     "sortablejs": "catalog:",
-    "three": "^0.181.2",
+    "three": "^0.182.0",
     "tim-js-sdk": "^2.27.6",
     "tim-upload-plugin": "^1.4.3",
     "trtc-js-sdk": "^4.15.22",
@@ -72,7 +72,7 @@
   },
   "devDependencies": {
     "@types/sortablejs": "catalog:",
-    "@types/three": "^0.181.0",
+    "@types/three": "^0.182.0",
     "pinia-plugin-persistedstate": "^4.7.1",
     "unplugin-element-plus": "^0.11.2"
   }
