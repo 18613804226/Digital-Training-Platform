@@ -14,10 +14,10 @@ let height = 0;
 
 class Particle {
   opacity: number = 1;
-  rotation: number = 0; // 雪花旋转
+  rotation: number = 0;
   rotationSpeed: number = 0;
   size: number = 1;
-  speedX: number = 0; // 横向漂移
+  speedX: number = 0;
   speedY: number = 1;
   x: number = 0;
   y: number = 0;
@@ -25,7 +25,7 @@ class Particle {
   reset() {
     this.x = Math.random() * width;
     this.y = -10;
-    this.opacity = Math.random() * 0.5 + 0.5;
+    this.opacity = Math.random() * 0.4 + 0.3; // 更透明一些
     this.rotation = Math.random() * Math.PI * 2;
   }
 }
@@ -46,7 +46,7 @@ function initParticles() {
   resizeCanvas();
 
   particles = [];
-  const count = props.type === 'snow' ? 150 : (props.type === 'rain' ? 120 : 60);
+  const count = props.type === 'snow' ? 150 : (props.type === 'rain' ? 180 : 60); // 雨粒子更多，显得更密更细腻
 
   for (let i = 0; i < count; i++) {
     const p = new Particle();
@@ -57,25 +57,23 @@ function initParticles() {
         p.size = Math.random() * 30 + 20;
         p.speedY = Math.random() * 0.5 + 0.2;
         p.speedX = Math.random() * 1 - 0.5;
-
         break;
       }
       case 'rain': {
-        p.size = Math.random() * 2 + 1;
-        p.speedY = Math.random() * 15 + 10;
-        p.speedX = Math.random() * 8 + 4; // 雨倾斜
-
+        // 温柔细雨调整
+        p.size = Math.random() * 1 + 0.4;     // 雨滴极细（原来是1~3）
+        p.speedY = Math.random() * 4 + 5;       // 下降速度慢很多（原来10~25）
+        p.speedX = Math.random() * 2 - 1;       // 倾斜度大幅减小，几乎垂直（原来4~12）
+        p.opacity = Math.random() * 0.5 + 0.2;  // 更透明
         break;
       }
       case 'snow': {
         p.size = Math.random() * 4 + 2;
         p.speedY = Math.random() * 2 + 1;
-        p.speedX = Math.random() * 2 - 1; // 轻微左右
+        p.speedX = Math.random() * 2 - 1;
         p.rotationSpeed = Math.random() * 0.02 - 0.01;
-
         break;
       }
-      // No default
     }
 
     particles.push(p);
@@ -92,27 +90,30 @@ function draw() {
 
     switch (props.type) {
       case 'fog': {
-        // 雾气大模糊圆点
         ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity * 0.3})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
-
         break;
       }
       case 'rain': {
-        // 雨滴拖尾线
-        ctx.strokeStyle = '#64b5f6';
-        ctx.lineWidth = p.size;
+        // 深邃诗意雨：深蓝灰色 + 修长雨丝 + 柔和圆头
+        ctx.strokeStyle = 'rgba(100, 130, 170, 0.75)';  // 深蓝灰色，增加神秘沉静感（可调透明度最后一位）
+        // 或者更冷调： 'rgba(120, 140, 180, 0.7)'
+        // 或者偏夜雨黑蓝： 'rgba(80, 100, 140, 0.8)'
+        ctx.lineWidth = p.size;         // 保持细线
+        ctx.lineCap = 'round';          // 雨丝两端圆润，更柔和
+        ctx.globalAlpha = p.opacity;    // 确保每根雨丝透明度独立（已有的）
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
-        ctx.lineTo(p.x + p.speedX * 3, p.y + p.speedY * 3);
-        ctx.stroke();
+        // 关键：拖尾长度决定视觉速度和意境感
+        const trailLength = 2;  // 推荐 4~6，雨丝修长优雅，增强纵深和朦胧感
+        ctx.lineTo(p.x + p.speedX * trailLength, p.y + p.speedY * trailLength);
 
+        ctx.stroke();
         break;
       }
       case 'snow': {
-        // 雪花圆点 + 轻微发光
         ctx.translate(p.x, p.y);
         ctx.rotate(p.rotation);
         ctx.fillStyle = '#ffffff';
@@ -122,15 +123,12 @@ function draw() {
         ctx.arc(0, 0, p.size, 0, Math.PI * 2);
         ctx.fill();
         p.rotation += p.rotationSpeed;
-
         break;
       }
-      // No default
     }
 
     ctx.restore();
 
-    // 更新位置
     p.y += p.speedY;
     p.x += p.speedX;
 
@@ -170,13 +168,9 @@ onBeforeUnmount(() => {
 <style scoped>
 .particle-layer {
   position: fixed;
-
-  /* 改成 fixed 更沉浸 */
   top: 0;
   left: 0;
   z-index: 0;
-
-  /* 放在背景之上，内容之下 */
   width: 100vw;
   height: 100vh;
   pointer-events: none;
