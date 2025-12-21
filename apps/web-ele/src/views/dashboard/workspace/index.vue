@@ -6,7 +6,7 @@ import type { WorkbenchTrendItem } from '@vben/common-ui';
 import { computed, onMounted, ref } from 'vue';
 
 import { VbenLoading, WorkbenchHeader, WorkbenchTrends } from '@vben/common-ui';
-import { preferences } from '@vben/preferences';
+import { preferences, usePreferences } from '@vben/preferences';
 import { useUserStore } from '@vben/stores';
 
 import { activitylogLatstApi, getWeatherApi } from '#/api';
@@ -14,8 +14,20 @@ import { activitylogLatstApi, getWeatherApi } from '#/api';
 import WeatherBackground from './weatherBackground.vue';
 import WeatherParticles from './weatherParticles.vue';
 
+const { contentIsMaximize } = usePreferences();
 const userStore = useUserStore();
 
+// 动态计算可用高度
+// vben 默认：Header 50px + Tabbar 40px = 90px（正常模式）
+// 全屏内容模式时高度为 0
+const dynamicHeight = computed(() => {
+  return contentIsMaximize.value
+    ? 'calc(100vh - 38px)' // 全屏内容模式：占满整个视口
+    : 'calc(100vh - 88px)'; // 正常模式：减去 Header(50px) + Tabbar(40px)
+});
+// const handleResize = () => {
+//   window.dispatchEvent(new Event('resize'));
+// };
 // 这是一个示例数据，实际项目中需要根据实际情况进行调整
 // url 也可以是内部路由，在 navTo 方法中识别处理，进行内部跳转
 // 例如：url: /dashboard/workspace
@@ -155,54 +167,6 @@ const trendItems: Ref<WorkbenchTrendItem[]> = ref([
   //   date: '刚刚',
   //   title: '威廉',
   // },
-  // {
-  //   avatar: 'svg:avatar-2',
-  //   content: `关注了 <a>威廉</a> `,
-  //   date: '1个小时前',
-  //   title: '艾文',
-  // },
-  // {
-  //   avatar: 'svg:avatar-3',
-  //   content: `发布了 <a>个人动态</a> `,
-  //   date: '1天前',
-  //   title: '克里斯',
-  // },
-  // {
-  //   avatar: 'svg:avatar-4',
-  //   content: `发表文章 <a>如何编写一个Vite插件</a> `,
-  //   date: '2天前',
-  //   title: 'Vben',
-  // },
-  // {
-  //   avatar: 'svg:avatar-1',
-  //   content: `回复了 <a>杰克</a> 的问题 <a>如何进行项目优化？</a>`,
-  //   date: '3天前',
-  //   title: '皮特',
-  // },
-  // {
-  //   avatar: 'svg:avatar-2',
-  //   content: `关闭了问题 <a>如何运行项目</a> `,
-  //   date: '1周前',
-  //   title: '杰克',
-  // },
-  // {
-  //   avatar: 'svg:avatar-3',
-  //   content: `发布了 <a>个人动态</a> `,
-  //   date: '1周前',
-  //   title: '威廉',
-  // },
-  // {
-  //   avatar: 'svg:avatar-4',
-  //   content: `推送了代码到 <a>Github</a>`,
-  //   date: '2021-04-01 20:00',
-  //   title: '威廉',
-  // },
-  // {
-  //   avatar: 'svg:avatar-4',
-  //   content: `发表文章 <a>如何编写使用 Admin Vben</a> `,
-  //   date: '2021-03-01 20:00',
-  //   title: 'Vben',
-  // },
 ]);
 
 async function activitylogLatst() {
@@ -282,16 +246,24 @@ onMounted(async () => {
   loading.value = true;
   fetchWeatherByLocation();
   activitylogLatst();
+  // window.addEventListener('resize', handleResize);
 });
+// onUnmounted(() => {
+//   window.removeEventListener('resize', handleResize);
+// });
 </script>
 
 <template>
-  <div class="h-full">
-    <WeatherBackground :type="weather.description || ''">
+  <div class="flex flex-col" :style="{ height: dynamicHeight }">
+    <WeatherBackground
+      class="flex flex-1 flex-col overflow-hidden"
+      :type="weather.description || ''"
+    >
       <VbenLoading v-if="loading" :spinning="loading" />
       <WeatherParticles :type="particleType" />
-      <div class="p-5">
+      <div class="flex flex-1 flex-col overflow-hidden p-5">
         <WorkbenchHeader
+          class="flex-shrink-0"
           :avatar="userStore.userInfo?.avatar || preferences.app.defaultAvatar"
         >
           <template #title>
@@ -315,12 +287,14 @@ onMounted(async () => {
           </template>
         </WorkbenchHeader>
 
-        <div class="flex flex-col lg:flex-row">
-          <div class="mr-4 w-full lg:w-3/5">
+        <div class="flex flex-1 flex-col overflow-hidden">
+          <div
+            class="mr-4 flex w-full flex-1 flex-col overflow-hidden lg:w-3/5"
+          >
             <!-- <WorkbenchProject :items="projectItems" title="项目" @click="navTo" /> -->
             <WorkbenchTrends
               :items="trendItems"
-              class="mt-5"
+              class="mt-5 flex-1 overflow-auto"
               title="Latest news"
             />
             <!-- <WorkbenchTodo :items="todoItems" class="mt-5" title="待办事项" /> -->

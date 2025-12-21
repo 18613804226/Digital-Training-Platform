@@ -36,6 +36,7 @@ import LoginForm from '#/views/_core/authentication/login.vue';
 // 👇 不再用本地 ref，改用 Store
 const notificationStore = useNotificationStore();
 const accessStore = useAccessStore();
+
 // 初始化：加载历史通知（可选，如果你希望首次进入显示历史记录）
 onMounted(async () => {
   // 监听 userInfo 变化（应对刷新后异步加载）
@@ -114,7 +115,9 @@ const menus = computed(() => [
 const avatar = computed(() => {
   return userStore.userInfo?.avatar ?? preferences.app.defaultAvatar;
 });
-
+const email = computed(() => {
+  return userStore.userInfo?.email ?? '';
+});
 async function handleLogout() {
   await authStore.logout(false);
 }
@@ -149,7 +152,7 @@ watch(
         :avatar
         :menus
         :text="userStore.userInfo?.realName"
-        description="xxx@gmail.com"
+        :description="email"
         tag-text="Pro"
         @logout="handleLogout"
       />

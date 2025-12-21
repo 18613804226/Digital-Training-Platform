@@ -17,7 +17,7 @@ export type BaseFormComponentType =
   | 'VbenInput'
   | 'VbenInputPassword'
   | 'VbenPinInput'
-  // | 'VbenSelect'
+  | 'VbenSelect'
   | (Record<never, never> & string);
 
 type Breakpoints = '2xl:' | '3xl:' | '' | 'lg:' | 'md:' | 'sm:' | 'xl:';

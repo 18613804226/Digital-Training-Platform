@@ -2,9 +2,9 @@
 import type { VbenFormSchema } from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
 
-import { computed, h, ref } from 'vue';
+import { computed, h, markRaw, ref } from 'vue';
 
-import { AuthenticationRegister, z } from '@vben/common-ui';
+import { AuthenticationRegister, SliderCaptcha, z } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { registerApi } from '#/api';
@@ -25,6 +25,18 @@ const formSchema = computed((): VbenFormSchema[] => {
       fieldName: 'username',
       label: $t('authentication.username'),
       rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
+    },
+    {
+      component: 'VbenInput',
+      componentProps: {
+        placeholder: $t('authentication.emailTip'),
+      },
+      fieldName: 'email',
+      label: $t('authentication.email') || '邮箱',
+      rules: z
+        .string()
+        .min(1, { message: $t('authentication.emailTip') })
+        .email({ message: $t('authentication.emailValidErrorTip') }),
     },
     {
       component: 'VbenInputPassword',
@@ -80,6 +92,13 @@ const formSchema = computed((): VbenFormSchema[] => {
       }),
       rules: z.boolean().refine((value) => !!value, {
         message: $t('authentication.agreeTip'),
+      }),
+    },
+    {
+      component: markRaw(SliderCaptcha),
+      fieldName: 'captcha',
+      rules: z.boolean().refine((value) => value, {
+        message: $t('authentication.verifyRequiredTip'),
       }),
     },
   ];
