@@ -13,6 +13,6 @@ export const overridesPreferences = defineOverridesPreferences({
     accessMode: 'frontend',
   },
   theme: {
-    mode: 'light',
+    mode: 'auto',
   },
 });

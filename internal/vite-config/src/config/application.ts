@@ -9,9 +9,9 @@ import { findMonorepoRoot } from '@vben/node-utils';
 import { NodePackageImporter } from 'sass';
 import { defineConfig, loadEnv, mergeConfig } from 'vite';
 
+import { loadAndConvertEnv } from '../../utils/env';
 import { defaultImportmapOptions, getDefaultPwaOptions } from '../options';
 import { loadApplicationPlugins } from '../plugins';
-import { loadAndConvertEnv } from '../../utils/env';
 import { getCommonConfig } from './common';
 
 function defineApplicationConfig(userConfigPromise?: DefineApplicationOptions) {
@@ -71,9 +71,9 @@ function defineApplicationConfig(userConfigPromise?: DefineApplicationOptions) {
       esbuild: {
         drop: isBuild
           ? [
-            // 'console',
-            'debugger',
-          ]
+              // 'console',
+              'debugger',
+            ]
           : [],
         legalComments: 'none',
       },
@@ -105,19 +105,19 @@ function createCssOptions(injectGlobalScss = true): CSSOptions {
   return {
     preprocessorOptions: injectGlobalScss
       ? {
-        scss: {
-          additionalData: (content: string, filepath: string) => {
-            const relativePath = relative(root, filepath);
-            // apps下的包注入全局样式
-            if (relativePath.startsWith(`apps${path.sep}`)) {
-              return `@use "@vben/styles/global" as *;\n${content}`;
-            }
-            return content;
+          scss: {
+            additionalData: (content: string, filepath: string) => {
+              const relativePath = relative(root, filepath);
+              // apps下的包注入全局样式
+              if (relativePath.startsWith(`apps${path.sep}`)) {
+                return `@use "@vben/styles/global" as *;\n${content}`;
+              }
+              return content;
+            },
+            api: 'modern',
+            importers: [new NodePackageImporter()],
           },
-          api: 'modern',
-          importers: [new NodePackageImporter()],
-        },
-      }
+        }
       : {},
   };
 }

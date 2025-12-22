@@ -192,7 +192,7 @@ async function getUserListData(
 }
 function showIconConfirm(row: RowType) {
   prompt({
-    component: () => { },
+    component: () => {},
     content: 'Confirm whether to delete',
     icon: 'warning',
     modelPropName: 'value',
@@ -227,7 +227,12 @@ onMounted(() => {
         </VbenButton>
       </template>
       <template #action="{ row }">
-        <VbenButton class="text-red-500 hover:text-red-700" variant="link" size="sm" @click="showIconConfirm(row)">
+        <VbenButton
+          class="text-red-500 hover:text-red-700"
+          variant="link"
+          size="sm"
+          @click="showIconConfirm(row)"
+        >
           delete
         </VbenButton>
       </template>

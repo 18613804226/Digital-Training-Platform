@@ -4,7 +4,6 @@ import { ref } from 'vue';
 import { useVbenForm, useVbenModal } from '@vben/common-ui';
 
 import { getCourseApi } from '#/api';
-import { label } from 'three/tsl';
 
 defineOptions({
   name: 'ExtraModal',
@@ -24,10 +23,12 @@ const [Modal, modalApi] = useVbenModal({
     const courseList = await getCourseApi({});
 
     // 转换为 select 选项
-    const courseOptions = courseList.list.map((course: { id: number; title: string }) => ({
-      label: course.title,
-      value: course.id,
-    }));
+    const courseOptions = courseList.list.map(
+      (course: { id: number; title: string }) => ({
+        label: course.title,
+        value: course.id,
+      }),
+    );
 
     // 更新 schema 中对应字段的 options
     const schema = formSchema.value;
@@ -43,7 +44,7 @@ const [Modal, modalApi] = useVbenModal({
       (item) => item.fieldName === 'templateId',
     );
     if (templateField) {
-      templateField.componentProps.options = [{ label: "Default", value: 1 }]; // 或其他模板数据
+      templateField.componentProps.options = [{ label: 'Default', value: 1 }]; // 或其他模板数据
     }
   },
 });

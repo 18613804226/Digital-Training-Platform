@@ -66,6 +66,8 @@ export async function typescript(): Promise<Linter.Config[]> {
         '@typescript-eslint/no-use-before-define': 'off',
         '@typescript-eslint/no-var-requires': 'error',
         'unused-imports/no-unused-vars': 'off',
+        // 强制使用单引号
+        // '@typescript-eslint/quotes': ['error', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
       },
     },
   ];

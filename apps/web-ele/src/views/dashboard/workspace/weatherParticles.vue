@@ -46,7 +46,7 @@ function initParticles() {
   resizeCanvas();
 
   particles = [];
-  const count = props.type === 'snow' ? 150 : (props.type === 'rain' ? 180 : 60); // 雨粒子更多，显得更密更细腻
+  const count = props.type === 'snow' ? 150 : props.type === 'rain' ? 180 : 60; // 雨粒子更多，显得更密更细腻
 
   for (let i = 0; i < count; i++) {
     const p = new Particle();
@@ -61,10 +61,10 @@ function initParticles() {
       }
       case 'rain': {
         // 温柔细雨调整
-        p.size = Math.random() * 1 + 0.4;     // 雨滴极细（原来是1~3）
-        p.speedY = Math.random() * 4 + 5;       // 下降速度慢很多（原来10~25）
-        p.speedX = Math.random() * 2 - 1;       // 倾斜度大幅减小，几乎垂直（原来4~12）
-        p.opacity = Math.random() * 0.5 + 0.2;  // 更透明
+        p.size = Math.random() * 1 + 0.4; // 雨滴极细（原来是1~3）
+        p.speedY = Math.random() * 4 + 5; // 下降速度慢很多（原来10~25）
+        p.speedX = Math.random() * 2 - 1; // 倾斜度大幅减小，几乎垂直（原来4~12）
+        p.opacity = Math.random() * 0.5 + 0.2; // 更透明
         break;
       }
       case 'snow': {
@@ -98,16 +98,16 @@ function draw() {
       }
       case 'rain': {
         // 深邃诗意雨：深蓝灰色 + 修长雨丝 + 柔和圆头
-        ctx.strokeStyle = 'rgba(100, 130, 170, 0.75)';  // 深蓝灰色，增加神秘沉静感（可调透明度最后一位）
+        ctx.strokeStyle = 'rgba(100, 130, 170, 0.75)'; // 深蓝灰色，增加神秘沉静感（可调透明度最后一位）
         // 或者更冷调： 'rgba(120, 140, 180, 0.7)'
         // 或者偏夜雨黑蓝： 'rgba(80, 100, 140, 0.8)'
-        ctx.lineWidth = p.size;         // 保持细线
-        ctx.lineCap = 'round';          // 雨丝两端圆润，更柔和
-        ctx.globalAlpha = p.opacity;    // 确保每根雨丝透明度独立（已有的）
+        ctx.lineWidth = p.size; // 保持细线
+        ctx.lineCap = 'round'; // 雨丝两端圆润，更柔和
+        ctx.globalAlpha = p.opacity; // 确保每根雨丝透明度独立（已有的）
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
         // 关键：拖尾长度决定视觉速度和意境感
-        const trailLength = 2;  // 推荐 4~6，雨丝修长优雅，增强纵深和朦胧感
+        const trailLength = 2; // 推荐 4~6，雨丝修长优雅，增强纵深和朦胧感
         ctx.lineTo(p.x + p.speedX * trailLength, p.y + p.speedY * trailLength);
 
         ctx.stroke();

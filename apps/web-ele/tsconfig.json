@@ -3,11 +3,11 @@
   "extends": "@vben/tsconfig/web-app.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "rootDir": "src",
     "paths": {
       "#/*": ["./src/*"],
       "three/*": ["node_modules/three/*"]
     },
-    "rootDir": "src",
     "types": ["vite/client", "@vben/types/global"]
   },
   "references": [{ "path": "./tsconfig.node.json" }],

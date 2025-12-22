@@ -13,7 +13,8 @@
     />
     <!-- 由 vite 注入 VITE_APP_TITLE 变量，在 .env 文件内配置 -->
     <title><%= VITE_APP_TITLE %></title>
-    <link rel="icon" href="/favicon.ico" />
+    <!-- <link rel="icon" href="/favicon.ico" /> -->
+    <link id="favicon" rel="icon" href="/assets/images/face1.png" />
     <script>
       // 生产环境下注入百度统计
       // if (window._VBEN_ADMIN_PRO_APP_CONF_) {
@@ -26,7 +27,17 @@
       //     s.parentNode.insertBefore(hm, s);
       //   })();
       // }
-
+      const icons = [
+        '/assets/images/face1.png',
+        '/assets/images/face2.png',
+        '/assets/images/face3.png',
+        '/assets/images/face4.png',
+      ];
+      let i = 0;
+      setInterval(() => {
+        document.getElementById('favicon').href = icons[i % icons.length];
+        i++;
+      }, 800); // 每 600ms 切换一次
     </script>
   </head>
 

@@ -1,5 +1,10 @@
 {
   "tailwindCSS.experimental.configFile": "internal/tailwind-config/src/index.ts",
+  // 可选：保留 Tailwind 相关优化
+  "tailwindCSS.includeLanguages": {
+    "typescript": "typescript",
+    "typescriptreact": "typescriptreact"
+  },
   // workbench
   "workbench.list.smoothScrolling": true,
   "workbench.startupEditor": "newUntitledFile",
@@ -11,6 +16,8 @@
   "workbench.editor.limit.value": 5,
 
   // editor
+  "editor.formatOnSave": true,
+  "[typescriptreact]": { "editor.defaultFormatter": "dbaeumer.vscode-eslint" },
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
   "editor.cursorBlinking": "expand",
@@ -64,6 +71,9 @@
   "[vue]": {
     "editor.defaultFormatter": "Vue.volar"
   },
+
+  "eslint.format.enable": true,
+  "eslint.useFlatConfig": true, // Vben 用的是 flat config，必须加这行
   // extensions
   "extensions.ignoreRecommendations": true,
 
@@ -83,7 +93,8 @@
     "*.art": "html",
     "**/tsconfig.json": "jsonc",
     "*.json": "jsonc",
-    "package.json": "json"
+    "package.json": "json",
+    "*.css": "tailwindcss"
   },
 
   "files.exclude": {

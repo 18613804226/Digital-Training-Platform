@@ -60,17 +60,23 @@ function onTransitionEnd() {
 </script>
 
 <template>
-  <div :class="cn(
-    'flex-center absolute left-0 top-0 z-100 size-full bg-overlay-content backdrop-blur-sm transition-all duration-500',
-    {
-      'invisible opacity-0': !showSpinner,
-    },
-    props.class,
-  )
-    " @transitionend="onTransitionEnd">
-    <div :class="{ paused: !renderSpinner }" v-if="renderSpinner"
-      class="loader relative size-12 before:absolute before:left-0 before:top-[60px] before:h-[5px] before:w-12 before:rounded-[50%] before:content-[''] after:absolute after:left-0 after:top-0 after:h-full after:w-full after:rounded after:bg-primary after:content-['']">
-    </div>
+  <div
+    :class="
+      cn(
+        'flex-center absolute left-0 top-0 z-100 size-full bg-overlay-content backdrop-blur-sm transition-all duration-500',
+        {
+          'invisible opacity-0': !showSpinner,
+        },
+        props.class,
+      )
+    "
+    @transitionend="onTransitionEnd"
+  >
+    <div
+      :class="{ paused: !renderSpinner }"
+      v-if="renderSpinner"
+      class="loader relative size-12 before:absolute before:left-0 before:top-[60px] before:h-[5px] before:w-12 before:rounded-[50%] before:content-[''] after:absolute after:left-0 after:top-0 after:h-full after:w-full after:rounded after:bg-primary after:content-['']"
+    ></div>
   </div>
 </template>
 
@@ -87,9 +93,11 @@ function onTransitionEnd() {
 
 .loader {
   &::after {
-    background: linear-gradient(135deg,
-        hsl(210deg 100% 50%),
-        hsl(240deg 100% 50%));
+    background: linear-gradient(
+      135deg,
+      hsl(210deg 100% 50%),
+      hsl(240deg 100% 50%)
+    );
     border-radius: 10px;
     box-shadow:
       0 0 20px rgb(0 255 255 / 50%),
@@ -115,24 +123,29 @@ function onTransitionEnd() {
 
 @keyframes color-shift {
   0% {
-    background: linear-gradient(135deg,
-        hsl(210deg 100% 50%),
-        hsl(240deg 100% 50%));
+    background: linear-gradient(
+      135deg,
+      hsl(210deg 100% 50%),
+      hsl(240deg 100% 50%)
+    );
   }
 
   50% {
-    background: linear-gradient(135deg,
-        hsl(180deg 100% 50%),
-        hsl(270deg 100% 50%));
+    background: linear-gradient(
+      135deg,
+      hsl(180deg 100% 50%),
+      hsl(270deg 100% 50%)
+    );
   }
 
   100% {
-    background: linear-gradient(135deg,
-        hsl(210deg 100% 50%),
-        hsl(240deg 100% 50%));
+    background: linear-gradient(
+      135deg,
+      hsl(210deg 100% 50%),
+      hsl(240deg 100% 50%)
+    );
   }
 }
-
 
 @keyframes jump-ani {
   15% {
@@ -158,7 +171,6 @@ function onTransitionEnd() {
 }
 
 @keyframes loader-shadow-ani {
-
   0%,
   100% {
     transform: scale(1, 1);

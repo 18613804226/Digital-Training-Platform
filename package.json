@@ -62,6 +62,9 @@
     "version": "pnpm exec changeset version && pnpm install --no-frozen-lockfile",
     "catalog": "pnpx codemod pnpm/catalog"
   },
+  "dependencies": {
+    "pinia-plugin-persistedstate": "catalog:"
+  },
   "devDependencies": {
     "@changesets/changelog-github": "catalog:",
     "@changesets/cli": "catalog:",
@@ -112,16 +115,13 @@
       "@ctrl/tinycolor": "catalog:",
       "clsx": "catalog:",
       "esbuild": "0.25.3",
+      "jiti": "^2.6.1",
       "pinia": "catalog:",
-      "vue": "catalog:",
-      "jiti": "^2.6.1"
+      "vue": "catalog:"
     },
     "neverBuiltDependencies": [
       "canvas",
       "node-gyp"
     ]
-  },
-  "dependencies": {
-    "pinia-plugin-persistedstate": "catalog:"
   }
 }
