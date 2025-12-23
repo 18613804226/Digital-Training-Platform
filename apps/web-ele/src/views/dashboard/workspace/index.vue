@@ -386,10 +386,10 @@ onMounted(async () => {
 
 /* ❄️ 雪：上下漂 */
 .icon-snow {
-  animation: float 3s ease-in-out infinite;
+  animation: cloud 3s ease-in-out infinite;
 }
 
 .icon-default {
-  animation: float 3s ease-in-out infinite;
+  animation: cloud 3s ease-in-out infinite;
 }
 </style>
