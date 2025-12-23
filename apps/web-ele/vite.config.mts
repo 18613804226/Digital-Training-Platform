@@ -1,8 +1,11 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { defineConfig } from '@vben/vite-config';
 
 import ElementPlus from 'unplugin-element-plus/vite';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(async () => {
   return {

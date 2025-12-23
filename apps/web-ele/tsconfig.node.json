@@ -4,6 +4,11 @@
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    // 关键点 1：开启此项来满足 allowImportingTsExtensions 的要求
+    "emitDeclarationOnly": true,
+    // 关键点 2：必须设为 false，因为 Project Reference 项目不能禁用 emit
     "noEmit": false
   },
   "include": ["vite.config.mts"]

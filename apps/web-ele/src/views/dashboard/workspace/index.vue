@@ -171,14 +171,16 @@ const trendItems: Ref<WorkbenchTrendItem[]> = ref([
 
 async function activitylogLatst() {
   const res = await activitylogLatstApi();
-  res.map((e: { content: any; createdAt: any; user: { username: any } }) => {
-    trendItems.value.push({
-      date: e.createdAt,
-      content: e.content,
-      title: e.user.username,
-      avatar: `svg:avatar-${Math.floor(Math.random() * 4) + 1}`,
-    });
-  });
+  res.forEach(
+    (e: { content: any; createdAt: any; user: { username: any } }) => {
+      trendItems.value.push({
+        date: e.createdAt,
+        content: e.content,
+        title: e.user.username,
+        avatar: `svg:avatar-${Math.floor(Math.random() * 4) + 1}`,
+      });
+    },
+  );
 }
 
 // const router = useRouter();
@@ -202,6 +204,7 @@ function getGreeting() {
   const hour = now.getHours(); // 从当前时间中提取小时部分
 
   const greeting =
+    // eslint-disable-next-line unicorn/no-nested-ternary
     hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good night';
 
   return greeting;

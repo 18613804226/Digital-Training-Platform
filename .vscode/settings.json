@@ -66,14 +66,14 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[vue]": {
-    "editor.defaultFormatter": "Vue.volar"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
 
-  "eslint.format.enable": true,
-  "eslint.useFlatConfig": true, // Vben 用的是 flat config，必须加这行
+  "eslint.format.enable": false,
+  "eslint.singleQuote": true,
   // extensions
   "extensions.ignoreRecommendations": true,
 
