@@ -243,6 +243,14 @@ const particleType = computed(() => {
   if (desc.includes('mist') || desc.includes('fog')) return 'fog';
   return 'none'; // ✅ 默认值
 });
+const weatherIconClass = computed(() => {
+  const desc = (weather.value.description || '').toLowerCase();
+  if (desc.includes('sun') || desc.includes('clear')) return 'icon-sun';
+  if (desc.includes('cloud')) return 'icon-cloud';
+  if (desc.includes('rain')) return 'icon-rain';
+  if (desc.includes('snow')) return 'icon-snow';
+  return 'icon-default';
+});
 
 const loading = ref(false);
 onMounted(async () => {
@@ -285,7 +293,12 @@ onMounted(async () => {
                   Range：{{ weather.temp_min }}°C ~ {{ weather.temp_max }}°C
                 </p>
               </div>
-              <img class="ml-3" :src="iconUrl" :alt="weather.description" />
+              <img
+                class="weather-icon ml-3"
+                :class="weatherIconClass"
+                :src="iconUrl"
+                :alt="weather.description"
+              />
             </div>
           </template>
         </WorkbenchHeader>
@@ -314,3 +327,69 @@ onMounted(async () => {
     </WeatherBackground>
   </div>
 </template>
+<style scoped>
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes cloud {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-2px);
+  }
+
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+.weather-icon {
+  width: 64px;
+  height: 64px;
+}
+
+/* ☀️ 太阳：慢慢旋转 */
+.icon-sun {
+  animation: rotate 12s linear infinite;
+}
+
+/* ☁️ 云：左右飘 */
+.icon-cloud {
+  animation: cloud 4s ease-in-out infinite;
+}
+
+/* 🌧️ 雨：轻微抖动 */
+.icon-rain {
+  animation: shake 1.2s ease-in-out infinite;
+}
+
+/* ❄️ 雪：上下漂 */
+.icon-snow {
+  animation: float 3s ease-in-out infinite;
+}
+
+.icon-default {
+  animation: float 3s ease-in-out infinite;
+}
+</style>
