@@ -45,7 +45,7 @@ async function onSubmit(values: Record<string, any>) {
     const response = await aiGenerateQuestionsApi(values);
     questions.value = response;
   } catch {
-    error.value = '网络错误，请重试';
+    error.value = 'Network error. Please try again.';
   } finally {
     loading.value = false;
   }

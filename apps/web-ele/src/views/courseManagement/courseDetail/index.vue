@@ -291,7 +291,7 @@ const hasTypeInLesson = (lesson: any, type: string): boolean => {
                   v-access:role="['ADMIN', 'GUEST', 'TEACHER']"
                   variant="ghost"
                   size="sm"
-                  class="w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  class="drag-handle w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                 >
                   <ElIcon>
                     <Rank />

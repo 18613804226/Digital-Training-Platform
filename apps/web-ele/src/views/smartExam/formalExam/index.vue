@@ -216,7 +216,9 @@ const handleVisibilityChange = () => {
   if (document.hidden) {
     visibilityChangeTimer = setTimeout(() => {
       // 用非阻塞提示替代 alert
-      ElMessage.warning('检测到你离开了考试页面！系统已记录。');
+      ElMessage.warning(
+        'You have left the exam page! This has been recorded by the system.',
+      );
       windowLocked.value = false; // 标记违规
     }, 3000); // 3秒内切回不算违规
   } else {
