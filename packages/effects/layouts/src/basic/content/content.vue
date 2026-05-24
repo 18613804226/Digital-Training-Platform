@@ -146,4 +146,3 @@ function transformComponent(
     </RouterView>
   </div>
 </template>
-
