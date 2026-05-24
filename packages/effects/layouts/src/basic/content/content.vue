@@ -104,7 +104,7 @@ function transformComponent(
         v-if="getEnabledTransition"
         :name="getTransitionName(route)"
         appear
-        mode="default"
+        mode="out-in"
       >
         <KeepAlive
           v-if="keepAlive"
@@ -146,3 +146,4 @@ function transformComponent(
     </RouterView>
   </div>
 </template>
+

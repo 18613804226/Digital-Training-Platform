@@ -441,8 +441,8 @@ const leaveRoom = async () => {
       localStream.stop();
       localStream.close();
       console.log('本地流已关闭');
-    } catch (e) {
-      console.warn('关闭流失败', e);
+    } catch (error) {
+      console.warn('关闭流失败', error);
     }
     localStream = null;
   }
@@ -470,7 +470,7 @@ const leaveRoom = async () => {
   }
 
   if (timInstance) {
-    await timInstance.logout().catch(() => { });
+    await timInstance.logout().catch(() => {});
     timInstance = null;
   }
   // if (localStream) localStream.close();
@@ -493,7 +493,6 @@ onUnmounted(() => {
   // const local = document.getElementById('local-video');
   // if (local) local.innerHTML = '';
   // document.querySelectorAll('[id^="thumb-"]').forEach(el => el.innerHTML = '');
-
 });
 </script>
 
@@ -502,19 +501,29 @@ onUnmounted(() => {
   <div class="relative flex h-full flex-col overflow-hidden p-2 sm:p-4">
     <!-- 弹幕层 -->
     <div class="pointer-events-none absolute inset-0 z-50 overflow-hidden">
-      <div v-for="(dm, idx) in danmakuList" :key="idx"
+      <div
+        v-for="(dm, idx) in danmakuList"
+        :key="idx"
         class="animate-danmaku absolute whitespace-nowrap text-sm font-bold text-white"
-        :style="{ top: `${dm.top}px`, animationDuration: `${dm.duration}s` }">
+        :style="{ top: `${dm.top}px`, animationDuration: `${dm.duration}s` }"
+      >
         {{ dm.text }}
       </div>
     </div>
 
     <!-- Page 容器 -->
-    <Page class="card-box relative flex-1 overflow-hidden rounded-lg"
-      title="Online live classroom (Tencent Cloud · TRTC + IM)" :loading="joining" loading-text="正在加入直播间...">
+    <Page
+      class="card-box relative flex-1 overflow-hidden rounded-lg"
+      title="Online live classroom (Tencent Cloud · TRTC + IM)"
+      :loading="joining"
+      loading-text="正在加入直播间..."
+    >
       <!-- 顶部信息（仅桌面显示） -->
       <template #description>
-        <div v-if="!isMobile" class="flex justify-between text-sm text-gray-600">
+        <div
+          v-if="!isMobile"
+          class="flex justify-between text-sm text-gray-600"
+        >
           <span>Course: xx</span>
           <span>Online users：{{ onlineCount }} 人</span>
         </div>
@@ -524,25 +533,41 @@ onUnmounted(() => {
       <div v-if="!isMobile" class="flex h-full gap-6">
         <!-- 左侧：视频区域 -->
         <div class="relative flex-1">
-          <div class="relative h-full w-full overflow-hidden rounded-lg bg-black">
+          <div
+            class="relative h-full w-full overflow-hidden rounded-lg bg-black"
+          >
             <div id="local-video" class="relative h-full w-full"></div>
-            <div class="absolute bottom-2 left-2 right-2 rounded bg-black bg-opacity-60 px-2 py-1 text-xs text-white">
+            <div
+              class="absolute bottom-2 left-2 right-2 rounded bg-black bg-opacity-60 px-2 py-1 text-xs text-white"
+            >
               Speaker: {{ USER_ID }}
             </div>
 
             <!-- 画中画小窗（右下角） -->
-            <div v-if="allThumbs.length > 0" class="absolute bottom-4 right-4 z-10 flex gap-2">
-              <div v-for="thumb in allThumbs" :key="thumb.key"
-                class="thumb-container relative h-16 w-24 cursor-pointer overflow-hidden rounded border border-gray-600 bg-gray-800 transition-all duration-200">
+            <div
+              v-if="allThumbs.length > 0"
+              class="absolute bottom-4 right-4 z-10 flex gap-2"
+            >
+              <div
+                v-for="thumb in allThumbs"
+                :key="thumb.key"
+                class="thumb-container relative h-16 w-24 cursor-pointer overflow-hidden rounded border border-gray-600 bg-gray-800 transition-all duration-200"
+              >
                 <template v-if="thumb.type === 'user'">
-                  <div :id="`thumb-${thumb.userId}`" class="h-full w-full"></div>
                   <div
-                    class="absolute bottom-0 left-0 right-0 truncate bg-black bg-opacity-50 px-1 text-[10px] text-white">
+                    :id="`thumb-${thumb.userId}`"
+                    class="h-full w-full"
+                  ></div>
+                  <div
+                    class="absolute bottom-0 left-0 right-0 truncate bg-black bg-opacity-50 px-1 text-[10px] text-white"
+                  >
                     {{ thumb.name }}
                   </div>
                 </template>
                 <template v-else-if="thumb.type === 'more'">
-                  <div class="flex h-full w-full items-center justify-center text-xs font-bold text-white">
+                  <div
+                    class="flex h-full w-full items-center justify-center text-xs font-bold text-white"
+                  >
                     +{{ thumb.count }}
                   </div>
                 </template>
@@ -565,8 +590,13 @@ onUnmounted(() => {
               </ElCheckbox>
             </div>
             <div
-              class="no-scrollbar mb-2 min-h-0 flex-1 overflow-y-auto border border-dashed border-gray-300 p-4 text-sm">
-              <div v-for="(msg, idx) in chatMessages" :key="idx" class="mb-1 break-words">
+              class="no-scrollbar mb-2 min-h-0 flex-1 overflow-y-auto border border-dashed border-gray-300 p-4 text-sm"
+            >
+              <div
+                v-for="(msg, idx) in chatMessages"
+                :key="idx"
+                class="mb-1 break-words"
+              >
                 <span class="font-medium text-blue-600">[{{ msg.from }}]:</span>
 
                 <!-- 📝 文本消息 -->
@@ -575,19 +605,33 @@ onUnmounted(() => {
                 }}</span>
 
                 <!-- 🖼️ 图片消息 -->
-                <img v-else-if="msg.type === 'image'" :src="msg.body" alt="图片消息"
-                  class="ml-1 mt-1 max-w-[200px] rounded border" @click="openImagePreview(msg.body)" />
+                <img
+                  v-else-if="msg.type === 'image'"
+                  :src="msg.body"
+                  alt="图片消息"
+                  class="ml-1 mt-1 max-w-[200px] rounded border"
+                  @click="openImagePreview(msg.body)"
+                />
 
                 <!-- 🔊 语音消息 -->
-                <div v-else-if="msg.type === 'audio'" class="ml-1 mt-1 flex items-center">
+                <div
+                  v-else-if="msg.type === 'audio'"
+                  class="ml-1 mt-1 flex items-center"
+                >
                   <audio :src="msg.body" controls class="rounded"></audio>
-                  <span class="ml-2 text-xs text-gray-500">({{ formatDuration(msg.duration) }})</span>
+                  <span class="ml-2 text-xs text-gray-500"
+                    >({{ formatDuration(msg.duration) }})</span
+                  >
                 </div>
 
                 <!-- 📎 文件消息 -->
                 <div v-else-if="msg.type === 'file'" class="ml-1 mt-1">
-                  <a :href="msg.body" target="_blank" rel="noopener noreferrer"
-                    class="inline-flex items-center gap-1 text-blue-600 hover:underline">
+                  <a
+                    :href="msg.body"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1 text-blue-600 hover:underline"
+                  >
                     📎 {{ msg.fileName || '未知文件' }}
                   </a>
                   <span class="ml-2 text-xs text-gray-500">
@@ -596,27 +640,45 @@ onUnmounted(() => {
                 </div>
 
                 <!-- 🧾 系统消息（群提示、自定义等） -->
-                <span v-else-if="msg.type === 'system'" class="ml-1 text-[12px] italic text-gray-500">
+                <span
+                  v-else-if="msg.type === 'system'"
+                  class="ml-1 text-[12px] italic text-gray-500"
+                >
                   {{ msg.body }}
                 </span>
 
                 <!-- ⚠️ 其他完全未知的消息类型（兜底） -->
-                <span v-else class="ml-1 text-red-500">[不支持的消息类型: {{ msg.type }}]</span>
+                <span v-else class="ml-1 text-red-500"
+                  >[不支持的消息类型: {{ msg.type }}]</span
+                >
               </div>
             </div>
             <div class="mt-auto flex gap-2">
-              <input v-model="inputMessage" type="text" placeholder="输入消息..."
-                class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm" @keyup.enter="sendChatMessage" />
+              <input
+                v-model="inputMessage"
+                type="text"
+                placeholder="输入消息..."
+                class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm"
+                @keyup.enter="sendChatMessage"
+              />
               <VbenButton size="sm" @click="sendChatMessage">Send</VbenButton>
             </div>
           </div>
 
           <!-- 底部操作按钮 -->
           <div class="mt-4 flex justify-end gap-4">
-            <VbenButton :variant="isAudioEnabled ? 'default' : 'destructive'" size="sm" @click="toggleMute('audio')">
+            <VbenButton
+              :variant="isAudioEnabled ? 'default' : 'destructive'"
+              size="sm"
+              @click="toggleMute('audio')"
+            >
               {{ isAudioEnabled ? 'Mute' : 'Cancel Mute' }}
             </VbenButton>
-            <VbenButton :variant="isVideoEnabled ? 'default' : 'destructive'" size="sm" @click="toggleMute('video')">
+            <VbenButton
+              :variant="isVideoEnabled ? 'default' : 'destructive'"
+              size="sm"
+              @click="toggleMute('video')"
+            >
               {{ isVideoEnabled ? 'Turn off Camera' : 'Turn On Camera' }}
             </VbenButton>
             <!-- <VbenButton variant="default" size="sm" @click="requestToSpeak">
@@ -634,17 +696,31 @@ onUnmounted(() => {
         <!-- 全屏视频 -->
         <div class="relative h-full w-full overflow-hidden rounded-lg bg-black">
           <div id="local-video" class="h-full w-full"></div>
-          <div class="absolute bottom-2 left-2 right-2 rounded bg-black bg-opacity-60 px-2 py-1 text-xs text-white">
+          <div
+            class="absolute bottom-2 left-2 right-2 rounded bg-black bg-opacity-60 px-2 py-1 text-xs text-white"
+          >
             Speaker: {{ USER_ID }}
           </div>
 
           <!-- 小窗移到左上角（最多显示2个） -->
-          <div v-if="allThumbs.length > 0" class="absolute left-2 top-2 z-10 flex gap-1">
-            <div v-for="thumb in allThumbs.slice(0, 2)" :key="thumb.key"
-              class="thumb-container relative h-12 w-16 overflow-hidden rounded border border-gray-600 bg-gray-800">
-              <div v-if="thumb.type === 'user'" :id="`thumb-${thumb.userId}`" class="h-full w-full"></div>
-              <div v-else-if="thumb.type === 'more'"
-                class="flex h-full w-full items-center justify-center text-[10px] font-bold text-white">
+          <div
+            v-if="allThumbs.length > 0"
+            class="absolute left-2 top-2 z-10 flex gap-1"
+          >
+            <div
+              v-for="thumb in allThumbs.slice(0, 2)"
+              :key="thumb.key"
+              class="thumb-container relative h-12 w-16 overflow-hidden rounded border border-gray-600 bg-gray-800"
+            >
+              <div
+                v-if="thumb.type === 'user'"
+                :id="`thumb-${thumb.userId}`"
+                class="h-full w-full"
+              ></div>
+              <div
+                v-else-if="thumb.type === 'more'"
+                class="flex h-full w-full items-center justify-center text-[10px] font-bold text-white"
+              >
                 +{{ thumb.count }}
               </div>
             </div>
@@ -654,15 +730,28 @@ onUnmounted(() => {
         <!-- 底部控制栏 -->
         <div class="absolute bottom-0 left-0 right-0 bg-white p-3 shadow-lg">
           <div class="flex items-center gap-2">
-            <input v-model="inputMessage" type="text" placeholder="输入消息..."
-              class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm" @keyup.enter="sendChatMessage" />
+            <input
+              v-model="inputMessage"
+              type="text"
+              placeholder="输入消息..."
+              class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm"
+              @keyup.enter="sendChatMessage"
+            />
             <VbenButton size="sm" @click="sendChatMessage">Send</VbenButton>
           </div>
           <div class="mt-4 flex justify-end gap-4">
-            <VbenButton :variant="isAudioEnabled ? 'default' : 'destructive'" size="sm" @click="toggleMute('audio')">
+            <VbenButton
+              :variant="isAudioEnabled ? 'default' : 'destructive'"
+              size="sm"
+              @click="toggleMute('audio')"
+            >
               {{ isAudioEnabled ? 'Mute' : 'Cancel Mute' }}
             </VbenButton>
-            <VbenButton :variant="isVideoEnabled ? 'default' : 'destructive'" size="sm" @click="toggleMute('video')">
+            <VbenButton
+              :variant="isVideoEnabled ? 'default' : 'destructive'"
+              size="sm"
+              @click="toggleMute('video')"
+            >
               {{ isVideoEnabled ? 'Turn off Camera' : 'Turn On Camera' }}
             </VbenButton>
             <!-- <VbenButton variant="default" size="sm" @click="requestToSpeak">
