@@ -1,0 +1,79 @@
+{
+  "name": "@vben/web-ele",
+  "version": "5.5.9",
+  "homepage": "https://vben.pro",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "directory": "apps/web-ele"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "vben",
+    "email": "ann.vben@gmail.com",
+    "url": "https://github.com/anncwb"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "pnpm vite build --mode production",
+    "build:analyze": "pnpm vite build --mode analyze",
+    "dev": "pnpm vite --mode development",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit --skipLibCheck"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "@formily/core": "^2.3.7",
+    "@formily/element-plus": "^1.1.0",
+    "@formily/json-schema": "^2.3.7",
+    "@formily/vue": "^2.3.7",
+    "@tencentcloud/roomkit-web-vue3": "^3.2.0",
+    "@thirdweb-dev/chains": "^0.1.120",
+    "@thirdweb-dev/react": "^4.9.4",
+    "@thirdweb-dev/sdk": "^4.0.99",
+    "@tiptap/core": "^3.13.0",
+    "@vben/access": "workspace:*",
+    "@vben/common-ui": "workspace:*",
+    "@vben/constants": "workspace:*",
+    "@vben/hooks": "workspace:*",
+    "@vben/icons": "workspace:*",
+    "@vben/layouts": "workspace:*",
+    "@vben/locales": "workspace:*",
+    "@vben/plugins": "workspace:*",
+    "@vben/preferences": "workspace:*",
+    "@vben/request": "workspace:*",
+    "@vben/stores": "workspace:*",
+    "@vben/styles": "workspace:*",
+    "@vben/types": "workspace:*",
+    "@vben/utils": "workspace:*",
+    "@vueuse/core": "catalog:",
+    "dayjs": "catalog:",
+    "dompurify": "^3.3.1",
+    "element-plus": "catalog:",
+    "ethers": "^5.8.0",
+    "face-api.js": "^0.22.2",
+    "highlight.js": "^11.11.1",
+    "marked": "^17.0.1",
+    "pinia": "catalog:",
+    "socket.io-client": "^4.8.1",
+    "sortablejs": "catalog:",
+    "three": "^0.181.2",
+    "tim-js-sdk": "^2.27.6",
+    "tim-upload-plugin": "^1.4.3",
+    "trtc-js-sdk": "^4.15.22",
+    "video.js": "^8.23.4",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "wujie-vue3": "^1.0.29"
+  },
+  "devDependencies": {
+    "@types/sortablejs": "catalog:",
+    "@types/three": "^0.181.0",
+    "pinia-plugin-persistedstate": "^4.7.1",
+    "unplugin-element-plus": "^0.11.2"
+  }
+}

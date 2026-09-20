@@ -1,0 +1,122 @@
+<script lang="ts" setup>
+import type { VbenFormSchema } from '@vben/common-ui';
+import type { Recordable } from '@vben/types';
+
+import { computed, h, markRaw, ref } from 'vue';
+
+import { AuthenticationRegister, SliderCaptcha, z } from '@vben/common-ui';
+import { $t } from '@vben/locales';
+
+import { registerApi } from '#/api';
+import { useAuthStore } from '#/store';
+
+defineOptions({ name: 'Register' });
+
+const authStore = useAuthStore();
+const loading = ref(false);
+
+const formSchema = computed((): VbenFormSchema[] => {
+  return [
+    {
+      component: 'VbenInput',
+      componentProps: {
+        placeholder: $t('authentication.usernameTip'),
+      },
+      fieldName: 'username',
+      label: $t('authentication.username'),
+      rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
+    },
+    {
+      component: 'VbenInput',
+      componentProps: {
+        placeholder: $t('authentication.emailTip'),
+      },
+      fieldName: 'email',
+      label: $t('authentication.email') || '邮箱',
+      rules: z
+        .string()
+        .min(1, { message: $t('authentication.emailTip') })
+        .email({ message: $t('authentication.emailValidErrorTip') }),
+    },
+    {
+      component: 'VbenInputPassword',
+      componentProps: {
+        passwordStrength: true,
+        placeholder: $t('authentication.password'),
+      },
+      fieldName: 'password',
+      label: $t('authentication.password'),
+      renderComponentContent() {
+        return {
+          strengthText: () => $t('authentication.passwordStrength'),
+        };
+      },
+      rules: z.string().min(1, { message: $t('authentication.passwordTip') }),
+    },
+    {
+      component: 'VbenInputPassword',
+      componentProps: {
+        placeholder: $t('authentication.confirmPassword'),
+      },
+      dependencies: {
+        rules(values) {
+          const { password } = values;
+          return z
+            .string({ required_error: $t('authentication.passwordTip') })
+            .min(1, { message: $t('authentication.passwordTip') })
+            .refine((value) => value === password, {
+              message: $t('authentication.confirmPasswordTip'),
+            });
+        },
+        triggerFields: ['password'],
+      },
+      fieldName: 'confirmPassword',
+      label: $t('authentication.confirmPassword'),
+    },
+    {
+      component: 'VbenCheckbox',
+      fieldName: 'agreePolicy',
+      renderComponentContent: () => ({
+        default: () =>
+          h('span', [
+            $t('authentication.agree'),
+            h(
+              'a',
+              {
+                class: 'vben-link ml-1 ',
+                href: '',
+              },
+              `${$t('authentication.privacyPolicy')} & ${$t('authentication.terms')}`,
+            ),
+          ]),
+      }),
+      rules: z.boolean().refine((value) => !!value, {
+        message: $t('authentication.agreeTip'),
+      }),
+    },
+    {
+      component: markRaw(SliderCaptcha),
+      fieldName: 'captcha',
+      rules: z.boolean().refine((value) => value, {
+        message: $t('authentication.verifyRequiredTip'),
+      }),
+    },
+  ];
+});
+
+async function handleSubmit(value: Recordable<any>) {
+  // console.log('register submit:', value);
+  const result = await registerApi(value);
+  if (result.accessToken) {
+    authStore.authLogin(value);
+  }
+}
+</script>
+
+<template>
+  <AuthenticationRegister
+    :form-schema="formSchema"
+    :loading="loading"
+    @submit="handleSubmit"
+  />
+</template>
