@@ -130,8 +130,8 @@ catalogs:
       specifier: ^13.4.0
       version: 13.9.0
     '@vueuse/integrations':
-      specifier: ^14.0.0
-      version: 14.0.0
+      specifier: ^15.0.0
+      version: 15.0.0
     '@vueuse/motion':
       specifier: ^3.0.3
       version: 3.0.3
@@ -1391,7 +1391,7 @@ importers:
         version: 13.9.0(vue@3.5.24(typescript@5.9.3))
       '@vueuse/integrations':
         specifier: 'catalog:'
-        version: 14.0.0(async-validator@4.2.5)(axios@1.13.2)(fuse.js@7.1.0)(idb-keyval@6.2.2)(nprogress@0.2.0)(qrcode@1.5.4)(sortablejs@1.15.6)(vue@3.5.24(typescript@5.9.3))
+        version: 15.0.0(async-validator@4.2.5)(axios@1.13.2)(fuse.js@7.1.0)(idb-keyval@6.2.2)(nprogress@0.2.0)(qrcode@1.5.4)(sortablejs@1.15.6)(vue@3.5.24(typescript@5.9.3))
       json-bigint:
         specifier: 'catalog:'
         version: 1.0.0
@@ -5292,9 +5292,6 @@ packages:
   '@tencentcloud/chat@3.6.1':
     resolution: {integrity: sha512-YKftPfO2Mzo/RhSmUq2806FrB2ZB9AiuVmhHupxXtG6g8RMHTJICQulp6z+3bBzU7qko9BancR8rtvfdpDTpmQ==}
 
-  '@tencentcloud/chat@3.6.6':
-    resolution: {integrity: sha512-PYPGUoZHw3GjDgM0N72qr0K/Wjp28HAoGaND077sbUQEwYFaMjZ1tuBQZugFG6v8OS8Ihx71yqNshR3xDHvYaA==}
-
   '@tencentcloud/chat@3.6.7':
     resolution: {integrity: sha512-HEmyOFTWRzP4PlHNNVSk3dxEq8wYcyqhGkYT2a0/qgSFD6X7DBwrJWnD5K4HnVXqEafnwF7c8FUIkr2OvxXoMQ==}
 
@@ -6216,22 +6213,24 @@ packages:
     peerDependencies:
       vue: ^3.5.24
 
-  '@vueuse/core@14.0.0':
-    resolution: {integrity: sha512-d6tKRWkZE8IQElX2aHBxXOMD478fHIYV+Dzm2y9Ag122ICBpNKtGICiXKOhWU3L1kKdttDD9dCMS4bGP3jhCTQ==}
+  '@vueuse/core@15.0.0':
+    resolution: {integrity: sha512-Zv67h5mrk7YHDJsRObx+DXaCBz6RKBUpxqLesJ+3xZNPG6yuQs7ja7kg3veFrrouYLWAqydQ7CwGEbLVxB43Ng==}
+    engines: {node: '>=22'}
     peerDependencies:
       vue: ^3.5.24
 
   '@vueuse/core@9.13.0':
     resolution: {integrity: sha512-pujnclbeHWxxPRqXWmdkKV5OX4Wk4YeK7wusHqRwU0Q7EFusHoqNA/aPhB6KCh9hEqJkLAJo7bb0Lh9b+OIVzw==}
 
-  '@vueuse/integrations@14.0.0':
-    resolution: {integrity: sha512-5A0X7q9qyLtM3xyghq5nK/NEESf7cpcZlkQgXTMuW4JWiAMYxc1ImdhhGrk4negFBsq3ejvAlRmLdNrkcTzk1Q==}
+  '@vueuse/integrations@15.0.0':
+    resolution: {integrity: sha512-uWC1608pEocJPeRk1IqrEA3uYHhAGTJNibcMAdxgdK2Sy2Hypc6b+VdNO9KekCxyPc4VXK8SKDp8vsXefR/ZFg==}
+    engines: {node: '>=22'}
     peerDependencies:
       async-validator: ^4
       axios: ^1
       change-case: ^5
-      drauu: ^0.4
-      focus-trap: ^7
+      drauu: ^1 || ^0.4
+      focus-trap: ^7 || ^8
       fuse.js: ^7
       idb-keyval: ^6
       jwt-decode: ^4
@@ -6272,8 +6271,9 @@ packages:
   '@vueuse/metadata@13.9.0':
     resolution: {integrity: sha512-1AFRvuiGphfF7yWixZa0KwjYH8ulyjDCC0aFgrGRz8+P4kvDFSdXLVfTk5xAN9wEuD1J6z4/myMoYbnHoX07zg==}
 
-  '@vueuse/metadata@14.0.0':
-    resolution: {integrity: sha512-6yoGqbJcMldVCevkFiHDBTB1V5Hq+G/haPlGIuaFZHpXC0HADB0EN1ryQAAceiW+ryS3niUwvdFbGiqHqBrfVA==}
+  '@vueuse/metadata@15.0.0':
+    resolution: {integrity: sha512-sfWE5LADAKJ0KnjtGliMdSN8Ij/L7uP6rXIZlgPloAI4zvvefbw6H5Lt7KJA6RqQOYgVqWF5Guj50HHMIzygBg==}
+    engines: {node: '>=22'}
 
   '@vueuse/metadata@9.13.0':
     resolution: {integrity: sha512-gdU7TKNAUVlXXLbaF+ZCfte8BjRJQWPCa2J55+7/h+yDtzw3vOoGQDRXzI6pyKyo6bXFT5/QoPE4hAknExjRLQ==}
@@ -6291,8 +6291,9 @@ packages:
     peerDependencies:
       vue: ^3.5.24
 
-  '@vueuse/shared@14.0.0':
-    resolution: {integrity: sha512-mTCA0uczBgurRlwVaQHfG0Ja7UdGe4g9mwffiJmvLiTtp1G4AQyIjej6si/k8c8pUwTfVpNufck+23gXptPAkw==}
+  '@vueuse/shared@15.0.0':
+    resolution: {integrity: sha512-vbNXhGrbV53xPOMSyOzMHQRvhMgZf7oNDw2RChUetVxwTIEkInQ1joZ9JbT0G3z2n2AJNjvmCWeM9ySYrnvogA==}
+    engines: {node: '>=22'}
     peerDependencies:
       vue: ^3.5.24
 
@@ -7380,6 +7381,7 @@ packages:
 
   crypto-js@4.2.0:
     resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    deprecated: Active development of CryptoJS has been discontinued. This library is no longer maintained.
 
   crypto-random-string@2.0.0:
     resolution: {integrity: sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==}
@@ -12384,6 +12386,7 @@ packages:
 
   trtc-js-sdk@4.15.22:
     resolution: {integrity: sha512-YC0YvHya0Dnrxs9+TsT6L73M5mTKt+Aqar56Hlq+C1LNiuCpCBl+6vs1DTz0yH/NELNl0Oiv6OSl5j6LwSOQrw==}
+    deprecated: 'trtc-js-sdk is no longer maintained. Please migrate to TRTC Web SDK v5(trtc-sdk-v5): https://www.npmjs.com/package/trtc-sdk-v5 . Migration guide: https://web.sdk.qcloud.com/trtc/webrtc/doc/zh-cn/tutorial-07-info-v4-to-v5-migration.html'
 
   trtc-sdk-v5@5.11.1:
     resolution: {integrity: sha512-7EPZx3UUrvBAU9HynXsIcgI91wYWTYKbEkYUp186EDwgVEzc+v4uDL0427AY1PBI8tgf2ednO4qFk/C8crTSPQ==}
@@ -13207,6 +13210,7 @@ packages:
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@3.0.0:
     resolution: {integrity: sha512-nt+N2dzIutVRxARx1nghPKGv1xHikU7HKdfafKkLNLindmPU/ch3U31NOCGGA/dmPcmb1VlofO0vnKAcsm0o/Q==}
@@ -17854,7 +17858,7 @@ snapshots:
 
   '@tencentcloud/call-engine-js@3.3.2':
     dependencies:
-      '@tencentcloud/chat': 3.6.6
+      '@tencentcloud/chat': 3.6.7
       core-js: 3.47.0
       eventemitter3: 4.0.7
       rtc-detect: 0.0.5
@@ -17864,7 +17868,7 @@ snapshots:
   '@tencentcloud/call-uikit-vue2.6@4.0.12(vue@3.5.24(typescript@5.9.3))':
     dependencies:
       '@tencentcloud/call-engine-js': 3.3.2
-      '@tencentcloud/chat': 3.6.6
+      '@tencentcloud/chat': 3.6.7
       '@tencentcloud/tui-core': 2.5.1
       '@vue/composition-api': 1.7.2(vue@3.5.24(typescript@5.9.3))
     transitivePeerDependencies:
@@ -17873,13 +17877,13 @@ snapshots:
   '@tencentcloud/call-uikit-vue2@4.0.12':
     dependencies:
       '@tencentcloud/call-engine-js': 3.3.2
-      '@tencentcloud/chat': 3.6.6
+      '@tencentcloud/chat': 3.6.7
       '@tencentcloud/tui-core': 2.5.1
 
   '@tencentcloud/call-uikit-vue@4.0.12':
     dependencies:
       '@tencentcloud/call-engine-js': 3.3.2
-      '@tencentcloud/chat': 3.6.6
+      '@tencentcloud/chat': 3.6.7
       '@tencentcloud/tui-core': 2.5.1
 
   '@tencentcloud/chat-uikit-engine-lite@1.0.1':
@@ -17929,8 +17933,6 @@ snapshots:
       - vue
 
   '@tencentcloud/chat@3.6.1': {}
-
-  '@tencentcloud/chat@3.6.6': {}
 
   '@tencentcloud/chat@3.6.7': {}
 
@@ -19376,11 +19378,11 @@ snapshots:
       '@vueuse/shared': 13.9.0(vue@3.5.24(typescript@5.9.3))
       vue: 3.5.24(typescript@5.9.3)
 
-  '@vueuse/core@14.0.0(vue@3.5.24(typescript@5.9.3))':
+  '@vueuse/core@15.0.0(vue@3.5.24(typescript@5.9.3))':
     dependencies:
       '@types/web-bluetooth': 0.0.21
-      '@vueuse/metadata': 14.0.0
-      '@vueuse/shared': 14.0.0(vue@3.5.24(typescript@5.9.3))
+      '@vueuse/metadata': 15.0.0
+      '@vueuse/shared': 15.0.0(vue@3.5.24(typescript@5.9.3))
       vue: 3.5.24(typescript@5.9.3)
 
   '@vueuse/core@9.13.0(@vue/composition-api@1.7.2(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))':
@@ -19393,10 +19395,10 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
-  '@vueuse/integrations@14.0.0(async-validator@4.2.5)(axios@1.13.2)(fuse.js@7.1.0)(idb-keyval@6.2.2)(nprogress@0.2.0)(qrcode@1.5.4)(sortablejs@1.15.6)(vue@3.5.24(typescript@5.9.3))':
+  '@vueuse/integrations@15.0.0(async-validator@4.2.5)(axios@1.13.2)(fuse.js@7.1.0)(idb-keyval@6.2.2)(nprogress@0.2.0)(qrcode@1.5.4)(sortablejs@1.15.6)(vue@3.5.24(typescript@5.9.3))':
     dependencies:
-      '@vueuse/core': 14.0.0(vue@3.5.24(typescript@5.9.3))
-      '@vueuse/shared': 14.0.0(vue@3.5.24(typescript@5.9.3))
+      '@vueuse/core': 15.0.0(vue@3.5.24(typescript@5.9.3))
+      '@vueuse/shared': 15.0.0(vue@3.5.24(typescript@5.9.3))
       vue: 3.5.24(typescript@5.9.3)
     optionalDependencies:
       async-validator: 4.2.5
@@ -19411,7 +19413,7 @@ snapshots:
 
   '@vueuse/metadata@13.9.0': {}
 
-  '@vueuse/metadata@14.0.0': {}
+  '@vueuse/metadata@15.0.0': {}
 
   '@vueuse/metadata@9.13.0': {}
 
@@ -19439,7 +19441,7 @@ snapshots:
     dependencies:
       vue: 3.5.24(typescript@5.9.3)
 
-  '@vueuse/shared@14.0.0(vue@3.5.24(typescript@5.9.3))':
+  '@vueuse/shared@15.0.0(vue@3.5.24(typescript@5.9.3))':
     dependencies:
       vue: 3.5.24(typescript@5.9.3)
 
